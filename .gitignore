@@ -1,0 +1,16 @@
+bin
+obj
+*.log
+output/
+_Resharper*
+*.user
+*.suo
+*.ncb
+packages/
+*.Cache
+src/*.properties
+bower_components
+node_modules
+*.gen.*
+AssemblyInfo.cs
+.vs

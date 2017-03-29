@@ -1,0 +1,20 @@
+import System.IO
+
+Global(
+	#Project : @ClientInterface,
+	DeployAlias : @Marketing,
+	HumanReadableName : "Интерфейс маркетолога",
+	Profile : @catalog,
+	SkipFix: true,
+	Config: {
+		"assembly:info:generate": {
+			@Publisher: "АналитФармация",
+		}
+	}
+)
+
+task @default, [@build]
+
+task @build, [@WebBuild]
+
+task @deploy, ["deploy:pipeline"]
