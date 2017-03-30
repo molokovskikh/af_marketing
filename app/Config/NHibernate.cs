@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Humanizer;
+using Marketing.Models;
 using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
@@ -69,6 +70,43 @@ namespace Marketing
 				//{Environment.ShowSql, "true"},
 				//{Environment.FormatSql, "true"},
 				{Environment.Isolation, "ReadCommitted"},
+			});
+
+			Mapper.Class<Promoter>(m => {
+				m.Bag(o => o.Producers, c => {
+					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
+					c.Inverse(true);
+				});
+				m.Bag(o => o.Members, c => {
+					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
+					c.Inverse(true);
+				});
+			});
+			Mapper.Class<PromoterProducer>(m => {
+				m.Bag(o => o.Promotions, c => {
+					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
+					c.Inverse(true);
+				});
+			});
+			Mapper.Class<PromotionMember>(m => {
+				m.Bag(o => o.Subscribes, c => {
+					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
+					c.Inverse(true);
+				});
+			});
+			Mapper.Class<ProducerPromotion>(m => {
+				m.Bag(o => o.Products, c => {
+					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
+					c.Inverse(true);
+				});
+				m.Bag(o => o.Suppliers, c => {
+					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
+					c.Inverse(true);
+				});
+				m.Bag(o => o.Subscribes, c => {
+					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
+					c.Inverse(true);
+				});
 			});
 
 			var types = MappingAssembly.GetTypes().Where(t =>

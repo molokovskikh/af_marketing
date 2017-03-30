@@ -1,0 +1,29 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace Marketing.Models
+{
+	/// <summary>
+	/// Организатор акции, пользователь сайта
+	/// </summary>
+	public class Promoter
+	{
+		public Promoter()
+		{
+			Producers = new List<PromoterProducer>();
+			Members = new List<PromotionMember>();
+		}
+
+		public virtual uint Id { get; set; }
+
+		public virtual string Name { get; set; }
+
+		public virtual string Login { get; set; }
+
+		public virtual IList<PromoterProducer> Producers { get; set; }
+
+		public virtual IList<PromotionMember> Members { get; set; }
+	}
+}
