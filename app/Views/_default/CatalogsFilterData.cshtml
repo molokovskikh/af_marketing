@@ -1,0 +1,35 @@
+﻿@model List<Marketing.ViewModels.ViewModelList>
+@{
+    string currentCatalogsSearch = ViewBag.CurrentCatalogsSearch;
+}
+@*Разделение JS, сопутствующих параметров и данного кода необходимо для корректной работы компонента*@
+
+@Html.Hidden("catalogIdList", string.Join(",", Model.Select(s => s.Value).ToList()))
+@Html.Hidden("catalogSearch", currentCatalogsSearch)
+
+<script type="text/javascript">
+    function filterCatalogsOnSelectionChanged(s, e) {
+        if (!$("[name='catalogIdList']").hasClass("busy")) {
+        	s.GetSelectedFieldValues("Value", function (val) { $("[name='catalogIdList']").val(val); });
+        }
+    }
+
+    function filterCatalogsCloseGridLookup() {
+        filterCatalogs.ConfirmCurrentSelection();
+        filterCatalogs.HideDropDown();
+    }
+
+    function filterCatalogsBeginCallback(s, e) {
+        var currentValue = s.GetAutoFilterEditor(1).GetValue();
+        e.customArgs["term"] = currentValue;
+        e.customArgs["currentValues"] = $("[name='catalogIdList']").val();
+        $("[name='catalogSearch']").val(currentValue);
+    }
+
+    $(function() {
+        var currentValue = filterCatalogs.GetValue();
+        if (currentValue == undefined || currentValue == "") {
+            filterCatalogs.SetValue();
+        }
+    });
+</script>

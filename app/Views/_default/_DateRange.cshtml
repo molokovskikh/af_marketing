@@ -1,0 +1,92 @@
+﻿@using System.Web.UI.WebControls
+@model Marketing.ViewModels.DateRangeViewModel
+
+
+@Html.Hidden("dateBegin", Model.DateBegin)
+@Html.Hidden("dateEnd", Model.DateEnd)
+
+<script type="text/javascript">
+	function DateEndUpdate(s, e) {
+	    var rawDate = s.GetText();
+	    if (rawDate != undefined && rawDate != '') {
+	        $("[id='dateEnd']").val(rawDate + ' 00:00:00');
+	        DateBegin.SetMaxDate(s.GetValue());
+	        if (DateBegin.GetValue() > s.GetValue()) {
+	            DateBegin.SetValue(s.GetValue());
+	        }
+	    }
+	}
+	function DateBeginUpdate(s, e) {
+	    var rawDate = s.GetText();
+	    if (rawDate != undefined && rawDate != '') {
+	        $("[id='dateBegin']").val(rawDate + ' 00:00:00');
+	        DateEnd.SetMaxDate(s.GetValue());
+	        if (DateEnd.GetValue() > s.GetValue()) {
+	            DateEnd.SetValue(s.GetValue());
+	        }
+	    }
+	}
+</script>
+@Html.DevExpress().FormLayout(settings =>
+{
+    settings.Name = "dateRange";
+    settings.RequiredMarkDisplayMode = RequiredMarkMode.RequiredOnly;
+    settings.SettingsItemCaptions.Location = LayoutItemCaptionLocation.Left;
+    settings.ControlStyle.CssClass = "pickerFormLayout";
+
+    var pickerGroup = settings.Items.AddGroupItem(itemSettings => {
+        itemSettings.Caption = "Период:";
+        itemSettings.ColCount = 2;
+        itemSettings.AlignItemCaptions = false;
+    });
+    pickerGroup.ParentContainerStyle.CssClass = "pickerGroupContainer";
+    pickerGroup.GroupBoxDecoration = GroupBoxDecoration.HeadingLine;
+
+    var newItem = pickerGroup.Items.Add(item => Model.DateBegin, itemSettings => ConfigureDateEditItem(itemSettings));
+    newItem.NestedExtensionType = FormLayoutNestedExtensionItemType.DateEdit;
+    newItem.Caption = "с:";
+    var dateEditSettings = (DateEditSettings)newItem.NestedExtensionSettings;
+    dateEditSettings.Properties.ClientSideEvents.DateChanged = "DateBeginUpdate";
+    dateEditSettings.Properties.CalendarProperties.DisabledDates.AddRange(Model.DateBeginDisabledDates?? new List<DateTime>());
+    if (Model.DateBeginMax != null)
+        dateEditSettings.Properties.CalendarProperties.MaxDate = Model.DateBeginMax.Value;
+    if (Model.DateBeginMin != null)
+        dateEditSettings.Properties.CalendarProperties.MaxDate = Model.DateBeginMin.Value;
+    else
+        dateEditSettings.Properties.CalendarProperties.MaxDate = Model.DateEnd;
+
+    newItem = pickerGroup.Items.Add(item => Model.DateEnd, itemSettings => ConfigureDateEditItem(itemSettings));
+    newItem.NestedExtensionType = FormLayoutNestedExtensionItemType.DateEdit;
+    newItem.Caption = "по:";
+    dateEditSettings = (DateEditSettings)newItem.NestedExtensionSettings;
+    dateEditSettings.Properties.ClientSideEvents.DateChanged = "DateEndUpdate";
+    dateEditSettings.Properties.CalendarProperties.DisabledDates.AddRange(Model.DateEndDisabledDates ?? new List<DateTime>());
+    if (Model.DateEndMax != null)
+        dateEditSettings.Properties.CalendarProperties.MaxDate = Model.DateEndMax.Value;
+    if (Model.DateEndMin != null)
+        dateEditSettings.Properties.CalendarProperties.MaxDate = Model.DateEndMin.Value;
+
+
+    pickerGroup.Items.Add(itemSettings => {
+        itemSettings.NestedExtensionType = FormLayoutNestedExtensionItemType.ValidationSummary;
+        itemSettings.ShowCaption = DefaultBoolean.False;
+        itemSettings.ColSpan = 2;
+        itemSettings.Height = Unit.Pixel(50);
+    });
+}).GetHtml()
+
+@functions{
+  Function<DateEditSettings, MVCxFormLayoutItem> ConfigureDateEditItem = itemSettings =>
+  {
+      itemSettings.NestedExtensionType = FormLayoutNestedExtensionItemType.DateEdit;
+      var dateEditSettings = (DateEditSettings)itemSettings.NestedExtensionSettings;
+      dateEditSettings.ShowModelErrors = true;
+      dateEditSettings.Properties.ValidationSettings.Display = Display.Dynamic;
+      dateEditSettings.Properties.ValidationSettings.SetFocusOnError = true;
+      dateEditSettings.Properties.ValidationSettings.ErrorDisplayMode = ErrorDisplayMode.ImageWithTooltip;
+      dateEditSettings.Properties.ValidationSettings.CausesValidation = true;
+      dateEditSettings.Properties.CalendarProperties.Columns = 2;
+      dateEditSettings.Properties.CalendarProperties.ShowShadow = false;
+      return dateEditSettings;
+  };
+}

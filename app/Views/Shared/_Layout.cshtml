@@ -7,6 +7,43 @@
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 
+
+
+    <script src="@Url.Content("~/Scripts/jquery-1.11.1.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/jquery-ui.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/knockout-3.4.1.js")"></script>
+    <script src="@Url.Content("~/Scripts/cldr.js")"></script>
+    <script src="~/Scripts/cldr/event.js"></script>
+    <script src="~/Scripts/cldr/supplemental.js"></script>
+
+    <script src="@Url.Content("~/Scripts/globalize.js")"></script>
+
+    <script src="~/Scripts/globalize/message.js"></script>
+    <script src="~/Scripts/globalize/number.js"></script>
+    <script src="~/Scripts/globalize/plural.js"></script>
+    <!-- Load after globalize/number.js -->
+    <script src="~/Scripts/globalize/date.js"></script> <!-- the trick-->
+    <script src="~/Scripts/globalize/currency.js"></script>
+
+    <!-- Load after globalize/number.js and globalize/plural.js-->
+    <script src="~/Scripts/globalize/relative-time.js"></script>
+    <script src="@Url.Content("~/Scripts/ace.js")"></script>
+    @Html.DevExpress().GetStyleSheets(
+                new StyleSheet { ExtensionSuite = ExtensionSuite.NavigationAndLayout },
+                new StyleSheet { ExtensionSuite = ExtensionSuite.Report },
+                new StyleSheet { ExtensionSuite = ExtensionSuite.GridView },
+                new StyleSheet { ExtensionSuite = ExtensionSuite.Editors }
+                )
+    @Html.DevExpress().GetScripts(
+                new Script { ExtensionSuite = ExtensionSuite.NavigationAndLayout },
+                new Script { ExtensionSuite = ExtensionSuite.Report },
+                new Script { ExtensionSuite = ExtensionSuite.GridView },
+                new Script { ExtensionSuite = ExtensionSuite.Editors }
+                )
+
+    @RenderSection("AdditionalResources", false)
+
+
 </head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -22,8 +59,7 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("About", "About", "Home")</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                    <li>@Html.ActionLink("DevExample", "Index", "DevExample")</li>
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>

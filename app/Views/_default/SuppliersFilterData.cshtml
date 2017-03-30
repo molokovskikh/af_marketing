@@ -1,0 +1,30 @@
+﻿@model List<Marketing.ViewModels.ViewModelList>
+
+@*Разделение JS, сопутствующих параметров и данного кода необходимо для корректной работы компонента*@
+
+@Html.Hidden("supplierIdList", string.Join(",", Model.Select(s => s.Value).ToList()))
+
+<script type="text/javascript">
+    function filterSuppliersOnSelectionChanged(s, e) {
+        if (!$("[name='supplierIdList']").hasClass("busy")) {
+        	s.GetSelectedFieldValues("Value", function (val) { $("[name='supplierIdList']").val(val); });
+        }
+    }
+
+    function filterSuppliersCloseGridLookup() {
+        filterSuppliers.ConfirmCurrentSelection();
+        filterSuppliers.HideDropDown();
+    }
+
+    function filterSuppliersBeginCallback(s, e) {
+        e.customArgs["currentValues"] = $("[name='supplierIdList']").val();
+    }
+
+    $(function() {
+        var currentValue = filterSuppliers.GetValue();
+        if (currentValue == undefined || currentValue == "") {
+            filterSuppliers.SetValue();
+        }
+    });
+
+</script>

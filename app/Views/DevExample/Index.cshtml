@@ -1,0 +1,53 @@
+﻿@using System.ComponentModel
+@using Marketing.Controllers
+@using Marketing.ViewModels
+@model System.Collections.IEnumerable
+
+@{
+  ViewBag.Title = "DevExample";
+  DateTime dateFrom = ViewBag.DateFrom ?? DateTime.Now.Date.AddDays(-6);
+  DateTime dateTo = ViewBag.DateTo ?? DateTime.Now;
+  List<ViewModelList> currentCatalogs = ViewBag.CurrentCatalogs ?? new List<ViewModelList> ();
+  List<ViewModelList> currentSuppliers = ViewBag.CurrentSuppliers ?? new List<ViewModelList>();
+  List<ViewModelList> currentProducers = ViewBag.CurrentProducers ?? new List<ViewModelList>();
+  List<ViewModelList> currentAddresses = ViewBag.CurrentAddresses ?? new List<ViewModelList>();
+}
+<div class="form-group">
+
+</div>
+@using (Html.BeginForm("Index", "DevExample", FormMethod.Post))
+{
+<div class="filterWrapper">
+    <div class="form-group">
+        @Html.Partial("../_default/SuppliersFilterData", currentSuppliers)
+        @Html.Partial("../_default/SuppliersFilterLogic", currentSuppliers)
+    </div>
+    <div class="form-group">
+        @Html.Partial("../_default/ProducersFilterData", currentProducers)
+        @Html.Partial("../_default/ProducersFilterLogic", currentProducers)
+    </div>
+    <div class="form-group">
+        @Html.Partial("../_default/CatalogsFilterData", currentCatalogs)
+        @Html.Partial("../_default/CatalogsFilterLogic", currentCatalogs)
+    </div>
+    <div class="form-group">
+        @Html.Partial("../_default/_DateRange", new DateRangeViewModel { DateBegin = dateFrom, DateEnd = dateTo })
+    </div>
+    <div class="form-group">
+        <button type="submit">Поиск</button> | <button type="submit" name="exportToExcel" value="true">Экспорт в Excel</button>
+    </div>
+</div>
+    <div class="form-group">
+        <script type="text/javascript">
+            //Здесь нужно собать все значения, которые должны быть учтены при фильтрации
+            function gridVIewBeginCallback(s, e) {
+                e.customArgs["dateBegin"] = $("[name='dateBegin']").val();
+                e.customArgs["dateEnd"] = $("[name='dateEnd']").val();
+                e.customArgs["catalogIdList"] = $("[name='catalogIdList']").val();
+                e.customArgs["supplierIdList"] = $("[name='supplierIdList']").val();
+                e.customArgs["producerIdList"] = $("[name='producerIdList']").val();
+            }
+        </script>
+        @Html.Partial("GridView", Model)
+    </div>
+}
