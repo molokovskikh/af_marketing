@@ -108,6 +108,9 @@ namespace Marketing
 					c.Inverse(true);
 				});
 			});
+			Mapper.Class<Address>(m => {
+				m.Property(x => x.AddressName, c => c.Column("Address"));
+			});
 
 			var types = MappingAssembly.GetTypes().Where(t =>
 				!Attribute.IsDefined(t, typeof(CompilerGeneratedAttribute), false)
