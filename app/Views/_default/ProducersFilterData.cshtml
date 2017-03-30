@@ -1,0 +1,32 @@
+﻿@model List<Marketing.ViewModels.ViewModelList>
+
+@*Разделение JS, сопутствующих параметров и данного кода необходимо для корректной работы компонента*@
+
+@Html.Hidden("producerIdList", string.Join(",", Model.Select(s => s.Value).ToList()))
+
+<script type="text/javascript">
+    function filterProducersOnSelectionChanged(s, e) {
+    	if (!$("[name='producerIdList']").hasClass("busy")) {
+    		s.GetSelectedFieldValues("Value", function (val) { $("[name='producerIdList']").val(val); });
+        }
+    }
+
+    function filterProducersCloseGridLookup() {
+        filterProducers.ConfirmCurrentSelection();
+        filterProducers.HideDropDown();
+    }
+
+    function filterProducersBeginCallback(s, e) {
+        var currentValue = s.GetAutoFilterEditor(1).GetValue();
+        e.customArgs["term"] = currentValue;
+        e.customArgs["currentValues"] = $("[name='producerIdList']").val();
+    }
+
+    $(function() {
+        var currentValue = filterProducers.GetValue();
+        if (currentValue == undefined || currentValue == "") {
+            filterProducers.SetValue();
+        }
+    });
+
+</script>

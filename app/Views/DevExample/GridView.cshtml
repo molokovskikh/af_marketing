@@ -1,0 +1,7 @@
+﻿@using Marketing.Controllers
+@{
+    var resultSettings = DevExampleController.GridViewHelper.ExportGridViewSettings;
+    resultSettings.ClientSideEvents.BeginCallback = "gridVIewBeginCallback";
+}
+
+@Html.DevExpress().GridView(resultSettings).Bind(Model).GetHtml()

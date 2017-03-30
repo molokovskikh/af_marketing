@@ -1,0 +1,68 @@
+﻿@using System.ComponentModel
+@using DevExpress.Data
+@model List<Marketing.ViewModels.ViewModelList>
+@{
+    var filterName = "filterSuppliers";
+}
+
+		@*Разделение JS, сопутствующих параметров и данного кода необходимо для корректной работы компонента*@
+
+@Html.DevExpress().GridLookup(
+    settings => {
+        settings.Width = 300;
+        settings.Properties.Caption = "Поставщики:";
+        settings.Name = filterName;
+        settings.KeyFieldName = "Value";
+        settings.CommandColumn.Visible = true;
+        settings.CommandColumn.ShowSelectCheckbox = true;
+        settings.Columns.Add(c => {
+            c.FieldName = "Text";
+            c.Caption = "Поиск:";
+            c.Settings.AllowAutoFilter = DefaultBoolean.True;
+            c.Settings.AutoFilterCondition = AutoFilterCondition.Contains;
+        });
+        settings.Columns.Add(c => {
+            c.FieldName = "Value";
+            c.Visible = false;
+        });
+        settings.Properties.SelectionMode = DevExpress.Web.GridLookupSelectionMode.Multiple;
+        settings.Properties.TextFormatString = "{0}";
+        settings.Properties.MultiTextSeparator = ", ";
+        settings.Properties.Width = 300;
+        settings.Properties.IncrementalFilteringMode = IncrementalFilteringMode.Contains;
+        settings.Properties.IncrementalFilteringDelay = 500;
+
+        settings.GridViewProperties.CallbackRouteValues = new {Controller = "DevExample", Action = "GetFilterSuppliers"};
+        settings.GridViewProperties.Settings.ShowFilterRow = true;
+        settings.GridViewProperties.Settings.ShowStatusBar = GridViewStatusBarMode.Visible;
+
+        settings.GridViewClientSideEvents.SelectionChanged = filterName+ "OnSelectionChanged";
+        settings.GridViewClientSideEvents.BeginCallback = filterName + "BeginCallback";
+
+        settings.PreRender = (sender, e) => {
+            var gridViewLookup = (MVCxGridLookup) sender;
+            for (int i = 0; i < gridViewLookup.GridView.VisibleRowCount; i++) {
+                if ((bool) gridViewLookup.GridView.GetRowValues(i, "Selected")) {
+                    gridViewLookup.GridView.Selection.SelectRow(i);
+                }
+            }
+        };
+        settings.GridViewProperties.SetStatusBarTemplateContent(c => {
+            ViewContext.Writer.Write("<div style=\"padding: 2px 8px 2px 0; float: right\">");
+            Html.DevExpress().Button(
+                btnSettings => {
+                    btnSettings.Name = filterName + "btnClose";
+                    btnSettings.UseSubmitBehavior = false;
+                    btnSettings.Text = "Закрыть";
+                    btnSettings.ClientSideEvents.Click = filterName + "CloseGridLookup";
+                }
+                ).Render();
+            ViewContext.Writer.Write("</div>");
+        });
+
+        settings.DataBound = (sender, e) => {
+            var filterCurrent = (MVCxGridLookup) sender;
+            filterCurrent.GridView.Width = 300;
+        };
+    }).BindList(Model).GetHtml()
+
