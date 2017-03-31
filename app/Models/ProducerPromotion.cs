@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
@@ -12,6 +13,8 @@ namespace Marketing.Models
 	{
 		public virtual uint Id { get; set; }
 
+		[Required]
+		[Display(Name = "Наименование")]
 		public virtual string Name { get; set; }
 
 		public virtual PromoterProducer Producer { get; set; }

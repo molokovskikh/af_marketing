@@ -21,8 +21,9 @@ namespace Marketing
 				GlobalContext.Properties["version"] = typeof(HomeController).Assembly.GetName().Version;
 				var hibernate = new NHibernate();
 				hibernate.Init();
-				GlobalFilters.Filters.Add(new ErrorFilter());
-				GlobalFilters.Filters.Add(new SessionFilter(hibernate.Factory));
+				GlobalFilters.Filters.Add(new ErrorFilter(),0);
+				GlobalFilters.Filters.Add(new SessionFilter(hibernate.Factory),1);
+				GlobalFilters.Filters.Add(new PromoterIdentifierFilter(), 2);
 
 				AreaRegistration.RegisterAllAreas();
 				RouteConfig.RegisterRoutes(RouteTable.Routes);

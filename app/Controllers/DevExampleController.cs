@@ -13,7 +13,7 @@ using NHibernate.Linq;
 
 namespace Marketing.Controllers
 {
-	public class DevExampleController : BaseController
+	public class DevExampleController : Controller
 	{
 		public List<dynamic> DevExampleData { get; set; }
 
