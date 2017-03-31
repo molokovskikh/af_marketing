@@ -111,6 +111,12 @@ namespace Marketing
 			Mapper.Class<Address>(m => {
 				m.Property(x => x.AddressName, c => c.Column("Address"));
 			});
+			Mapper.Class<RegionalAdmin>(m => {
+				m.Schema("AccessRight");
+				m.Table("RegionalAdmins");
+				m.Id(x => x.RowId);
+				m.Property(x => x.Name, c => c.Column("UserName"));
+			});
 
 			var types = MappingAssembly.GetTypes().Where(t =>
 				!Attribute.IsDefined(t, typeof(CompilerGeneratedAttribute), false)

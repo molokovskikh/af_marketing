@@ -4,10 +4,9 @@ using NHibernate;
 
 namespace Marketing.Controllers
 {
-	public class HomeController : Controller
+	[Authorize]
+	public class HomeController : BaseController
 	{
-		protected ISession DbSession => HttpContext.Items[typeof(ISession)] as ISession;
-
 		public ActionResult Index()
 		{
 			return View();
