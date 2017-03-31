@@ -11,6 +11,9 @@ using System.Web.Security;
 
 namespace Marketing.Controllers
 {
+#if !DEBUG
+	[Authorize]
+#endif
 	public class AccountController : BaseController
 	{
 		public const string ACC_LOGIN_PREFIX = "Marketing_";
@@ -59,6 +62,7 @@ namespace Marketing.Controllers
 			}
 
 			FormsAuthentication.SetAuthCookie(login, model.RememberMe);
+			System.Web.HttpContext.Current.Session["promoter"] = user;
 
 			return Redirect(returnUrl ?? "/");
 		}
