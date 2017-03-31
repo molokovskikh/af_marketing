@@ -1,0 +1,33 @@
+﻿@using Marketing.Models
+@model Marketing.ViewModels.PromoterProducersViewModel
+
+@{
+    var producer = (PromoterProducer) ViewBag.Producer;
+    ViewBag.Title = $"Изменение акции от \"{producer.Producer.Name}\"";
+}
+
+<div class="form-group">
+    <ol class="breadcrumb">
+        <li>
+            <a href="@Url.Action("Index", "Home")">Меню</a>
+        </li>
+        <li>
+            <a href="@Url.Action("Index", "Marketing")">Маркетинговые мероприятия</a>
+        </li>
+        <li>
+            <a href="@Url.Action("PromotionList", "Marketing", new {id = producer.Producer.Id})">@producer.Producer.Name</a>
+        </li>
+        <li class="active">@ViewBag.Title</li>
+    </ol>
+</div>
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm("PromotionEdit", "Marketing", FormMethod.Post, new {@class = "form-horizontal", role = "form"})) {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary("", new {@class = "text-danger"})
+    @Html.HiddenFor(model => model.AttachedProducerId)
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

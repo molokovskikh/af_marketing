@@ -1,0 +1,44 @@
+﻿@using System.Web.UI.WebControls
+@using Marketing.Models
+
+
+@Html.DevExpress().GridView(settings => {
+    settings.Name = "Пример выгрузки";
+    settings.CallbackRouteValues = new { Action = "IndexGridView", Controller = "Marketing"};
+
+    settings.PreviewEncodeHtml = false;
+    settings.EncodeHtml = false;
+
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "Producer.Name";
+        column.PropertiesEdit.EncodeHtml = false;
+        column.Caption = "Наименование";
+        column.SetDataItemTemplateContent(c =>
+        {
+            var value = DataBinder.Eval(c.DataItem, "Id").ToString();
+            var text = DataBinder.Eval(c.DataItem, "Producer.Name").ToString();
+            string htmlContent = $"<a href=\"{Url.Action("PromotionList", new { id = value })}\">{text}</a>";
+            ViewContext.Writer.Write(htmlContent);
+        });
+    });
+
+    settings.Columns.Add(column => {
+        column.PropertiesEdit.EncodeHtml = false;
+        column.Caption = "Контакты";
+        column.SetDataItemTemplateContent(c => {
+            var value = DataBinder.Eval(c.DataItem, "Id").ToString();
+            string htmlContent = $"<a href=\"{Url.Action("ProducerEdit", new {id = value})}\"  class=\"href-dots\">...</a>";
+            ViewContext.Writer.Write(htmlContent);
+        });
+    });
+
+    settings.Settings.VerticalScrollableHeight = 500;
+    settings.SettingsPager.PageSize = 100;
+    settings.SettingsSearchPanel.Visible = true;
+    settings.SettingsPager.Position = PagerPosition.TopAndBottom;
+    settings.SettingsPager.FirstPageButton.Visible = true;
+    settings.SettingsPager.LastPageButton.Visible = true;
+    settings.SettingsPager.PageSizeItemSettings.Visible = true;
+    settings.SettingsPager.PageSizeItemSettings.Items = new string[] { "10", "20", "50", "100", "150", "200" };
+}).Bind(Model).GetHtml()

@@ -72,6 +72,8 @@ namespace Marketing
 				{Environment.Isolation, "ReadCommitted"},
 			});
 
+			Mapper.Class<Producer>(m => { m.Schema("catalogs"); });
+
 			Mapper.Class<Promoter>(m => {
 				m.Bag(o => o.Producers, c => {
 					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
@@ -95,6 +97,7 @@ namespace Marketing
 				});
 			});
 			Mapper.Class<ProducerPromotion>(m => {
+				m.ManyToOne(s => s.Producer, mapper => mapper.Column("PromoterProducerId"));
 				m.Bag(o => o.Products, c => {
 					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
 					c.Inverse(true);

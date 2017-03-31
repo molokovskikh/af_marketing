@@ -1,0 +1,18 @@
+﻿@using Marketing.Models
+@model Marketing.ViewModels.PromoterProducersViewModel
+
+@{
+    var producer = (PromoterProducer) ViewBag.Producer;
+    ViewBag.Title = $"Изменение условий акции от \"{producer.Producer.Name}\"";
+}
+<div class="form-group"></div>
+
+@using (Html.BeginForm("PromotionEdit", "Marketing", FormMethod.Post, new {@class = "form-horizontal", role = "form"})) {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary("", new {@class = "text-danger"})
+    @Html.HiddenFor(model => model.AttachedProducerId)
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

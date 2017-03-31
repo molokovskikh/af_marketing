@@ -178,10 +178,12 @@
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\DevExampleController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\MarketingController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\ErrorFilter.cs" />
+    <Compile Include="Helpers\PromoterIdentifierFilter.cs" />
     <Compile Include="Helpers\SessionFilter.cs" />
     <Compile Include="Models\Address.cs" />
     <Compile Include="Models\Catalog.cs" />
@@ -202,6 +204,7 @@
     <Compile Include="ViewModels\DateRangeViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\RegisterViewModel.cs" />
+    <Compile Include="ViewModels\PromoterProducersViewModel.cs" />
     <Compile Include="ViewModels\ViewModelList.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -265,8 +268,20 @@
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Account\Confirm.cshtml" />
+    <Content Include="Views\Marketing\Index.cshtml" />
+    <Content Include="Views\Marketing\ProducerAdd.cshtml" />
+    <Content Include="Views\Marketing\ProducerEdit.cshtml" />
+    <Content Include="Views\Marketing\PromotionList.cshtml" />
+    <Content Include="Views\Marketing\PromotionEdit.cshtml" />
+    <Content Include="Views\Marketing\PromotionAdd.cshtml" />
+    <Content Include="Views\Marketing\PromotionСonditionsEdit.cshtml" />
+    <Content Include="Views\Marketing\PromotionListGridView.cshtml" />
+    <Content Include="Views\Marketing\IndexGridView.cshtml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Helpers\GridViews\" />
+    <Folder Include="Views\Filter\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
