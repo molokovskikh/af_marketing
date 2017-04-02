@@ -28,3 +28,6 @@ textarea {
 .href-dots{ font-weight: bold;font-size: 18px;}
 .server-message{font-size: 1.5em; text-align: center; margin-top: 10px;}
 .width-100 .dxgvControl_MetropolisBlue{ width: 100% !important;}
+
+.overlay{position:fixed;left:0;top:0;width:100%;height:100%;z-index:10000;background-color:rgba(0,0,0,.1)}
+.centered{position:absolute;left:0;top:0;right:0;bottom:0;margin:auto;}

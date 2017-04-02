@@ -1,0 +1,22 @@
+﻿@using Marketing.ViewModels
+@model List<MembersGridViewModel>
+@{
+    ViewBag.Title = "Участники акций";
+}
+
+<div class="form-group">
+    <ol class="breadcrumb">
+        <li>
+            <a href="@Url.Action("Index", "Home")">Меню</a>
+        </li>
+        <li class="active">@ViewBag.Title</li>
+    </ol>
+</div>
+<h2>@ViewBag.Title</h2>
+<div class="form-group">
+		@Html.ActionLink("Добавить", "Add", "Members", null, new { @class = "btn btn-primary" })
+</div>
+
+<div id="gridContent" class="row">
+		@Html.Partial("GridView", Model);
+</div>
