@@ -1,0 +1,48 @@
+﻿@using Marketing.ViewModels
+@model ClientViewModel
+@{
+    ViewBag.Title = "Редактирование участника";
+}
+
+<div class="form-group">
+    <ol class="breadcrumb">
+        <li>
+            <a href="@Url.Action("Index", "Home")">Меню</a>
+        </li>
+        <li>
+            <a href="@Url.Action("Index", "Members")">Участники</a>
+        </li>
+        <li class="active">@ViewBag.Title</li>
+    </ol>
+</div>
+<h2>@ViewBag.Title</h2>
+@using (Html.BeginForm("Edit", "Members", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+	@Html.AntiForgeryToken()
+	@Html.ValidationSummary("", new { @class = "text-danger" })
+	<div class="form-group">
+    <div class="col-md-2">
+			@Html.DisplayNameFor(m => m.Name)
+    </div>
+		<div class="col-md-10">
+			@Html.DisplayFor(m => m.Name)
+		</div>
+	</div>
+	<table class="table table-striped table-condensed table-hover">
+		<caption>Точки</caption>
+		<thead>
+			<tr><th>Адрес</th></tr>
+		</thead>
+		<tbody>
+			@foreach (var address in Model.Addresses)
+			{
+				<tr><td>@address.AddressName</td></tr>
+			}
+		</tbody>
+	</table>
+	<div class="form-group">
+		<div class="col-md-12">
+			<input type="submit" class="btn btn-default" value="Сохранить" />
+		</div>
+	</div>
+}
