@@ -1,9 +1,13 @@
 ﻿@model System.Web.Mvc.HandleErrorInfo
 
 @{
-    ViewBag.Title = "Error";
+    ViewBag.Title = "Ошибка в Маркетинге";
 }
 
-<h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">An error occurred while processing your request.</h2>
-
+<h1 class="text-danger">@ViewBag.Title</h1>
+<h2 class="text-danger">При обработке запроса произошла ошибка.</h2>
+<p>
+    Попробуйте вернуться на предыдущую страницу и повторить действие. <br />
+    Мы оповещены о возникшей проблеме и постараемся устранить ее в ближайшее время.
+</p>
+<p><a href="javascript:history.back()" class="btn btn-default">Возврат на предыдущую страницу</a></p>

@@ -13,5 +13,11 @@ namespace Marketing.Controllers
 		{
 			return View(CurrentPromoter);
 		}
+
+		[AllowAnonymous]
+		public ActionResult Error()
+		{
+			return View();
+		}
 	}
 }
