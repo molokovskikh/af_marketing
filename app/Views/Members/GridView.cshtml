@@ -1,0 +1,55 @@
+﻿@using System.Web.UI.WebControls
+@using Marketing.ViewModels
+@model List<MembersGridViewModel>
+
+@Html.DevExpress().GridView(settings =>
+{
+    settings.Name = "gridMembers";
+    settings.CallbackRouteValues = new { Action = "GetGridData", Controller = "Members" };
+    settings.PreviewEncodeHtml = false;
+    settings.EncodeHtml = false;
+    settings.KeyFieldName = "MemberId";
+
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "Name";
+        column.PropertiesEdit.EncodeHtml = false;
+        column.Caption = "Наименование";
+        //column.SetDataItemTemplateContent(c =>
+        //{
+        //    var value = DataBinder.Eval(c.DataItem, "MemmberId").ToString();
+        //    var text = DataBinder.Eval(c.DataItem, "Name").ToString();
+        //    string htmlContent = $"<a href=\"{Url.Action("PromotionList", new { id = value })}\">{text}</a>";
+        //    ViewContext.Writer.Write(htmlContent);
+        //});
+    });
+
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "AddressCount";
+        column.PropertiesEdit.EncodeHtml = false;
+        column.Caption = "Кол-во точек";
+        //column.SetDataItemTemplateContent(c =>
+        //{
+        //    var value = DataBinder.Eval(c.DataItem, "Id").ToString();
+        //    string htmlContent = $"<a href=\"{Url.Action("MemberEdit", new { id = value })}\"  class=\"href-dots\">...</a>";
+        //    ViewContext.Writer.Write(htmlContent);
+        //});
+    });
+
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "Subscribes";
+        column.PropertiesEdit.EncodeHtml = false;
+        column.Caption = "Подписки на акции";
+    });
+
+    //settings.Settings.VerticalScrollableHeight = 500;
+    settings.SettingsPager.PageSize = 20;
+    settings.SettingsSearchPanel.Visible = true;
+    settings.SettingsPager.Position = PagerPosition.TopAndBottom;
+    settings.SettingsPager.FirstPageButton.Visible = true;
+    settings.SettingsPager.LastPageButton.Visible = true;
+    settings.SettingsPager.PageSizeItemSettings.Visible = true;
+    settings.SettingsPager.PageSizeItemSettings.Items = new string[] { "10", "20", "50", "100", "150", "200" };
+}).Bind(Model).GetHtml()

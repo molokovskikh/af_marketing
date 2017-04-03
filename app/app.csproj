@@ -179,6 +179,7 @@
     <Compile Include="Controllers\DevExampleController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MarketingController.cs" />
+    <Compile Include="Controllers\MembersController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -203,6 +204,8 @@
     <Compile Include="Startup.cs" />
     <Compile Include="ViewModels\DateRangeViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
+    <Compile Include="ViewModels\MembersGridViewModel.cs" />
+    <Compile Include="ViewModels\MemberViewModel.cs" />
     <Compile Include="ViewModels\RegisterViewModel.cs" />
     <Compile Include="ViewModels\PromoterProducersViewModel.cs" />
     <Compile Include="ViewModels\ViewModelList.cs" />
@@ -210,6 +213,7 @@
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\img\ajax-loader.gif" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -277,6 +281,9 @@
     <Content Include="Views\Marketing\PromotionСonditionsEdit.cshtml" />
     <Content Include="Views\Marketing\PromotionListGridView.cshtml" />
     <Content Include="Views\Marketing\IndexGridView.cshtml" />
+    <Content Include="Views\Members\Index.cshtml" />
+    <Content Include="Views\Members\GridView.cshtml" />
+    <Content Include="Views\Members\Add.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Helpers\GridViews\" />
