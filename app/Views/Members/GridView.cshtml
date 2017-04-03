@@ -15,13 +15,13 @@
         column.FieldName = "Name";
         column.PropertiesEdit.EncodeHtml = false;
         column.Caption = "Наименование";
-        //column.SetDataItemTemplateContent(c =>
-        //{
-        //    var value = DataBinder.Eval(c.DataItem, "MemmberId").ToString();
-        //    var text = DataBinder.Eval(c.DataItem, "Name").ToString();
-        //    string htmlContent = $"<a href=\"{Url.Action("PromotionList", new { id = value })}\">{text}</a>";
-        //    ViewContext.Writer.Write(htmlContent);
-        //});
+        column.SetDataItemTemplateContent(c =>
+        {
+            var value = DataBinder.Eval(c.DataItem, "MemberId").ToString();
+            var text = DataBinder.Eval(c.DataItem, "Name").ToString();
+            string htmlContent = $"<a href=\"{Url.Action("Edit", new { id = value })}\">{text}</a>";
+            ViewContext.Writer.Write(htmlContent);
+        });
     });
 
     settings.Columns.Add(column =>

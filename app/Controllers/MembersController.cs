@@ -78,5 +78,24 @@ namespace Marketing.Controllers
 
 			return RedirectToAction("Index");
 		}
+
+		public ActionResult Edit(uint id)
+		{
+			var client = DbSession.Query<PromotionMember>()
+				.FirstOrDefault(r => r.Id == id)
+				.Client;
+			var model = new ClientViewModel {
+				Name = client.Name,
+				Addresses = client.Addresses
+			};
+			return View(model);
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public ActionResult Edit(ClientViewModel model)
+		{
+			return RedirectToAction("Index");
+		}
 	}
 }

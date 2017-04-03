@@ -202,6 +202,7 @@
     <Compile Include="Models\Supplier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="ViewModels\ClientViewModel.cs" />
     <Compile Include="ViewModels\DateRangeViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\MembersGridViewModel.cs" />
@@ -284,6 +285,7 @@
     <Content Include="Views\Members\Index.cshtml" />
     <Content Include="Views\Members\GridView.cshtml" />
     <Content Include="Views\Members\Add.cshtml" />
+    <Content Include="Views\Members\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Helpers\GridViews\" />
