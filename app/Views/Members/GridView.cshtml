@@ -5,10 +5,10 @@
 @Html.DevExpress().GridView(settings =>
 {
     settings.Name = "gridMembers";
-    settings.CallbackRouteValues = new { Action = "GetGridList", Controller = "Members" };
-
+    settings.CallbackRouteValues = new { Action = "GetGridData", Controller = "Members" };
     settings.PreviewEncodeHtml = false;
     settings.EncodeHtml = false;
+    settings.KeyFieldName = "MemberId";
 
     settings.Columns.Add(column =>
     {
