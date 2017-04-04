@@ -1,9 +1,9 @@
 ﻿@using System.Web.UI.WebControls
-@using Marketing.Models
+
 
 
 @Html.DevExpress().GridView(settings => {
-    settings.Name = "Пример выгрузки";
+    settings.Name = "Таблица";
     settings.CallbackRouteValues = new { Action = "IndexGridView", Controller = "Marketing"};
 
     settings.PreviewEncodeHtml = false;

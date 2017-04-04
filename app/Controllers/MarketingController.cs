@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Marketing.Helpers;
 using Marketing.Models;
 using Marketing.ViewModels;
 using NHibernate;
@@ -38,8 +39,9 @@ namespace Marketing.Controllers
 		public ActionResult ProducerAdd()
 		{
 			var model = new PromoterProducersViewModel();
-			model.ProducersList = DbSession.Query<Producer>().OrderBy(s => s.Name)
-				.Select(s => new SelectListItem() {Value = s.Id.ToString(), Text = s.Name}).ToList();
+			model.ProducersList = DbSession.Query<Producer>().OrderBy(s => s.Name).ToList()
+				.Where(s => CurrentPromoter.Producers.All(f => f.Producer.Id != s.Id))
+				.Select(s => new SelectListItem {Value = s.Id.ToString(), Text = s.Name}).ToList();
 			return View(model);
 		}
 
@@ -47,22 +49,38 @@ namespace Marketing.Controllers
 		public ActionResult ProducerAdd(PromoterProducersViewModel model)
 		{
 			if (!this.ModelState.IsValid) {
-				model.ProducersList = DbSession.Query<Producer>().OrderBy(s => s.Name)
-					.Select(
-						s => new SelectListItem() {Value = s.Id.ToString(), Text = s.Name, Selected = s.Id == model.SelectedProducerId})
+				model.ProducersList = DbSession.Query<Producer>().OrderBy(s => s.Name).ToList()
+				.Where(s => CurrentPromoter.Producers.All(f => f.Producer.Id != s.Id))
+					.Select(s => new SelectListItem {Value = s.Id.ToString(), Text = s.Name})
 					.ToList();
 				return View(model);
 			}
 			var currentProducer = DbSession.Query<Producer>().First(s => s.Id == model.SelectedProducerId);
-			var newItem = new PromoterProducer() {
-				Promoter = CurrentPromoter,
-				Producer = currentProducer,
-				Contacts = model.Contacts
-			};
-			DbSession.Save(newItem);
+			if (CurrentPromoter.Producers.Any(s => s.Producer.Id == currentProducer.Id)) {
+				ErrorMessage($"Поставщик \"{currentProducer.Name}\" не может быть добавлен повторно.");
+			} else {
+				var newItem = new PromoterProducer {
+					Promoter = CurrentPromoter,
+					Producer = currentProducer,
+					Contacts = model.Contacts
+				};
+				DbSession.Save(newItem);
 
-			SuccessMessage($"Поставщик \"{newItem.Producer.Name}\" успешно добавлен.");
+				SuccessMessage($"Поставщик \"{newItem.Producer.Name}\" успешно добавлен.");
+			}
+
 			return RedirectToAction("Index");
+		}
+
+		[HttpPost]
+		public ActionResult GetFilterProducerAdd()
+		{
+			var result = DbSession.Query<Producer>().OrderBy(s => s.Name).ToList()
+				.Where(s => CurrentPromoter.Producers.All(f => f.Producer.Id != s.Id))
+				.Select(s => new SelectListItem { Value = s.Id.ToString(), Text = s.Name })
+				.ToList();
+			return PartialView("../_default/ProducerAddFilter", result);
+
 		}
 
 		[HttpGet]
@@ -128,16 +146,30 @@ namespace Marketing.Controllers
 			return RedirectToAction("PromotionList", new {id = currentProducer.Id});
 		}
 
+
+		public ActionResult PromotionEditListManager(uint id, string list,
+			PromotionTableSelectorViewModel.RequestType type)
+		{
+			var model = new PromotionTableSelectorViewModel();
+			model.SetData(DbSession, id, type, list);
+			return PartialView("PromotionEditListGridView", model);
+		}
+
 		[HttpGet]
 		public ActionResult PromotionEdit(uint id)
 		{
-			return RedirectToAction("Index");
+			var model = new PromotionViewModel();
+			model.SetData(DbSession, id);
+			return View(model);
 		}
 
-		[HttpPost]
-		public ActionResult PromotionrEdit(uint id)
+		public ActionResult PromotionrEditGet(PromotionViewModel model)
 		{
-			return RedirectToAction("Index");
+			var promotion = DbSession.Query<ProducerPromotion>().First(s => s.Id == model.Promotion.Id);
+
+			promotion.UpdateProductsAndSuppliersByIds(DbSession, model.ProductsListToSetList, model.SuppliersListToSetList);
+
+			return RedirectToAction("PromotionList",new {id = promotion.Producer.Id});
 		}
 
 		[HttpGet]

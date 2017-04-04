@@ -1,0 +1,42 @@
+﻿@using System.Web.UI.WebControls
+@model Marketing.ViewModels.PromotionTableSelectorViewModel
+
+
+@Html.DevExpress().GridView(settings => {
+    settings.Caption = Model.Caption;
+    settings.Name = Model.Name;
+    settings.KeyFieldName = "Value";
+    settings.CommandColumn.Visible = true;
+    settings.CommandColumn.ShowSelectCheckbox = true;
+    settings.CommandColumn.Width = Unit.Pixel(30);
+
+
+    settings.Columns.Add(c => {
+        c.FieldName = "Text";
+        c.Caption = "Наименование";
+        c.Settings.AllowAutoFilter = DefaultBoolean.True;
+        c.Settings.AutoFilterCondition = AutoFilterCondition.Contains;
+    });
+    settings.Columns.Add(c => {
+        c.FieldName = "Value";
+        c.Visible = false;
+    });
+
+
+    settings.DataBound = (sender, e) =>
+    {
+        var filterCurrent = (MVCxGridView)sender;
+        filterCurrent.Width = Unit.Pixel(400);
+    };
+
+    settings.Width = Unit.Pixel(400);
+    settings.Settings.VerticalScrollableHeight = 300;
+    settings.CallbackRouteValues = new { Controller = "Marketing", Action = "PromotionEditListManager" };
+    settings.SettingsBehavior.AllowFocusedRow = true;
+    settings.SettingsSearchPanel.Visible = true;
+    settings.SettingsPager.Mode =GridViewPagerMode.EndlessPaging;
+    settings.ClientSideEvents.BeginCallback = $"{Model.Name}BeginCallback";
+    //   settings.ClientSideEvents.BeginCallback = $"{Model.Name}EndCallback";
+    settings.ClientSideEvents.FocusedRowChanged = $"{Model.Name}FocusedRowChanged";
+    settings.ClientSideEvents.SelectionChanged = $"{Model.Name}SelectionChanged";
+}).Bind(Model.ItemsList).GetHtml()

@@ -1,0 +1,30 @@
+﻿@using System.ComponentModel
+@using System.Web.UI.WebControls
+@using DevExpress.Data
+@model List<SelectListItem>
+@{
+    var filterName = "SelectedProducer";
+}
+@*Разделение JS, сопутствующих параметров и данного кода необходимо для корректной работы компонента*@
+
+@Html.DevExpress().ComboBox(
+    settings => {
+        settings.Name = filterName;
+        settings.Width = 280;
+        settings.Properties.DropDownWidth = 280;
+        settings.Properties.DropDownStyle = DropDownStyle.DropDown;
+        settings.CallbackRouteValues = new {Controller = "Marketing", Action = "GetFilterProducerAdd"};
+        settings.Properties.TextField = "Text";
+        settings.Properties.ValueField = "Value";
+        settings.Properties.ValueType = typeof (ulong);
+        settings.Properties.FilterMinLength = 2;
+        settings.Properties.Caption = "";
+        settings.Properties.Columns.Add("Text", "Наименование");
+        settings.Properties.CallbackPageSize = 30;
+        settings.Properties.IncrementalFilteringMode = IncrementalFilteringMode.Contains;
+        settings.Properties.ClientSideEvents.SelectedIndexChanged = "SelectedIndexChanged";
+        settings.Properties.ClientSideEvents.Init = "function (s, e) { s.GetInputElement().placeholder = 'Введите поисковую фразу ...'; }";
+        settings.Properties.ClearButton.DisplayMode = ClearButtonDisplayMode.OnHover;
+
+    }
+    ).BindList(Model).GetHtml()

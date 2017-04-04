@@ -181,6 +181,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\DevExampleController.cs" />
+    <Compile Include="Controllers\GenDataController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MarketingController.cs" />
     <Compile Include="Controllers\MembersController.cs" />
@@ -212,8 +213,10 @@
     <Compile Include="ViewModels\MembersGridViewModel.cs" />
     <Compile Include="ViewModels\MemberViewModel.cs" />
     <Compile Include="ViewModels\PromotionConditionsViewModel.cs" />
+    <Compile Include="ViewModels\PromotionViewModel.cs" />
     <Compile Include="ViewModels\RegisterViewModel.cs" />
     <Compile Include="ViewModels\PromoterProducersViewModel.cs" />
+    <Compile Include="ViewModels\PromotionTableSelectorViewModel.cs" />
     <Compile Include="ViewModels\ViewModelList.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -292,10 +295,13 @@
     <Content Include="Views\Members\Add.cshtml" />
     <Content Include="Views\Members\Edit.cshtml" />
     <Content Include="Views\Marketing\ConditionsGridView.cshtml" />
+    <Content Include="Views\_default\ProducerAddFilter.cshtml" />
+    <Content Include="Views\Marketing\PromotionEditListGridView.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Helpers\GridViews\" />
     <Folder Include="Views\Filter\" />
+    <Folder Include="Views\GenData\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
