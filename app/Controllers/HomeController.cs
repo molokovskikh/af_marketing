@@ -5,12 +5,14 @@ using NHibernate;
 namespace Marketing.Controllers
 {
 #if !DEBUG
-	[Authorize]
+	//[Authorize]
 #endif
 	public class HomeController : BaseController
 	{
 		public ActionResult Index()
 		{
+			if (System.Web.HttpContext.Current.Session["promoter"] == null)
+				return RedirectToAction("Login", "Account");
 			return View(CurrentPromoter);
 		}
 
