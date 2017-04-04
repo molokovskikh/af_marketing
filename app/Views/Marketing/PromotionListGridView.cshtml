@@ -3,7 +3,7 @@
 
 
 @Html.DevExpress().GridView(settings => {
-    settings.Name = "Пример выгрузки";
+    settings.Name = "Таблица";
     settings.CallbackRouteValues = new { Action = "PromotionListGridView", Controller = "Marketing"};
     settings.ClientSideEvents.BeginCallback = "gridVIewBeginCallback";
 

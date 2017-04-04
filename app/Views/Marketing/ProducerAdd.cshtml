@@ -1,7 +1,9 @@
-﻿@model Marketing.ViewModels.PromoterProducersViewModel
+﻿@using Marketing.ViewModels
+@model Marketing.ViewModels.PromoterProducersViewModel
 
 @{
-    ViewBag.Title = "Добавление производителя";
+  ViewBag.Title = "Добавление производителя";
+  List<SelectListItem> currentProducers = Model.ProducersList;
 }
 
 <div class="form-group">
@@ -20,12 +22,22 @@
 @using (Html.BeginForm("ProducerAdd", "Marketing", FormMethod.Post, new {@class = "form-horizontal", role = "form"})) {
     @Html.AntiForgeryToken()
     @Html.ValidationSummary("", new {@class = "text-danger"})
-    <div class="form-group">
-        @Html.LabelFor(m => m.SelectedProducerId, new {@class = "col-md-2 control-label"})
-        <div class="col-md-10">
-            @Html.DropDownListFor(m => m.SelectedProducerId, Model.ProducersList, new {@class = "form-control"})
-        </div>
+<div class="form-group">
+    @Html.LabelFor(m => m.SelectedProducerId, new { @class = "col-md-2 control-label" })
+    <div class="col-md-10">
+        @Html.HiddenFor(model => model.SelectedProducerId)
+        <script type="text/javascript">
+            var callbackInitDate;
+
+            function SelectedIndexChanged(s, e) {
+                var currentValue = s.GetValue();
+                $("[name='SelectedProducerId']").val(currentValue);
+            }
+        </script>
+        @Html.Partial("../_default/ProducerAddFilter", currentProducers)
+
     </div>
+</div>
     <div class="form-group">
         @Html.LabelFor(m => m.Contacts, new {@class = "col-md-2 control-label"})
         <div class="col-md-10">
