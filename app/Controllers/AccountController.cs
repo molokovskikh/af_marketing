@@ -12,7 +12,7 @@ using System.Web.Security;
 namespace Marketing.Controllers
 {
 #if !DEBUG
-	[Authorize]
+	//[Authorize]
 #endif
 	public class AccountController : BaseController
 	{
