@@ -35,9 +35,8 @@ namespace Marketing.Controllers
 
 			var login = ACC_LOGIN_PREFIX + model.Login;
 			var skipValidation = false;
-#if DEBUG
+			//заглушка оставлена до решения проблемы с сохранением нового пользователя в AD
 			skipValidation = !String.IsNullOrEmpty(ConfigurationManager.AppSettings["SkipLogonAD"]);
-#endif
 			if (!skipValidation) {
 				if (!Membership.ValidateUser(login, model.Password)) {
 					login = model.Login;
