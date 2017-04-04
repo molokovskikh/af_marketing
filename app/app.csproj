@@ -211,6 +211,7 @@
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\MembersGridViewModel.cs" />
     <Compile Include="ViewModels\MemberViewModel.cs" />
+    <Compile Include="ViewModels\PromotionConditionsViewModel.cs" />
     <Compile Include="ViewModels\RegisterViewModel.cs" />
     <Compile Include="ViewModels\PromoterProducersViewModel.cs" />
     <Compile Include="ViewModels\ViewModelList.cs" />
@@ -290,6 +291,7 @@
     <Content Include="Views\Members\GridView.cshtml" />
     <Content Include="Views\Members\Add.cshtml" />
     <Content Include="Views\Members\Edit.cshtml" />
+    <Content Include="Views\Marketing\ConditionsGridView.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Helpers\GridViews\" />
