@@ -101,9 +101,11 @@ namespace Marketing.Controllers
 				model.Login = promoter.Login;
 
 				model.Password = GeneratePassword();
-				//var user = Membership.CreateUser(ACC_LOGIN_PREFIX + promoter.Login, model.Password);
-				//user.IsApproved = true;
-				//Membership.UpdateUser(user);
+#if DEBUG
+				var user = Membership.CreateUser(ACC_LOGIN_PREFIX + promoter.Login, model.Password);
+				user.IsApproved = true;
+				Membership.UpdateUser(user);
+#endif
 			}
 			catch (Exception ex) {
 				DbSession.Transaction.Rollback();
