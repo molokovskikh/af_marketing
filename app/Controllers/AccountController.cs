@@ -109,7 +109,7 @@ namespace Marketing.Controllers
 			}
 			catch (Exception ex) {
 				DbSession.Transaction.Rollback();
-				Membership.DeleteUser(model.Login);
+				Membership.DeleteUser(ACC_LOGIN_PREFIX + model.Login);
 				ModelState.AddModelError("", ex);
 				return View(model);
 			}
