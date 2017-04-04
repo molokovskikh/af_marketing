@@ -1,18 +1,26 @@
 ﻿@using Marketing.Models
-@model Marketing.ViewModels.PromoterProducersViewModel
-
+@using Marketing.ViewModels
+@model PromotionConditionsViewModel
 @{
-    var producer = (PromoterProducer) ViewBag.Producer;
-    ViewBag.Title = $"Изменение условий акции от \"{producer.Producer.Name}\"";
-}
-<div class="form-group"></div>
-
-@using (Html.BeginForm("PromotionEdit", "Marketing", FormMethod.Post, new {@class = "form-horizontal", role = "form"})) {
-    @Html.AntiForgeryToken()
-    @Html.ValidationSummary("", new {@class = "text-danger"})
-    @Html.HiddenFor(model => model.AttachedProducerId)
+	ViewBag.Title = $"Условия по акции {Model.Promotion.Name} по производителю {Model.Producer.Name}";
 }
 
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
+<div class="form-group">
+    <ol class="breadcrumb">
+        <li>
+            <a href="@Url.Action("Index", "Home")">Меню</a>
+        </li>
+        <li>
+            <a href="@Url.Action("Index", "Marketing")">Маркетинговые мероприятия</a>
+        </li>
+        <li>
+            <a href="@Url.Action("PromotionList", "Marketing", new {id = Model.Promotion.Producer.Id})">@Model.Producer.Name</a>
+        </li>
+        <li class="active">Условия по акции</li>
+    </ol>
+</div>
+<h2>@ViewBag.Title</h2>
+
+<div class="row">
+		@Html.Partial("ConditionsGridView", Model);
+</div>

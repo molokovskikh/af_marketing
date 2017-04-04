@@ -28,6 +28,8 @@ namespace Marketing
 				AreaRegistration.RegisterAllAreas();
 				RouteConfig.RegisterRoutes(RouteTable.Routes);
 				BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+				ModelBinders.Binders.DefaultBinder = new DevExpress.Web.Mvc.DevExpressEditorsBinder();
 			} catch (Exception e) {
 				Log.Error("Ошибка при инициализации приложения", e);
 				throw;

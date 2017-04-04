@@ -120,6 +120,14 @@ namespace Marketing
 				m.Id(x => x.RowId);
 				m.Property(x => x.Name, c => c.Column("UserName"));
 			});
+			Mapper.Class<Product>(m => {
+				m.Schema("Catalogs");
+				m.Table("Products");
+			});
+			Mapper.Class<Catalog>(m => {
+				m.Schema("Catalogs");
+				m.Table("Catalog");
+			});
 
 			var types = MappingAssembly.GetTypes().Where(t =>
 				!Attribute.IsDefined(t, typeof(CompilerGeneratedAttribute), false)

@@ -7,6 +7,7 @@ using Marketing.Models;
 using Marketing.ViewModels;
 using NHibernate;
 using NHibernate.Linq;
+using DevExpress.Web.Mvc;
 
 namespace Marketing.Controllers
 {
@@ -142,7 +143,60 @@ namespace Marketing.Controllers
 		[HttpGet]
 		public ActionResult PromotionСonditionsEdit(uint id)
 		{
-			return RedirectToAction("Index");
+			var model = GetConditionsViewModel(id);
+			return View(model);
+		}
+
+		public ActionResult GetConditionsGridData(uint id)
+		{
+			var model = GetConditionsViewModel(id);
+			return PartialView("ConditionsGridView", model);
+		}
+
+		[ValidateInput(false)]
+		public ActionResult EditConditionsBatch(uint id, MVCxGridViewBatchUpdateValues<ConditionsGridViewModel, int> updateValues)
+		{
+			foreach (var item in updateValues.Update) {
+				if (updateValues.IsValid(item))
+					try {
+						var condition = DbSession.Query<PromotionProduct>().Single(r => r.Id == item.ConditionId);
+						condition.Price = item.Price;
+						condition.DealerPercent = item.DealerPercent;
+						condition.MemberPercent = item.MemberPercent;
+					} catch (Exception ex) {
+						updateValues.SetErrorText(item, ex.Message);
+					}
+			}
+			var model = GetConditionsViewModel(id);
+			return PartialView("ConditionsGridView", model);
+		}
+
+		private PromotionConditionsViewModel GetConditionsViewModel(uint id)
+		{
+			var promotion = DbSession.Query<ProducerPromotion>().FirstOrDefault(r => r.Id == id);
+			var producer = promotion.Producer;
+			var query = DbSession.Query<PromotionProduct>()
+				.Where(r => r.Promotion == promotion)
+				.Fetch(r => r.Product)
+				.ThenFetch(r => r.Catalog);
+			var conditions = query
+				.Select(r => new ConditionsGridViewModel
+				{
+					PromotionId = promotion.Id,
+					ConditionId = r.Id,
+					ProductName = r.Product.Catalog.Name,
+					Price = r.Price,
+					DealerPercent = r.DealerPercent,
+					MemberPercent = r.MemberPercent
+				})
+				.ToList();
+			var model = new PromotionConditionsViewModel
+			{
+				Conditions = conditions,
+				Promotion = promotion,
+				Producer = producer.Producer
+			};
+			return model;
 		}
 
 		[HttpPost]
