@@ -64,7 +64,9 @@ namespace Marketing.Controllers
 			FormsAuthentication.SetAuthCookie(login, model.RememberMe);
 			System.Web.HttpContext.Current.Session["promoter"] = user;
 
-			return Redirect(returnUrl ?? "/");
+			if ((returnUrl ?? "/") == "/")
+				returnUrl = "/marketing/";
+			return Redirect(returnUrl);
 		}
 
 		[HttpPost]
