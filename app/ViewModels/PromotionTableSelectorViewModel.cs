@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using Dapper;
+using Marketing.Models;
 using NHibernate;
+using NHibernate.Linq;
 
 namespace Marketing.ViewModels
 {
@@ -37,26 +39,30 @@ namespace Marketing.ViewModels
 
 
 			if (type == RequestType.ProductsListToGet) {
+				var promotion = dbSession.Query<ProducerPromotion>().First(s => s.Id == promotionId);
 				ItemsList = dbSession.Connection.Query<SelectListItem>(string.Format(@"
 SELECT pr.Id as 'Value',CONCAT(ct.Name,' ',IFNULL(pr.Properties,'')) as 'Text' FROM
-customers.promotion_producersproducts as pp
-INNER JOIN catalogs.Products as pr ON pr.Id = pp.ProductId
-INNER JOIN catalogs.catalog AS ct ON ct.Id = pr.CatalogId
-WHERE pp.ProductId NOT IN ({0})
+catalogs.assortment as pp
+INNER JOIN catalogs.catalog AS ct ON ct.Id = pp.CatalogId
+INNER JOIN catalogs.Products as pr ON pr.CatalogId = ct.Id
+WHERE pr.Id NOT IN ({0})
+AND pp.ProducerId IN ({1})
 ORDER BY Text
-", string.IsNullOrEmpty(selectedList) ? "0" : selectedList)).ToList();
+", string.IsNullOrEmpty(selectedList) ? "0" : selectedList), promotion.Producer.Producer.Id).ToList();
 				return;
 			}
 
 			if (type == RequestType.ProductsListToSet) {
+				var promotion = dbSession.Query<ProducerPromotion>().First(s => s.Id == promotionId);
 				ItemsList = dbSession.Connection.Query<SelectListItem>(string.Format(@"
 SELECT pr.Id as 'Value',CONCAT(ct.Name,' ',IFNULL(pr.Properties,'')) as 'Text' FROM
-customers.promotion_producersproducts as pp
-INNER JOIN catalogs.Products as pr ON pr.Id = pp.ProductId
-INNER JOIN catalogs.catalog AS ct ON ct.Id = pr.CatalogId
-WHERE pp.ProductId IN ({0})
+catalogs.assortment as pp
+INNER JOIN catalogs.catalog AS ct ON ct.Id = pp.CatalogId
+INNER JOIN catalogs.Products as pr ON pr.CatalogId = ct.Id
+WHERE pr.Id IN ({0})
+AND pp.ProducerId IN ({1})
 ORDER BY Text
-", string.IsNullOrEmpty(selectedList) ? "0" : selectedList)).ToList();
+", string.IsNullOrEmpty(selectedList) ? "0" : selectedList), promotion.Producer.Producer.Id).ToList();
 				return;
 			}
 			if (type == RequestType.SuppliersListToGet) {
