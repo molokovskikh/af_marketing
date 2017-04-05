@@ -1,0 +1,30 @@
+﻿@model List<Marketing.ViewModels.ViewModelList>
+
+@*Разделение JS, сопутствующих параметров и данного кода необходимо для корректной работы компонента*@
+
+@Html.Hidden("regionIdList", string.Join(",", Model.Select(s => s.Value).ToList()))
+
+<script type="text/javascript">
+  function filterRegionsOnSelectionChanged(s, e) {
+   	if (!$("[name='regionIdList']").hasClass("busy")) {
+   		s.GetSelectedFieldValues("Value", function (val) { $("[name='regionIdList']").val(val); });
+    }
+  }
+
+  function filterRegionsCloseGridLookup() {
+  	filterRegions.ConfirmCurrentSelection();
+    filterRegions.HideDropDown();
+  }
+
+  function filterRegionsBeginCallback(s, e) {
+   	e.customArgs["currentValues"] = $("[name='regionIdList']").val();
+  }
+
+  $(function() {
+    var currentValue = filterRegions.GetValue();
+    if (currentValue == undefined || currentValue == "") {
+    	filterRegions.SetValue();
+    }
+  });
+</script>
+

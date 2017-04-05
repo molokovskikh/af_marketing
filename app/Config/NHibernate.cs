@@ -149,9 +149,14 @@ namespace Marketing
 				m.Schema("Catalogs");
 				m.Table("Products");
 			});
-			Mapper.Class<Catalog>(m => {
-				m.Schema("Catalogs");
-				m.Table("Catalog");
+			Mapper.Class<Region>(m => {
+				m.Schema("Farm");
+				m.Table("Regions");
+				m.Id(x => x.Id, mapper => mapper.Column("RegionCode"));
+				m.Property(x => x.Name, mapper => mapper.Column("Region"));
+			});
+			Mapper.Class<Client>(m => {
+				m.ManyToOne(c => c.Region, mapper => mapper.Column("RegionCode"));
 			});
 
 			var types = MappingAssembly.GetTypes().Where(t =>

@@ -1,7 +1,8 @@
 ﻿@using Marketing.ViewModels
 @model List<MembersGridViewModel>
 @{
-    ViewBag.Title = "Участники акций";
+	ViewBag.Title = "Участники акций";
+	var regions = (List<ViewModelList>)ViewBag.AvailableRegions;
 }
 
 <div class="form-group">
@@ -13,10 +14,23 @@
     </ol>
 </div>
 <h2>@ViewBag.Title</h2>
+@using (Html.BeginForm("Index", "Members", FormMethod.Post))
+{
+<div class="filterWrapper">
+    <div class="form-group">
+        @Html.Partial("../_default/RegionsFilterData", regions)
+        @Html.Partial("../_default/RegionsFilterLogic", regions)
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-default">Поиск</button>
+    </div>
+</div>
+}
+<hr />
 <div class="form-group">
-		@Html.ActionLink("Добавить", "Add", "Members", null, new { @class = "btn btn-primary" })
+    @Html.ActionLink("Добавить", "Add", "Members", null, new { @class = "btn btn-primary" })
 </div>
 
 <div id="gridContent" class="row">
-		@Html.Partial("GridView", Model)
+    @Html.Partial("GridView", Model)
 </div>

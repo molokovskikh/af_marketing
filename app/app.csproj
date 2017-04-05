@@ -204,6 +204,7 @@
     <Compile Include="Models\PromotionProduct.cs" />
     <Compile Include="Models\PromotionSubscribe.cs" />
     <Compile Include="Models\PromotionSupplier.cs" />
+    <Compile Include="Models\Region.cs" />
     <Compile Include="Models\RegionalAdmin.cs" />
     <Compile Include="Models\Supplier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -302,6 +303,8 @@
     <Content Include="Views\Marketing\PromotionEditListGridView.cshtml" />
     <Content Include="Views\Members\Subscribes.cshtml" />
     <Content Include="Views\Members\SubscribesList.cshtml" />
+    <Content Include="Views\_default\RegionsFilterData.cshtml" />
+    <Content Include="Views\_default\RegionsFilterLogic.cshtml" />
     <Content Include="Views\Shared\_confirmationModalDialog.cshtml" />
     <Content Include="Views\Marketing\PromotionChange.cshtml" />
     <Content Include="Views\Marketing\_DateRange.cshtml" />

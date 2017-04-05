@@ -19,6 +19,15 @@ namespace Marketing.Controllers
 		public ActionResult Index()
 		{
 			var model = GetMemberList();
+			ViewBag.AvailableRegions = SearchRegions("");
+			return View(model);
+		}
+
+		[HttpPost]
+		public ActionResult Index(string regionIdList)
+		{
+			var model = GetMemberList(regionIdList);
+			ViewBag.AvailableRegions = SearchRegions("", regionIdList);
 			return View(model);
 		}
 
@@ -28,14 +37,20 @@ namespace Marketing.Controllers
 			return PartialView("GridView", model);
 		}
 
-		private List<MembersGridViewModel> GetMemberList()
+		private List<MembersGridViewModel> GetMemberList(string idList = "")
 		{
-			var result = DbSession.Query<PromotionMember>()
+			var list = DbSession.Query<PromotionMember>()
 				.Where(r => r.Promoter == CurrentPromoter)
-				.ToList()
+				.ToList();
+			if (!string.IsNullOrWhiteSpace(idList)) {
+				var ids = idList.Split(',').Select(i => ulong.Parse(i)).ToList();
+				list = list.Where(r => ids.Any(i => i == r.Client.Region.Id)).ToList();
+			}
+			var result = list
 				.Select(r => new MembersGridViewModel {
 					MemberId = r.Id,
 					Name = r.Client.Name,
+					Region = r.Client.Region.Name,
 					AddressCount = r.Client.Addresses.Count,
 					Subscribes = string.Join(",", r.Subscribes.Select(s => s.Promotion.Name).ToArray())
 				})
@@ -156,6 +171,28 @@ namespace Marketing.Controllers
 				Promotions = promotions
 			};
 			return model;
+		}
+
+		[HttpPost]
+		public ActionResult GetFilterRegions(string term, string currentValues = "")
+		{
+			var model = SearchRegions(term, currentValues);
+			return PartialView("../_default/RegionsFilterLogic", model);
+		}
+
+		private List<ViewModelList> SearchRegions(string term, string currentValues = "")
+		{
+			term = string.IsNullOrEmpty((term ?? "").Trim()) ? "%" : term;
+			currentValues = string.IsNullOrEmpty(currentValues) ? "0" : currentValues;
+			var itemsIdList = currentValues.Split(',').Select(s => ulong.Parse(s)).ToList();
+			var result = DbSession.Query<Region>()
+				.ToList()
+				.Select(r => new ViewModelList {
+					Value = r.Id,
+					Text = r.Name,
+					Selected = itemsIdList.Any(f => f == r.Id)
+				}).ToList();
+			return result;
 		}
 	}
 }

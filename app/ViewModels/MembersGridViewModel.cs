@@ -12,6 +12,7 @@ namespace Marketing.ViewModels
 		public uint MemberId { get; set; }
 		[Required]
 		public string Name { get; set; }
+		public string Region { get; set; }
 		[Required]
 		public int AddressCount { get; set; }
 		public string Subscribes { get; set; }
