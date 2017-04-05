@@ -33,6 +33,17 @@
         });
     });
 
+    settings.Columns.Add(column => {
+        column.PropertiesEdit.EncodeHtml = false;
+        column.Caption = "Действие";
+        column.SetDataItemTemplateContent(c => {
+            var value = DataBinder.Eval(c.DataItem, "Id").ToString();
+            var text = DataBinder.Eval(c.DataItem, "Producer.Name").ToString();
+            string htmlContent = $"<a class='c-pointer' onclick=\"submit('Вы действительно ходите удалить производителя `{text}`?', 'Да','Нет','{Url.Action("ProducerDelete", new {id = value})}')\">удалить</a>";
+            ViewContext.Writer.Write(htmlContent);
+        });
+    });
+
     settings.Settings.VerticalScrollableHeight = 500;
     settings.SettingsPager.PageSize = 100;
     settings.SettingsSearchPanel.Visible = true;

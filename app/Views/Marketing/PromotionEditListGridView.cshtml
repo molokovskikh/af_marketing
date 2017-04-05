@@ -30,13 +30,12 @@
     };
 
     settings.Width = Unit.Pixel(400);
-    settings.Settings.VerticalScrollableHeight = 300;
+    settings.Settings.VerticalScrollableHeight = Model.Height;
     settings.CallbackRouteValues = new { Controller = "Marketing", Action = "PromotionEditListManager" };
     settings.SettingsBehavior.AllowFocusedRow = true;
     settings.SettingsSearchPanel.Visible = true;
     settings.SettingsPager.Mode =GridViewPagerMode.EndlessPaging;
     settings.ClientSideEvents.BeginCallback = $"{Model.Name}BeginCallback";
-    //   settings.ClientSideEvents.BeginCallback = $"{Model.Name}EndCallback";
     settings.ClientSideEvents.FocusedRowChanged = $"{Model.Name}FocusedRowChanged";
     settings.ClientSideEvents.SelectionChanged = $"{Model.Name}SelectionChanged";
 }).Bind(Model.ItemsList).GetHtml()

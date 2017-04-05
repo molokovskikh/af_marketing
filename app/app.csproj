@@ -191,6 +191,7 @@
     <Compile Include="Helpers\ErrorFilter.cs" />
     <Compile Include="Helpers\PromoterIdentifierFilter.cs" />
     <Compile Include="Helpers\SessionFilter.cs" />
+    <Compile Include="Models\Region.cs" />
     <Compile Include="Models\Address.cs" />
     <Compile Include="Models\Catalog.cs" />
     <Compile Include="Models\Client.cs" />
@@ -252,6 +253,7 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\modal-confirmation.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
@@ -300,6 +302,11 @@
     <Content Include="Views\Marketing\PromotionEditListGridView.cshtml" />
     <Content Include="Views\Members\Subscribes.cshtml" />
     <Content Include="Views\Members\SubscribesList.cshtml" />
+    <Content Include="Views\Shared\_confirmationModalDialog.cshtml" />
+    <Content Include="Views\Marketing\PromotionChange.cshtml" />
+    <Content Include="Views\Marketing\_DateRange.cshtml" />
+    <Content Include="Views\Marketing\RegionFilterLogic.cshtml" />
+    <None Include="Views\Marketing\RegionFilterData.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Helpers\GridViews\" />

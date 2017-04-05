@@ -32,3 +32,5 @@ textarea {
 .centered{position:absolute;left:0;top:0;right:0;bottom:0;margin:auto;}
 .button-arrow{height: 38px;padding-bottom: 8px;}
 .table-text-element{ width: 300px !important;    display: block;}
+.c-pointer{ cursor: pointer !important;}
+.dv-black .dxflGroupBoxCaption_MetropolisBlue{ color: black !important;}
