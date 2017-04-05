@@ -210,6 +210,7 @@
     <Compile Include="ViewModels\DateRangeViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\MembersGridViewModel.cs" />
+    <Compile Include="ViewModels\MemberSubscribesViewModel.cs" />
     <Compile Include="ViewModels\MemberViewModel.cs" />
     <Compile Include="ViewModels\PromotionConditionsViewModel.cs" />
     <Compile Include="ViewModels\RegisterViewModel.cs" />
@@ -292,6 +293,8 @@
     <Content Include="Views\Members\Add.cshtml" />
     <Content Include="Views\Members\Edit.cshtml" />
     <Content Include="Views\Marketing\ConditionsGridView.cshtml" />
+    <Content Include="Views\Members\Subscribes.cshtml" />
+    <Content Include="Views\Members\SubscribesList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Helpers\GridViews\" />

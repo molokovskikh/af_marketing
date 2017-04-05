@@ -94,6 +94,7 @@ namespace Marketing
 				m.Bag(o => o.Subscribes, c => {
 					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
 					c.Inverse(true);
+					c.Key(k => k.Column("MemberId"));
 				});
 			});
 			Mapper.Class<ProducerPromotion>(m => {
@@ -110,6 +111,10 @@ namespace Marketing
 					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
 					c.Inverse(true);
 				});
+			});
+			Mapper.Class<PromotionSubscribe>(m => {
+				m.ManyToOne(s => s.Member, mapper => mapper.Column("MemberId"));
+				m.ManyToOne(s => s.Promotion, mapper => mapper.Column("PromotionId"));
 			});
 			Mapper.Class<Address>(m => {
 				m.Property(x => x.AddressName, c => c.Column("Address"));

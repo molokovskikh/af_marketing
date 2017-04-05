@@ -42,6 +42,15 @@
         column.FieldName = "Subscribes";
         column.PropertiesEdit.EncodeHtml = false;
         column.Caption = "Подписки на акции";
+        column.SetDataItemTemplateContent(c =>
+        {
+            var value = DataBinder.Eval(c.DataItem, "MemberId").ToString();
+            var text = DataBinder.Eval(c.DataItem, "Subscribes").ToString();
+            if (string.IsNullOrEmpty(text))
+                text = "[добавить]";
+            string htmlContent = $"<a href=\"{Url.Action("Subscribes", new { id = value })}\">{text}</a>";
+            ViewContext.Writer.Write(htmlContent);
+        });
     });
 
     //settings.Settings.VerticalScrollableHeight = 500;
