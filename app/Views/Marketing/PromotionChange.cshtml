@@ -1,10 +1,10 @@
 ﻿@using Marketing.Models
 @using Marketing.ViewModels
-@model Marketing.Models.ProducerPromotion
+@model ProducerPromotion
 
 @{
     var producer = (PromoterProducer) ViewBag.Producer;
-    ViewBag.Title = $"Добавление акции от \"{producer.Producer.Name}\"";
+    ViewBag.Title = $"Изменение акции от \"{producer.Producer.Name}\"";
 }
 
 <div class="form-group">
@@ -23,10 +23,10 @@
 </div>
 <h2>@ViewBag.Title</h2>
 
-@using (Html.BeginForm("PromotionAdd", "Marketing", FormMethod.Post, new {@class = "form-horizontal", role = "form"})) {
+@using (Html.BeginForm("PromotionChange", "Marketing", FormMethod.Post, new {@class = "form-horizontal", role = "form"})) {
     @Html.AntiForgeryToken()
     @Html.ValidationSummary("", new {@class = "text-danger"})
-    @Html.HiddenFor(model => model.Producer.Id)
+    @Html.HiddenFor(model => model.Id)
     <div class="form-group">
         @Html.LabelFor(m => m.Name, new {@class = "col-md-2 control-label"})
         <div class="col-md-10">
@@ -39,7 +39,7 @@
     </div>
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <input type="submit" class="btn btn-primary" value="Добавить"/>
+            <input type="submit" class="btn btn-primary" value="Изменить"/>
         </div>
     </div>
 }

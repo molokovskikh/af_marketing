@@ -31,8 +31,18 @@
         column.SetDataItemTemplateContent(c =>
         {
             var value = DataBinder.Eval(c.DataItem, "Id").ToString();
-            var text = DataBinder.Eval(c.DataItem, "Name").ToString();
             string htmlContent = $"<a href=\"{Url.Action("PromotionСonditionsEdit", new { id = value })}\"  class=\"href-dots\">...</a>";
+            ViewContext.Writer.Write(htmlContent);
+        });
+    });
+    settings.Columns.Add(column => {
+        column.PropertiesEdit.EncodeHtml = false;
+        column.Caption = "Действие";
+        column.SetDataItemTemplateContent(c => {
+            var value = DataBinder.Eval(c.DataItem, "Id").ToString();
+            var text = DataBinder.Eval(c.DataItem, "Name").ToString();
+            var htmlContent = $"<a class='c-pointer' onclick=\"submit('Вы действительно ходите удалить производителя `{text}`?', 'Да','Нет','{Url.Action("PromotionDelete", new {id = value})}')\">удалить</a> | "
+                + $"<a class='c-pointer' href='{Url.Action("PromotionChange", new { id = value })}'\">изменить</a>";
             ViewContext.Writer.Write(htmlContent);
         });
     });

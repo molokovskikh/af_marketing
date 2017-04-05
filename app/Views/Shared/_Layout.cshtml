@@ -43,6 +43,7 @@
 
     @RenderSection("AdditionalResources", false)
 
+    <script src="@Url.Content("~/Scripts/modal-confirmation.js")"></script>
 
 </head>
 <body>
@@ -77,7 +78,8 @@
 
     <div class="container body-content">
         @RenderBody()
-        <hr />
+        <hr/>
+				@Html.Partial("_confirmationModalDialog")
         <footer>
             <p>&copy; @DateTime.Now.Year - АналитФармация</p>
         </footer>

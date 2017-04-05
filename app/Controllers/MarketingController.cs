@@ -98,7 +98,14 @@ namespace Marketing.Controllers
 			SuccessMessage($"Контакты поставщика \"{model.Producer.Name}\" успешно изменен.");
 			return RedirectToAction("Index");
 		}
-
+		public ActionResult ProducerDelete(uint id)
+		{
+			var model = DbSession.Query<PromoterProducer>().First(s => s.Id == id);
+			DbSession.Delete(model);
+			SuccessMessage($"Поставщик \"{model.Producer.Name}\" успешно удален.");
+			return RedirectToAction("Index");
+		}
+		
 		public ActionResult PromotionList(uint id)
 		{
 			var currentProducer = DbSession.Query<PromoterProducer>().First(s => s.Id == id);
@@ -154,6 +161,12 @@ namespace Marketing.Controllers
 			model.SetData(DbSession, id, type, list);
 			return PartialView("PromotionEditListGridView", model);
 		}
+		public ActionResult GetFilterRegion(string term, string currentValues = "")
+		{
+			var model = new List<SelectListItem>();
+			DbSession.Query<Region>();
+			return PartialView("RegionFilterLogic", model);
+		}
 
 		[HttpGet]
 		public ActionResult PromotionEdit(uint id)
@@ -162,6 +175,39 @@ namespace Marketing.Controllers
 			model.SetData(DbSession, id);
 			return View(model);
 		}
+
+		[HttpGet]
+		public ActionResult PromotionChange(uint id)
+		{
+			var promotion = DbSession.Query<ProducerPromotion>().First(s => s.Id == id);
+			ViewBag.Producer = promotion.Producer;
+			return View(promotion);
+		}
+
+		[HttpPost]
+		public ActionResult PromotionChange(ProducerPromotion model)
+		{
+			var promotion = DbSession.Query<ProducerPromotion>().First(s => s.Id == model.Id);
+			if (!ModelState.IsValid) {
+				ViewBag.Producer = promotion.Producer;
+				return View(model);
+			}
+			promotion.Name = model.Name;
+			promotion.DateStarted = model.DateStarted;
+			promotion.DateFinished = model.DateFinished;
+			DbSession.Save(promotion);
+			return RedirectToAction("PromotionList", new {id = promotion.Producer.Id});
+		}
+
+
+		public ActionResult PromotionDelete(uint id)
+		{
+			var promotion = DbSession.Query<ProducerPromotion>().First(s => s.Id == id);
+			DbSession.Delete(promotion);
+			SuccessMessage($"Акция \"{promotion.Name}\" успешно удалена.");
+			return RedirectToAction("PromotionList", new { id = promotion.Producer.Id });
+		}
+		
 
 		public ActionResult PromotionrEditGet(PromotionViewModel model)
 		{

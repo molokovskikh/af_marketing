@@ -35,6 +35,16 @@ namespace Marketing.Models
 
 		public virtual IList<PromotionSubscribe> Subscribes { get; set; }
 
+		[Required]
+		[DataType(DataType.Date), DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+		[Display(Name = "Дата начала")]
+		public virtual DateTime DateStarted { get; set; }
+
+		[Required]
+		[DataType(DataType.Date), DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+		[Display(Name = "Дата окончания")]
+		public virtual DateTime DateFinished { get; set; }
+
 		public virtual void UpdateProductsAndSuppliersByIds(ISession dbSession, string productsIds, string suppliersIds)
 		{
 			var productsListRaw = (productsIds ?? "").Split(',').Select(s => {

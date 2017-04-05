@@ -22,7 +22,10 @@ namespace Marketing.ViewModels
 		public PromotionTableSelectorViewModel()
 		{
 			ItemsList = new List<SelectListItem>();
+			Height = 300;
 		}
+
+		public int Height { get; set; }
 
 		public string Name { get; set; }
 		public string Caption { get; set; }
@@ -39,6 +42,7 @@ namespace Marketing.ViewModels
 
 
 			if (type == RequestType.ProductsListToGet) {
+				Height = 600;
 				var promotion = dbSession.Query<ProducerPromotion>().First(s => s.Id == promotionId);
 				ItemsList = dbSession.Connection.Query<SelectListItem>(string.Format(@"
 SELECT pr.Id as 'Value',CONCAT(ct.Name,' ',IFNULL(pr.Properties,'')) as 'Text' FROM
@@ -53,6 +57,7 @@ ORDER BY Text
 			}
 
 			if (type == RequestType.ProductsListToSet) {
+				Height = 600;
 				var promotion = dbSession.Query<ProducerPromotion>().First(s => s.Id == promotionId);
 				ItemsList = dbSession.Connection.Query<SelectListItem>(string.Format(@"
 SELECT pr.Id as 'Value',CONCAT(ct.Name,' ',IFNULL(pr.Properties,'')) as 'Text' FROM
@@ -68,7 +73,7 @@ ORDER BY Text
 			if (type == RequestType.SuppliersListToGet) {
 				ItemsList = dbSession.Connection.Query<SelectListItem>(string.Format(@"
 SELECT sp.Id AS 'Value',sp.Name AS 'Text' FROM customers.suppliers AS sp
-WHERE sp.Id NOT IN ({0})
+WHERE sp.Id NOT IN ({0}) AND sp.Disabled = 0
 ORDER BY Text
 ", string.IsNullOrEmpty(selectedList) ? "0" : selectedList)).ToList();
 				return;
@@ -76,7 +81,7 @@ ORDER BY Text
 			if (type == RequestType.SuppliersListToSet) {
 				ItemsList = dbSession.Connection.Query<SelectListItem>(string.Format(@"
 SELECT sp.Id AS 'Value',sp.Name AS 'Text' FROM customers.suppliers AS sp
-WHERE sp.Id IN ({0})
+WHERE sp.Id IN ({0}) AND sp.Disabled = 0
 ORDER BY Text
 ", string.IsNullOrEmpty(selectedList) ? "0" : selectedList)).ToList();
 			}
