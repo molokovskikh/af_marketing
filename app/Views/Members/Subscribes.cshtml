@@ -1,0 +1,32 @@
+﻿@using Marketing.ViewModels
+@model MemberSubscribesViewModel
+@{
+    ViewBag.Title = "Подписки участника";
+}
+
+<div class="form-group">
+    <ol class="breadcrumb">
+        <li>
+            <a href="@Url.Action("Index", "Home")">Меню</a>
+        </li>
+        <li>
+            <a href="@Url.Action("Index", "Members")">Участники</a>
+        </li>
+        <li class="active">@ViewBag.Title</li>
+    </ol>
+</div>
+<h2>@ViewBag.Title</h2>
+
+<script>
+    function PromotionSelectionChanged(s, e) {
+        var selectedPromotions = s.GetSelectedValues();
+        s.PerformCallback({
+					"memberId": @Model.MemberId,
+	       	"selectedPromotions": selectedPromotions
+        });
+    }
+</script>
+
+<div class="row">
+		@Html.Partial("SubscribesList", Model)
+</div>

@@ -1,5 +1,7 @@
 ﻿using Marketing.Models;
 using Marketing.ViewModels;
+using NHibernate;
+using NHibernate.Criterion;
 using NHibernate.Linq;
 using System;
 using System.Collections.Generic;
@@ -30,11 +32,12 @@ namespace Marketing.Controllers
 		{
 			var result = DbSession.Query<PromotionMember>()
 				.Where(r => r.Promoter == CurrentPromoter)
+				.ToList()
 				.Select(r => new MembersGridViewModel {
 					MemberId = r.Id,
 					Name = r.Client.Name,
 					AddressCount = r.Client.Addresses.Count,
-					Subscribes = ""
+					Subscribes = string.Join(",", r.Subscribes.Select(s => s.Promotion.Name).ToArray())
 				})
 				.OrderBy(r => r.Name);
 			return result.ToList();
@@ -96,6 +99,63 @@ namespace Marketing.Controllers
 		public ActionResult Edit(ClientViewModel model)
 		{
 			return RedirectToAction("Index");
+		}
+
+		public ActionResult Subscribes(uint id)
+		{
+			var model = GetSubscribesModel(id);
+			return View(model);
+		}
+
+		public ActionResult SubscribesList(uint memberId, uint[] selectedPromotions)
+		{
+			var member = DbSession.Query<PromotionMember>().Single(r => r.Id == memberId);
+			var subscribes = DbSession.Query<PromotionSubscribe>()
+				.Where(r => r.Member == member)
+				.ToList();
+
+			var del = subscribes
+				.Where(r => !selectedPromotions.Any(p => p == r.Promotion.Id))
+				.ToList();
+			del.ForEach(r => DbSession.Delete(r));
+			DbSession.Flush();
+
+			foreach (var id in selectedPromotions) {
+				if (!subscribes.Any(r => r.Promotion.Id == id)) {
+					var subscribe = new PromotionSubscribe {
+						Member = member,
+						Promotion = DbSession.Query<ProducerPromotion>().Single(r => r.Id == id)
+					};
+					DbSession.Save(subscribe);
+				}
+			}
+			DbSession.Flush();
+
+			var model = GetSubscribesModel(memberId);
+			return PartialView(model);
+		}
+
+		private MemberSubscribesViewModel GetSubscribesModel(uint id)
+		{
+			var member = DbSession.Query<PromotionMember>().Single(r => r.Id == id);
+			var promoter = member.Promoter;
+			var subscribes = DbSession.Query<PromotionSubscribe>()
+				.Where(r => r.Member == member)
+				.ToList();
+			var promotions = DbSession.Query<ProducerPromotion>()
+				.Where(r => r.Producer.Promoter == promoter)
+				.ToList()
+				.Select(r => new MemberSubscribe {
+					PromotionId = r.Id,
+					PromotionName = subscribes.Any(s => s.Promotion.Id == r.Id) ? "*" + r.Name : r.Name,
+				})
+				.ToList();
+			var model = new MemberSubscribesViewModel {
+				MemberId = member.Id,
+				MemberName = member.Client.Name,
+				Promotions = promotions
+			};
+			return model;
 		}
 	}
 }

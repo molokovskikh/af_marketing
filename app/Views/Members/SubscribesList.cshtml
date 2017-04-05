@@ -1,0 +1,30 @@
+﻿@using System.Web.UI.WebControls
+@using Marketing.ViewModels
+@model MemberSubscribesViewModel
+
+@Html.DevExpress().ListBox(settings =>
+{
+    settings.Name = "lbSubscribes";
+    settings.CallbackRouteValues = new { Controller = "Members", Action = "SubscribesList" };
+    settings.Width = Unit.Pixel(400);
+    //settings.Height = 500;
+    settings.Properties.Caption = "Акции";
+    settings.Properties.CaptionSettings.Position = EditorCaptionPosition.Top;
+    settings.Properties.EnableClientSideAPI = true;
+    settings.Properties.SelectionMode = ListEditSelectionMode.CheckColumn;
+    settings.Properties.ValueField = "PromotionId";
+    settings.Properties.ValueType = typeof(uint);
+    settings.Properties.TextField = "PromotionName";
+    settings.Properties.ClientSideEvents.SelectedIndexChanged = "PromotionSelectionChanged";
+    settings.PreRender = (sender, e) =>
+    {
+        ASPxListBox listBox = (ASPxListBox)sender;
+        foreach (ListEditItem item in listBox.Items)
+            if (item.Text.StartsWith("*"))
+            {
+                item.Text = item.Text.Substring(1);
+                item.Selected = true;
+            }
+    };
+}).BindList(Model.Promotions).GetHtml()
+
