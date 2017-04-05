@@ -204,7 +204,6 @@
     <Compile Include="Models\PromotionProduct.cs" />
     <Compile Include="Models\PromotionSubscribe.cs" />
     <Compile Include="Models\PromotionSupplier.cs" />
-    <Compile Include="Models\Region.cs" />
     <Compile Include="Models\RegionalAdmin.cs" />
     <Compile Include="Models\Supplier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
