@@ -3,6 +3,7 @@ using Marketing.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.DirectoryServices;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -104,11 +105,7 @@ namespace Marketing.Controllers
 				model.Login = promoter.Login;
 
 				model.Password = GeneratePassword();
-#if !DEBUG
-				var user = Membership.CreateUser(Promoter.ACC_LOGIN_PREFIX + promoter.Login, model.Password);
-				user.IsApproved = true;
-				Membership.UpdateUser(user);
-#endif
+				CreateUserInAD(Promoter.ACC_LOGIN_PREFIX + promoter.Login, model.Password);
 			} catch (Exception ex) {
 				DbSession.Transaction.Rollback();
 				_log.Error(ex);
@@ -120,6 +117,24 @@ namespace Marketing.Controllers
 			}
 
 			return View("Confirm", model);
+		}
+
+		private void CreateUserInAD(string login, string password)
+		{
+#if !DEBUG
+			var root = new DirectoryEntry("LDAP://OU=Пользователи,OU=Клиенты,DC=adc,DC=analit,DC=net");
+			var userGroup = new DirectoryEntry("LDAP://CN=Базовая группа клиентов - получателей данных,OU=Группы,OU=Клиенты,DC=adc,DC=analit,DC=net");
+			var user = root.Children.Add("CN=" + login, "user");
+			user.Properties["samAccountName"].Value = login;
+			user.Properties["description"].Value = "Пользователь Интерфейса маркетолога";
+			user.CommitChanges();
+			user.Invoke("SetPassword", password);
+			user.Properties["userAccountControl"].Value = 66048;
+			user.CommitChanges();
+			userGroup.Invoke("Add", user.Path);
+			userGroup.CommitChanges();
+			root.CommitChanges();
+#endif
 		}
 
 		[HttpPost]
