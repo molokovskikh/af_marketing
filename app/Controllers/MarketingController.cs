@@ -11,11 +11,11 @@ using NHibernate;
 using NHibernate.Linq;
 using DevExpress.Web.Mvc;
 
+namespace Marketing.Controllers
+{
 #if !DEBUG
 	[Authorize]
 #endif
-namespace Marketing.Controllers
-{
 	public class PromoterProducersItem
 	{
 		public virtual uint Id { get; set; }
