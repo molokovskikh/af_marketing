@@ -85,7 +85,7 @@ ORDER BY Text
 				}
 				ItemsList = dbSession.Connection.Query<SelectListItem>(string.Format(@"
 SELECT sp.Id AS 'Value', CONCAT(sp.Name,' - ',rg.Region) AS 'Text' FROM customers.suppliers AS sp
-INNER JOIN farm.Regions as rg ON rg.RegionCode = sp.RegionMask 
+INNER JOIN farm.Regions as rg ON rg.RegionCode & sp.RegionMask  > 0
 WHERE sp.Id NOT IN ({0}) AND sp.Disabled = 0 {1}
 ORDER BY Text
 ", string.IsNullOrEmpty(selectedList) ? "0" : selectedList, mask == 0 ? "" : "AND sp.RegionMask & @code > 0"),
@@ -95,7 +95,7 @@ ORDER BY Text
 			if (type == RequestType.SuppliersListToSet) {
 				ItemsList = dbSession.Connection.Query<SelectListItem>(string.Format(@"
 SELECT sp.Id AS 'Value', CONCAT(sp.Name,' - ',rg.Region) AS 'Text' FROM customers.suppliers AS sp
-INNER JOIN farm.Regions as rg ON rg.RegionCode = sp.RegionMask 
+INNER JOIN farm.Regions as rg ON rg.RegionCode & sp.RegionMask  > 0
 WHERE sp.Id IN ({0}) AND sp.Disabled = 0
 ORDER BY Text
 ", string.IsNullOrEmpty(selectedList) ? "0" : selectedList)).ToList();
