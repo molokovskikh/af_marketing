@@ -115,7 +115,7 @@ namespace Marketing.Controllers
 #if !DEBUG
 				Membership.DeleteUser(Promoter.ACC_LOGIN_PREFIX + model.Login);
 #endif
-				ModelState.AddModelError("", ex);
+				ModelState.AddModelError("", ex.Message);
 				return View(model);
 			}
 
