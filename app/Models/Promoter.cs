@@ -11,6 +11,8 @@ namespace Marketing.Models
 	/// </summary>
 	public class Promoter
 	{
+		public const string ACC_LOGIN_PREFIX = "Marketing_";
+
 		public Promoter()
 		{
 			Producers = new List<PromoterProducer>();

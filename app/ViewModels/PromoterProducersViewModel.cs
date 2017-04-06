@@ -18,7 +18,7 @@ namespace Marketing.ViewModels
 		public List<SelectListItem> ProducersList { get; set; }
 
 
-		[Required(ErrorMessage = "Необходимо выбрать поставщика")]
+		[Range(1, int.MaxValue, ErrorMessage = "Необходимо выбрать поставщика")]
 		[Display(Name = "Поставщик")]
 		public uint SelectedProducerId { get; set; }
 

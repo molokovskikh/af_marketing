@@ -1,4 +1,5 @@
 ﻿@using System.ComponentModel
+@using System.Web.UI.WebControls
 @using DevExpress.Data
 @model List<SelectListItem>
 @{
@@ -15,6 +16,7 @@
         settings.KeyFieldName = "Value";
         settings.CommandColumn.Visible = true;
         settings.CommandColumn.ShowSelectCheckbox = true;
+        settings.CommandColumn.Width = Unit.Pixel(30);
         settings.Columns.Add(c => {
             c.FieldName = "Text";
             c.Caption = "Поиск:";

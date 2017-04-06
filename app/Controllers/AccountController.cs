@@ -11,13 +11,10 @@ using System.Web.Security;
 
 namespace Marketing.Controllers
 {
-#if !DEBUG
+
 	[Authorize]
-#endif
 	public class AccountController : BaseController
 	{
-		public const string ACC_LOGIN_PREFIX = "Marketing_";
-
 		[AllowAnonymous]
 		public ActionResult Login()
 		{
@@ -33,10 +30,10 @@ namespace Marketing.Controllers
 			if (!ModelState.IsValid)
 				return View(model);
 
-			var login = ACC_LOGIN_PREFIX + model.Login;
+			var login = Promoter.ACC_LOGIN_PREFIX + model.Login;
 			var skipValidation = false;
-#if !DEBUG
-			skipValidation = !String.IsNullOrEmpty(ConfigurationManager.AppSettings["SkipLogonAD"]);
+#if DEBUG
+			skipValidation = !string.IsNullOrEmpty(ConfigurationManager.AppSettings["SkipLogonAD"]);
 #endif
 			if (!skipValidation) {
 				if (!Membership.ValidateUser(login, model.Password)) {
@@ -54,16 +51,12 @@ namespace Marketing.Controllers
 				if (admin) {
 					FormsAuthentication.SetAuthCookie(model.Login, model.RememberMe);
 					return RedirectToAction("Register");
-				} else {
-					ModelState.AddModelError("",
-						$"Пользователь \"{model.Login}\" не включен в список организаторов акций. Обратитесь в АналитФармацию.");
-					return View(model);
 				}
+				ModelState.AddModelError("",
+					$"Пользователь \"{model.Login}\" не включен в список организаторов акций. Обратитесь в АналитФармацию.");
+				return View(model);
 			}
-
 			FormsAuthentication.SetAuthCookie(login, model.RememberMe);
-			System.Web.HttpContext.Current.Session["promoter"] = user;
-
 			if ((returnUrl ?? "/") == "/")
 				returnUrl = "/marketing/";
 			return Redirect(returnUrl);
@@ -80,6 +73,9 @@ namespace Marketing.Controllers
 
 		public ActionResult Register()
 		{
+			if (CurrentPromoter?.Login != null) //если задан пользователь с логином это не админ (оперативное решение)
+				return RedirectToAction("Index", "Home");
+
 			return View(new RegisterViewModel());
 		}
 
@@ -87,6 +83,9 @@ namespace Marketing.Controllers
 		[ValidateAntiForgeryToken]
 		public ActionResult Register(RegisterViewModel model)
 		{
+			if (CurrentPromoter?.Login != null) //если задан пользователь с логином это не админ (оперативное решение)
+				return RedirectToAction("Index", "Home");
+
 			if (!ModelState.IsValid)
 				return View(model);
 
@@ -101,15 +100,17 @@ namespace Marketing.Controllers
 				model.Login = promoter.Login;
 
 				model.Password = GeneratePassword();
-#if DEBUG
-				var user = Membership.CreateUser(ACC_LOGIN_PREFIX + promoter.Login, model.Password);
+#if !DEBUG
+				var user = Membership.CreateUser(Promoter.ACC_LOGIN_PREFIX + promoter.Login, model.Password);
 				user.IsApproved = true;
 				Membership.UpdateUser(user);
 #endif
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				DbSession.Transaction.Rollback();
-				Membership.DeleteUser(ACC_LOGIN_PREFIX + model.Login);
+
+#if !DEBUG
+				Membership.DeleteUser(Promoter.ACC_LOGIN_PREFIX + model.Login);
+#endif
 				ModelState.AddModelError("", ex);
 				return View(model);
 			}
@@ -121,13 +122,16 @@ namespace Marketing.Controllers
 		[ValidateAntiForgeryToken]
 		public ActionResult Confirm(bool sendEmail)
 		{
+			if (CurrentPromoter?.Login != null) //если задан пользователь с логином это не админ (оперативное решение)
+				return RedirectToAction("Index", "Home");
+
 			return RedirectToAction("Register");
 		}
 
 		private string GeneratePassword()
 		{
 			var availableChars = "23456789qwertyupasdfghjkzxcvbnmQWERTYUPASDFGHJKLZXCVBNM";
-			var password = String.Empty;
+			var password = string.Empty;
 			var random = new Random();
 			while (password.Length < 8)
 				password += availableChars[random.Next(0, availableChars.Length - 1)];
