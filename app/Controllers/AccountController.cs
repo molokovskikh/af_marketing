@@ -12,7 +12,7 @@ using System.Web.Security;
 namespace Marketing.Controllers
 {
 #if !DEBUG
-	//[Authorize]
+	[Authorize]
 #endif
 	public class AccountController : BaseController
 	{
@@ -35,8 +35,9 @@ namespace Marketing.Controllers
 
 			var login = ACC_LOGIN_PREFIX + model.Login;
 			var skipValidation = false;
-			//заглушка оставлена до решения проблемы с сохранением нового пользователя в AD
+#if !DEBUG
 			skipValidation = !String.IsNullOrEmpty(ConfigurationManager.AppSettings["SkipLogonAD"]);
+#endif
 			if (!skipValidation) {
 				if (!Membership.ValidateUser(login, model.Password)) {
 					login = model.Login;

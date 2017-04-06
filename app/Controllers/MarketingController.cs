@@ -11,6 +11,9 @@ using NHibernate;
 using NHibernate.Linq;
 using DevExpress.Web.Mvc;
 
+#if !DEBUG
+	[Authorize]
+#endif
 namespace Marketing.Controllers
 {
 	public class PromoterProducersItem
@@ -106,7 +109,7 @@ namespace Marketing.Controllers
 			SuccessMessage($"Поставщик \"{model.Producer.Name}\" успешно удален.");
 			return RedirectToAction("Index");
 		}
-		
+
 		public ActionResult PromotionList(uint id)
 		{
 			var currentProducer = DbSession.Query<PromoterProducer>().First(s => s.Id == id);
@@ -215,7 +218,7 @@ namespace Marketing.Controllers
 			SuccessMessage($"Акция \"{promotion.Name}\" успешно удалена.");
 			return RedirectToAction("PromotionList", new { id = promotion.Producer.Id });
 		}
-		
+
 
 		public ActionResult PromotionrEditGet(PromotionViewModel model)
 		{

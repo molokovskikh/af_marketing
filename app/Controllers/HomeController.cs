@@ -5,7 +5,7 @@ using NHibernate;
 namespace Marketing.Controllers
 {
 #if !DEBUG
-	//[Authorize]
+	[Authorize]
 #endif
 	public class HomeController : BaseController
 	{

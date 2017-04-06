@@ -12,7 +12,7 @@ using System.Web.Mvc;
 namespace Marketing.Controllers
 {
 #if !DEBUG
-	//[Authorize]
+	[Authorize]
 #endif
 	public class MembersController : BaseController
 	{
