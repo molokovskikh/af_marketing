@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
+using log4net;
 
 namespace Marketing.Controllers
 {
@@ -15,6 +16,9 @@ namespace Marketing.Controllers
 	[Authorize]
 	public class AccountController : BaseController
 	{
+
+		private static ILog _log = LogManager.GetLogger(typeof(AccountController));
+
 		[AllowAnonymous]
 		public ActionResult Login()
 		{
@@ -107,7 +111,7 @@ namespace Marketing.Controllers
 #endif
 			} catch (Exception ex) {
 				DbSession.Transaction.Rollback();
-
+				_log.Error(ex);
 #if !DEBUG
 				Membership.DeleteUser(Promoter.ACC_LOGIN_PREFIX + model.Login);
 #endif
