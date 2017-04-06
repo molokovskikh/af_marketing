@@ -13,9 +13,6 @@ using DevExpress.Web.Mvc;
 
 namespace Marketing.Controllers
 {
-#if !DEBUG
-	[Authorize]
-#endif
 	public class PromoterProducersItem
 	{
 		public virtual uint Id { get; set; }
@@ -23,6 +20,9 @@ namespace Marketing.Controllers
 		public virtual string Contacts { get; set; }
 	}
 
+#if !DEBUG
+	[Authorize]
+#endif
 	public class MarketingController : BaseController
 	{
 		public ActionResult Index()
