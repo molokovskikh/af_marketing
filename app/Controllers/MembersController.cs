@@ -11,9 +11,7 @@ using System.Web.Mvc;
 
 namespace Marketing.Controllers
 {
-#if !DEBUG
 	[Authorize]
-#endif
 	public class MembersController : BaseController
 	{
 		public ActionResult Index()

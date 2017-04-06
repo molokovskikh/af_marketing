@@ -40,7 +40,7 @@
         var dateStart = (DateTime)e.GetValue("DateStarted");
         var dateFinish = (DateTime)e.GetValue("DateFinished");
         if (dateStart.Date > DateTime.Now || dateFinish.Date < DateTime.Now.Date)
-            e.Row.BackColor = Color.GhostWhite;
+            e.Row.BackColor = Color.LightGray;
     };
 
     settings.Columns.Add(column =>

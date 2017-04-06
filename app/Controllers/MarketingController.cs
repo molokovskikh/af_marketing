@@ -20,9 +20,7 @@ namespace Marketing.Controllers
 		public virtual string Contacts { get; set; }
 	}
 
-#if !DEBUG
 	[Authorize]
-#endif
 	public class MarketingController : BaseController
 	{
 		public ActionResult Index()
