@@ -1,4 +1,5 @@
-﻿@using System.Web.UI.WebControls
+﻿@using System.Drawing
+@using System.Web.UI.WebControls
 @using Marketing.Models
 
 
@@ -23,6 +24,24 @@
             ViewContext.Writer.Write(htmlContent);
         });
     });
+    settings.Columns.Add(column => {
+        column.FieldName = "DateStarted";
+        column.Visible = false;
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "DateFinished";
+        column.Visible = false;
+    });
+
+    settings.HtmlRowPrepared = (s, e) => {
+        if (e.RowType != GridViewRowType.Data) return;
+
+        var dateStart = (DateTime)e.GetValue("DateStarted");
+        var dateFinish = (DateTime)e.GetValue("DateFinished");
+        if (dateStart.Date > DateTime.Now || dateFinish.Date < DateTime.Now.Date)
+            e.Row.BackColor = Color.GhostWhite;
+    };
 
     settings.Columns.Add(column =>
     {

@@ -5,11 +5,11 @@
     var filterName = "filterRegions";
 }
 
-		@*Разделение JS, сопутствующих параметров и данного кода необходимо для корректной работы компонента*@
+@*Разделение JS, сопутствующих параметров и данного кода необходимо для корректной работы компонента*@
 
 @Html.DevExpress().GridLookup(
     settings => {
-        settings.Width = 300;
+        settings.Width = 340;
         settings.Properties.Caption = "Регионы:";
         settings.Name = filterName;
         settings.KeyFieldName = "Value";
@@ -25,10 +25,10 @@
             c.FieldName = "Value";
             c.Visible = false;
         });
-        settings.Properties.SelectionMode = DevExpress.Web.GridLookupSelectionMode.Multiple;
+        settings.Properties.SelectionMode = GridLookupSelectionMode.Multiple;
         settings.Properties.TextFormatString = "{0}";
         settings.Properties.MultiTextSeparator = ", ";
-        settings.Properties.Width = 300;
+        settings.Properties.Width = 340;
         settings.Properties.IncrementalFilteringMode = IncrementalFilteringMode.Contains;
         settings.Properties.IncrementalFilteringDelay = 500;
 
@@ -36,12 +36,13 @@
         settings.GridViewProperties.Settings.ShowFilterRow = true;
         settings.GridViewProperties.Settings.ShowStatusBar = GridViewStatusBarMode.Visible;
 
-        settings.GridViewClientSideEvents.SelectionChanged = filterName+ "OnSelectionChanged";
+        settings.GridViewClientSideEvents.SelectionChanged = filterName + "OnSelectionChanged";
+        settings.GridViewClientSideEvents.EndCallback = filterName + "EndCallback";
         settings.GridViewClientSideEvents.BeginCallback = filterName + "BeginCallback";
 
         settings.PreRender = (sender, e) => {
             var gridViewLookup = (MVCxGridLookup) sender;
-            for (int i = 0; i < gridViewLookup.GridView.VisibleRowCount; i++) {
+            for (var i = 0; i < gridViewLookup.GridView.VisibleRowCount; i++) {
                 if ((bool) gridViewLookup.GridView.GetRowValues(i, "Selected")) {
                     gridViewLookup.GridView.Selection.SelectRow(i);
                 }
@@ -62,7 +63,7 @@
 
         settings.DataBound = (sender, e) => {
             var filterCurrent = (MVCxGridLookup) sender;
-            filterCurrent.GridView.Width = 300;
+            filterCurrent.GridView.Width = 340;
         };
     }).BindList(Model).GetHtml()
 

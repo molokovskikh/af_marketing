@@ -1,4 +1,5 @@
-﻿@model List<Marketing.ViewModels.ViewModelList>
+﻿@using Marketing.ViewModels
+@model List<SelectListItem>
 
 @*Разделение JS, сопутствующих параметров и данного кода необходимо для корректной работы компонента*@
 
@@ -7,7 +8,10 @@
 <script type="text/javascript">
     function filterRegionsOnSelectionChanged(s, e) {
         if (!$("[name='regionIdList']").hasClass("busy")) {
-            s.GetSelectedFieldValues("Value", function(val) { $("[name='regionIdList']").val(val); });
+            s.GetSelectedFieldValues("Value", function(val) {
+                $("[name='regionIdList']").val(val);
+                @(PromotionTableSelectorViewModel.RequestType.SuppliersListToGet.ToString()).PerformCallback();
+            });
         }
     }
 
@@ -18,6 +22,8 @@
 
     function filterRegionsBeginCallback(s, e) {
         e.customArgs["currentValues"] = $("[name='regionIdList']").val();
+    }
+    function filterRegionsEndCallback(s, e) {
     }
 
     $(function() {
