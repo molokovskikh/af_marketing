@@ -31,9 +31,10 @@ namespace Marketing.Controllers
 			return View(model);
 		}
 
-		public ActionResult GetGridData()
+		public ActionResult GetGridData(string regionIdList = "")
 		{
-			var model = GetMemberList();
+			var model = GetMemberList(regionIdList);
+			ViewBag.AvailableRegions = SearchRegions("", regionIdList);
 			return PartialView("GridView", model);
 		}
 
@@ -66,6 +67,7 @@ namespace Marketing.Controllers
 				.Select(r => r.Client)
 				.ToList();
 			model.AvailableMembers = DbSession.Query<Client>()
+				.Where(r => r.Status)
 				.Where(r => !exist.Contains(r))
 				.OrderBy(r => r.Name)
 				.Select(r => new SelectListItem {
@@ -114,6 +116,24 @@ namespace Marketing.Controllers
 		public ActionResult Edit(ClientViewModel model)
 		{
 			return RedirectToAction("Index");
+		}
+
+		[ValidateInput(false)]
+		public ActionResult Delete(uint memberId, string regionIdList = "")
+		{
+			if (memberId > 0)
+				try {
+					var member = DbSession.Query<PromotionMember>().Single(r => r.Id == memberId);
+					DbSession.Delete(member);
+					DbSession.Flush();
+					SuccessMessage($"Участник \"{member.Client.Name}\" успешно удален.");
+				}
+				catch (Exception ex) {
+					ViewData["ErrorMessage"] = ex.Message;
+				}
+			var model = GetMemberList(regionIdList);
+			ViewBag.AvailableRegions = SearchRegions("", regionIdList);
+			return View("Index", model);
 		}
 
 		public ActionResult Subscribes(uint id)
@@ -186,6 +206,7 @@ namespace Marketing.Controllers
 			currentValues = string.IsNullOrEmpty(currentValues) ? "0" : currentValues;
 			var itemsIdList = currentValues.Split(',').Select(s => ulong.Parse(s)).ToList();
 			var result = DbSession.Query<Region>()
+				.Where(r => r.Id > 0)
 				.ToList()
 				.Select(r => new ViewModelList {
 					Value = r.Id,

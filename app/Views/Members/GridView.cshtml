@@ -1,11 +1,16 @@
 ﻿@using System.Web.UI.WebControls
 @using Marketing.ViewModels
 @model List<MembersGridViewModel>
+@{
+	var regions = string.Join(",", ((List<ViewModelList>)ViewBag.AvailableRegions)
+		.Where(r => r.Selected)
+		.Select(r => r.Value.ToString()).ToArray());
+}
 
 @Html.DevExpress().GridView(settings =>
 {
     settings.Name = "gridMembers";
-    settings.CallbackRouteValues = new { Action = "GetGridData", Controller = "Members" };
+    settings.CallbackRouteValues = new { Action = "GetGridData", Controller = "Members", regionIdList = regions };
     settings.PreviewEncodeHtml = false;
     settings.EncodeHtml = false;
     settings.KeyFieldName = "MemberId";
@@ -39,7 +44,7 @@
             var value = DataBinder.Eval(c.DataItem, "MemberId").ToString();
             var text = DataBinder.Eval(c.DataItem, "Subscribes").ToString();
             if (string.IsNullOrEmpty(text))
-                text = "[добавить]";
+                text = "[подписать]";
             string htmlContent = $"<a href=\"{Url.Action("Subscribes", new { id = value })}\">{text}</a>";
             ViewContext.Writer.Write(htmlContent);
         });
@@ -49,6 +54,18 @@
         column.FieldName = "Region";
         column.PropertiesEdit.EncodeHtml = false;
         column.Caption = "Регион";
+    });
+    settings.Columns.Add(column =>
+    {
+        column.PropertiesEdit.EncodeHtml = false;
+        column.Caption = "Действие";
+        column.SetDataItemTemplateContent(c =>
+        {
+            var value = DataBinder.Eval(c.DataItem, "MemberId").ToString();
+            var text = DataBinder.Eval(c.DataItem, "Name").ToString();
+            string htmlContent = $"<a class='c-pointer' onclick=\"submit('Вы действительно ходите удалить участника `{text}`?', 'Да','Нет','{Url.Action("Delete", "Members", new { memberId = value, regionIdList = regions })}')\">удалить</a>";
+            ViewContext.Writer.Write(htmlContent);
+        });
     });
 
     settings.SettingsPager.PageSize = 20;
