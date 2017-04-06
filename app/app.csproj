@@ -181,7 +181,6 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\DevExampleController.cs" />
-    <Compile Include="Controllers\GenDataController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MarketingController.cs" />
     <Compile Include="Controllers\MembersController.cs" />
@@ -291,29 +290,27 @@
     <Content Include="Views\Marketing\PromotionEdit.cshtml" />
     <Content Include="Views\Marketing\PromotionAdd.cshtml" />
     <Content Include="Views\Marketing\PromotionСonditionsEdit.cshtml" />
-    <Content Include="Views\Marketing\PromotionListGridView.cshtml" />
-    <Content Include="Views\Marketing\IndexGridView.cshtml" />
+    <Content Include="Views\Marketing\partials\_PromotionListGridView.cshtml" />
+    <Content Include="Views\Marketing\partials\_IndexGridView.cshtml" />
     <Content Include="Views\Members\Index.cshtml" />
     <Content Include="Views\Members\GridView.cshtml" />
     <Content Include="Views\Members\Add.cshtml" />
     <Content Include="Views\Members\Edit.cshtml" />
-    <Content Include="Views\Marketing\ConditionsGridView.cshtml" />
+    <Content Include="Views\Marketing\partials\_ConditionsGridView.cshtml" />
     <Content Include="Views\_default\ProducerAddFilter.cshtml" />
-    <Content Include="Views\Marketing\PromotionEditListGridView.cshtml" />
+    <Content Include="Views\Marketing\partials\_PromotionEditListGridView.cshtml" />
     <Content Include="Views\Members\Subscribes.cshtml" />
     <Content Include="Views\Members\SubscribesList.cshtml" />
     <Content Include="Views\_default\RegionsFilterData.cshtml" />
     <Content Include="Views\_default\RegionsFilterLogic.cshtml" />
     <Content Include="Views\Shared\_confirmationModalDialog.cshtml" />
     <Content Include="Views\Marketing\PromotionChange.cshtml" />
-    <Content Include="Views\Marketing\_DateRange.cshtml" />
-    <Content Include="Views\Marketing\RegionFilterLogic.cshtml" />
-    <None Include="Views\Marketing\RegionFilterData.cshtml" />
+    <Content Include="Views\Marketing\partials\_DateRange.cshtml" />
+    <Content Include="Views\Marketing\partials\_PromotionEditRegionFilterLogic.cshtml" />
+    <None Include="Views\Marketing\partials\_PromotionEditRegionFilterData.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Helpers\GridViews\" />
-    <Folder Include="Views\Filter\" />
-    <Folder Include="Views\GenData\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

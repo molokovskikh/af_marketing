@@ -64,7 +64,8 @@
         function @(tableNameForSupplierGet)BeginCallback(s, e) {
             e.customArgs["id"] = @Model.Promotion.Id;
             e.customArgs["type"] = @((int) PromotionTableSelectorViewModel.RequestType.SuppliersListToGet);
-            e.customArgs["list"] = $("[name='@(tableNameForSupplierSet + "List")']").val();
+        	e.customArgs["list"] = $("[name='@(tableNameForSupplierSet + "List")']").val();
+        	e.customArgs["regionList"] =  $("[name='regionIdList']").val();
         }
 
         function @(tableNameForSupplierSet)BeginCallback(s, e) {
@@ -131,7 +132,8 @@
             @(tableNameForProductSet).PerformCallback();
             @(tableNameForProductGet).UnselectAllRowsOnPage();
 						$("[name='@(tableNameForProductSet + "ToSelectList")']").val("");
-						 $("[name='@(tableNameForProductSet + "ToSelectItem")']").val("");
+        	$("[name='@(tableNameForProductSet + "ToSelectItem")']").val("");
+            @(tableNameForProductGet).PerformCallback();
         }
 
         function InitProductRemove() {
@@ -146,7 +148,8 @@
             $("[name='@(tableNameForProductSet + "List")']").val(currentList.getDiff(removeList).join());
             @(tableNameForProductSet).PerformCallback();
 						$("[name='@(tableNameForProductSet + "ToRemoveList")']").val("");
-						 $("[name='@(tableNameForProductSet + "ToRemoveItem")']").val("");
+        	$("[name='@(tableNameForProductSet + "ToRemoveItem")']").val("");
+            @(tableNameForProductGet).PerformCallback();
         }
 
         function InitSupplierAdd() {
@@ -163,7 +166,8 @@
             @(tableNameForSupplierSet).PerformCallback();
             @(tableNameForSupplierGet).UnselectAllRowsOnPage();
 						$("[name='@(tableNameForSupplierSet + "ToSelectList")']").val("");
-						 $("[name='@(tableNameForSupplierSet + "ToSelectItem")']").val("");
+        	$("[name='@(tableNameForSupplierSet + "ToSelectItem")']").val("");
+            @(tableNameForSupplierGet).PerformCallback();
         }
 
         function InitSupplierRemove() {
@@ -178,26 +182,15 @@
             $("[name='@(tableNameForSupplierSet + "List")']").val(currentList.getDiff(removeList).join());
             @(tableNameForSupplierSet).PerformCallback();
 						$("[name='@(tableNameForSupplierSet + "ToRemoveList")']").val("");
-						 $("[name='@(tableNameForSupplierSet + "ToRemoveItem")']").val("");
+        	$("[name='@(tableNameForSupplierSet + "ToRemoveItem")']").val("");
+            @(tableNameForSupplierGet).PerformCallback();
         }
 
         $(function() {
-            $("#filterProductsRawGet").click(function() {
-                InitProductAdd();
-            });
-
-            $("#filterProductsRawRemove").click(function() {
-                InitProductRemove();
-            });
-
-
-            $("#filterSuppliersRawGet").click(function() {
-                InitSupplierAdd();
-            });
-
-            $("#filterSuppliersRawRemove").click(function() {
-                InitSupplierRemove();
-            });
+            $("#filterProductsRawGet").click(function() {InitProductAdd();});
+            $("#filterProductsRawRemove").click(function() {InitProductRemove();});
+            $("#filterSuppliersRawGet").click(function() {InitSupplierAdd();});
+            $("#filterSuppliersRawRemove").click(function() {InitSupplierRemove();});
         });
     </script>
 
@@ -211,7 +204,7 @@
             <div class="form-group">
                 <div class="col-xs-6 col-md-4">
 
-                    @Html.Partial("PromotionEditListGridView", new PromotionTableSelectorViewModel
+                    @Html.Partial("partials/_PromotionEditListGridView", new PromotionTableSelectorViewModel
                {
                    Name = tableNameForProductGet,
                    Caption = "Доступные",
@@ -234,7 +227,7 @@
                 </div>
                 <div class="col-xs-6 col-md-4">
 
-                    @Html.Partial("PromotionEditListGridView", new PromotionTableSelectorViewModel
+                    @Html.Partial("partials/_PromotionEditListGridView", new PromotionTableSelectorViewModel
                {
                    Name = tableNameForProductSet,
                    Caption = "Участвующие в акции",
@@ -249,12 +242,16 @@
 
     <h3>Поставщики:</h3>
 
+    <div class="form-group">
+        @Html.Partial("partials/_PromotionEditRegionFilterData", Model.RegionList)
+        @Html.Partial("partials/_PromotionEditRegionFilterLogic", Model.RegionList)
+    </div>
     <div class="container-fluid">
         <div class="row">
             <div class="form-group">
                 <div class="col-xs-6 col-md-4 tab">
 
-                    @Html.Partial("PromotionEditListGridView", new PromotionTableSelectorViewModel
+                    @Html.Partial("partials/_PromotionEditListGridView", new PromotionTableSelectorViewModel
                {
                    Name = tableNameForSupplierGet,
                    Caption = "Доступные",
@@ -276,7 +273,7 @@
                 </div>
                 <div class="col-xs-6 col-md-4">
 
-                    @Html.Partial("PromotionEditListGridView", new PromotionTableSelectorViewModel
+                    @Html.Partial("partials/_PromotionEditListGridView", new PromotionTableSelectorViewModel
                {
                    Name = tableNameForSupplierSet,
                    Caption = "Участвующие в акции",

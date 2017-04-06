@@ -32,7 +32,7 @@ namespace Marketing.ViewModels
 
 		public List<SelectListItem> ItemsList { get; set; }
 
-		public void SetData(ISession dbSession, uint promotionId, RequestType type, string selectedList)
+		public void SetData(ISession dbSession, uint promotionId, RequestType type, string selectedList, string regionList)
 		{
 			Name = type.ToString();
 			Caption = type == RequestType.ProductsListToGet
@@ -71,16 +71,31 @@ ORDER BY Text
 				return;
 			}
 			if (type == RequestType.SuppliersListToGet) {
+				ulong mask = 0;
+				if (!string.IsNullOrEmpty(regionList)) {
+					var arraySplited = regionList.Split(',');
+					if (arraySplited.All(s => s != "0")) {
+						var regions = arraySplited.Select(s => {
+							ulong value = 0;
+							ulong.TryParse(s, out value);
+							return value;
+						}).Where(s => s != 0).ToList();
+						mask = regions.Aggregate(mask, (current, region) => current | region);
+					}
+				}
 				ItemsList = dbSession.Connection.Query<SelectListItem>(string.Format(@"
-SELECT sp.Id AS 'Value',sp.Name AS 'Text' FROM customers.suppliers AS sp
-WHERE sp.Id NOT IN ({0}) AND sp.Disabled = 0
+SELECT sp.Id AS 'Value', CONCAT(sp.Name,' - ',rg.Region) AS 'Text' FROM customers.suppliers AS sp
+INNER JOIN farm.Regions as rg ON rg.RegionCode = sp.RegionMask 
+WHERE sp.Id NOT IN ({0}) AND sp.Disabled = 0 {1}
 ORDER BY Text
-", string.IsNullOrEmpty(selectedList) ? "0" : selectedList)).ToList();
+", string.IsNullOrEmpty(selectedList) ? "0" : selectedList, mask == 0 ? "" : "AND sp.RegionMask & @code > 0"),
+					new {@code = mask}).ToList();
 				return;
 			}
 			if (type == RequestType.SuppliersListToSet) {
 				ItemsList = dbSession.Connection.Query<SelectListItem>(string.Format(@"
-SELECT sp.Id AS 'Value',sp.Name AS 'Text' FROM customers.suppliers AS sp
+SELECT sp.Id AS 'Value', CONCAT(sp.Name,' - ',rg.Region) AS 'Text' FROM customers.suppliers AS sp
+INNER JOIN farm.Regions as rg ON rg.RegionCode = sp.RegionMask 
 WHERE sp.Id IN ({0}) AND sp.Disabled = 0
 ORDER BY Text
 ", string.IsNullOrEmpty(selectedList) ? "0" : selectedList)).ToList();

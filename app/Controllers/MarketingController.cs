@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Dapper;
 using Marketing.Helpers;
 using Marketing.Models;
 using Marketing.ViewModels;
@@ -32,7 +33,7 @@ namespace Marketing.Controllers
 		{
 			var PromoterProducers = DbSession.Query<PromoterProducer>()
 				.Where(s => s.Promoter.Id == CurrentPromoter.Id).OrderBy(s => s.Producer.Name).ToList();
-			return PartialView("IndexGridView", PromoterProducers);
+			return PartialView("partials/_IndexGridView", PromoterProducers);
 		}
 
 		[HttpGet]
@@ -119,7 +120,7 @@ namespace Marketing.Controllers
 		public ActionResult PromotionListGridView(uint id)
 		{
 			var currentProducer = DbSession.Query<PromoterProducer>().First(s => s.Id == id);
-			return PartialView("PromotionListGridView", DbSession.Query<ProducerPromotion>()
+			return PartialView("partials/_PromotionListGridView", DbSession.Query<ProducerPromotion>()
 				.Where(s => s.Producer == currentProducer).OrderBy(s => s.Name).ToList());
 		}
 
@@ -144,7 +145,9 @@ namespace Marketing.Controllers
 			}
 			var newItem = new ProducerPromotion() {
 				Producer = currentProducer,
-				Name = model.Name
+				Name = model.Name,
+				DateStarted = model.DateStarted,
+				DateFinished = model.DateFinished
 			};
 			DbSession.Save(newItem);
 
@@ -155,17 +158,22 @@ namespace Marketing.Controllers
 
 
 		public ActionResult PromotionEditListManager(uint id, string list,
-			PromotionTableSelectorViewModel.RequestType type)
+			PromotionTableSelectorViewModel.RequestType type, string regionList)
 		{
 			var model = new PromotionTableSelectorViewModel();
-			model.SetData(DbSession, id, type, list);
-			return PartialView("PromotionEditListGridView", model);
+			model.SetData(DbSession, id, type, list, regionList);
+			return PartialView("partials/_PromotionEditListGridView", model);
 		}
-		public ActionResult GetFilterRegion(string term, string currentValues = "")
+		public ActionResult GetFilterRegion(string currentValues = "")
 		{
-			var model = new List<SelectListItem>();
-			DbSession.Query<Region>();
-			return PartialView("RegionFilterLogic", model);
+			var model =
+				DbSession.Query<Region>()
+					.Where(s => s.Id != 0)
+					.OrderBy(s => s.Name)
+					.Select(s => new SelectListItem {Text = s.Name, Value = s.Id.ToString()})
+					.ToList();
+		//	model.Insert(0,new SelectListItem() {Value = "0",Text = "Все регионы"});
+			return PartialView("partials/_PromotionEditRegionFilterLogic", model);
 		}
 
 		[HttpGet]
@@ -228,7 +236,7 @@ namespace Marketing.Controllers
 		public ActionResult GetConditionsGridData(uint id)
 		{
 			var model = GetConditionsViewModel(id);
-			return PartialView("ConditionsGridView", model);
+			return PartialView("partials/_ConditionsGridView", model);
 		}
 
 		[ValidateInput(false)]
@@ -246,7 +254,7 @@ namespace Marketing.Controllers
 					}
 			}
 			var model = GetConditionsViewModel(id);
-			return PartialView("ConditionsGridView", model);
+			return PartialView("partials/_ConditionsGridView", model);
 		}
 
 		private PromotionConditionsViewModel GetConditionsViewModel(uint id)
