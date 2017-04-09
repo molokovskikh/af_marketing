@@ -1,7 +1,8 @@
-﻿@using Marketing.ViewModels
+﻿@using System.Web.UI.WebControls
+@using Marketing.ViewModels
 @model MemberSubscribesViewModel
 @{
-    ViewBag.Title = "Подписки участника";
+    ViewBag.Title = $"Подписки участника \"{Model.MemberName}\"";
 }
 
 <div class="form-group">
@@ -12,21 +13,53 @@
         <li>
             <a href="@Url.Action("Index", "Members")">Участники</a>
         </li>
-        <li class="active">@ViewBag.Title</li>
+        <li class="active">Подписки участника</li>
     </ol>
 </div>
 <h2>@ViewBag.Title</h2>
 
 <script>
     function PromotionSelectionChanged(s, e) {
-        var selectedPromotions = s.GetSelectedValues();
-        s.PerformCallback({
-					"memberId": @Model.MemberId,
-	       	"selectedPromotions": selectedPromotions
-        });
+    	var selectedPromotions = s.GetSelectedValues();
+    	$("#@Html.IdFor(m => m.PromotionsIdList)").val(selectedPromotions);
     }
 </script>
 
-<div class="row">
-		@Html.Partial("SubscribesList", Model)
-</div>
+@using (Html.BeginForm("Subscribes", "Members", FormMethod.Post))
+{
+	@Html.AntiForgeryToken()
+	@Html.HiddenFor(m => m.MemberId)
+	@Html.HiddenFor(m => m.PromotionsIdList)
+	<div class="row">
+			<div class="col-md-12">
+				@Html.DevExpress().ListBox(settings =>
+				{
+						settings.Name = "lbSubscribes";
+						settings.Width = Unit.Pixel(400);
+						settings.Properties.Caption = "Акции";
+						settings.Properties.CaptionSettings.Position = EditorCaptionPosition.Top;
+						settings.Properties.EnableClientSideAPI = true;
+						settings.Properties.SelectionMode = ListEditSelectionMode.CheckColumn;
+						settings.Properties.ValueField = "PromotionId";
+						settings.Properties.ValueType = typeof(uint);
+						settings.Properties.TextField = "PromotionName";
+						settings.Properties.ClientSideEvents.SelectedIndexChanged = "PromotionSelectionChanged";
+						settings.PreRender = (sender, e) =>
+						{
+								ASPxListBox listBox = (ASPxListBox)sender;
+								foreach (ListEditItem item in listBox.Items)
+										if (item.Text.StartsWith("*"))
+										{
+												item.Text = item.Text.Substring(1);
+												item.Selected = true;
+										}
+						};
+				}).BindList(Model.Promotions).GetHtml()
+			</div>
+	</div>
+	<div class="form-group">
+			<div class="col-md-12">
+					<button type="submit" class="btn btn-primary">Сохранить</button>
+			</div>
+	</div>
+}

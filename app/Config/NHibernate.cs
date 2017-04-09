@@ -118,17 +118,14 @@ namespace Marketing
 				m.ManyToOne(s => s.Producer, mapper => mapper.Column("PromoterProducerId"));
 				m.Bag(o => o.Products, c => {
 					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
-					c.Inverse(true);
 					c.Key(s => s.Column("PromotionId"));
 				}, map => map.OneToMany(s => s.Class(typeof (PromotionProduct))));
 				m.Bag(o => o.Suppliers, c => {
 					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
-					c.Inverse(true);
 					c.Key(s => s.Column("PromotionId"));
 				}, map => map.OneToMany(s => s.Class(typeof (PromotionSupplier))));
 				m.Bag(o => o.Subscribes, c => {
 					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
-					c.Inverse(true);
 					c.Key(s => s.Column("PromotionId"));
 				}, map => map.OneToMany(s => s.Class(typeof (PromotionSubscribe))));
 			});

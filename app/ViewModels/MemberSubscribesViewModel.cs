@@ -10,6 +10,8 @@ namespace Marketing.ViewModels
 		public uint MemberId { get; set; }
 		public string MemberName { get; set; }
 		public IList<MemberSubscribe> Promotions { get; set; }
+
+		public string PromotionsIdList { get; set; }
 	}
 
 	public class MemberSubscribe
