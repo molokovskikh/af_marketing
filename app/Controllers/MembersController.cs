@@ -258,12 +258,15 @@ insert into Contacts.Contact_groups (Id, Name, `Type`, ContactGroupOwnerId)
 			return View(model);
 		}
 
-		public ActionResult SubscribesList(uint memberId, uint[] selectedPromotions)
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public ActionResult Subscribes(uint memberId, string promotionsIdList)
 		{
 			var member = DbSession.Query<PromotionMember>().Single(r => r.Id == memberId);
 			var subscribes = DbSession.Query<PromotionSubscribe>()
 				.Where(r => r.Member == member)
 				.ToList();
+			var selectedPromotions = promotionsIdList.Split(',').Select(r => uint.Parse(r)).ToArray();
 
 			var del = subscribes
 				.Where(r => !selectedPromotions.Any(p => p == r.Promotion.Id))
@@ -282,8 +285,7 @@ insert into Contacts.Contact_groups (Id, Name, `Type`, ContactGroupOwnerId)
 			}
 			DbSession.Flush();
 
-			var model = GetSubscribesModel(memberId);
-			return PartialView(model);
+			return RedirectToAction("Index");
 		}
 
 		private MemberSubscribesViewModel GetSubscribesModel(uint id)
@@ -295,6 +297,7 @@ insert into Contacts.Contact_groups (Id, Name, `Type`, ContactGroupOwnerId)
 				.ToList();
 			var promotions = DbSession.Query<ProducerPromotion>()
 				.Where(r => r.Producer.Promoter == promoter)
+				.OrderBy(r => r.Name)
 				.ToList()
 				.Select(r => new MemberSubscribe {
 					PromotionId = r.Id,

@@ -306,7 +306,6 @@
     <Content Include="Views\_default\ProducerAddFilter.cshtml" />
     <Content Include="Views\Marketing\partials\_PromotionEditListGridView.cshtml" />
     <Content Include="Views\Members\Subscribes.cshtml" />
-    <Content Include="Views\Members\SubscribesList.cshtml" />
     <Content Include="Views\_default\RegionsFilterData.cshtml" />
     <Content Include="Views\_default\RegionsFilterLogic.cshtml" />
     <Content Include="Views\Shared\_confirmationModalDialog.cshtml" />
