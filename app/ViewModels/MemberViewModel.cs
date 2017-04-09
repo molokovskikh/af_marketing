@@ -13,6 +13,8 @@ namespace Marketing.ViewModels
 		[Display(Name = "Участник")]
 		public uint MemberId { get; set; }
 
-		public IList<SelectListItem> AvailableMembers { get; set; }
+		public IList<MemberListViewModel> AvailableMembers { get; set; }
+
+		public string RegionIdList { get; set; }
 	}
 }

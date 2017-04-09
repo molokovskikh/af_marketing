@@ -36,6 +36,13 @@ namespace Marketing.Controllers
 			return PartialView("GridView", model);
 		}
 
+		public ActionResult AvailableMembers(string regionIdList = "")
+		{
+			var model = GetClientList(regionIdList);
+			ViewBag.AvailableRegions = SearchRegions("", regionIdList);
+			return PartialView("_MembersList", model);
+		}
+
 		private List<MembersGridViewModel> GetMemberList(string idList = "")
 		{
 			var list = DbSession.Query<PromotionMember>()
@@ -51,7 +58,10 @@ namespace Marketing.Controllers
 					Name = r.Client.Name,
 					Region = r.Client.Region.Name,
 					AddressCount = r.Client.Addresses.Count,
-					Subscribes = string.Join(",", r.Subscribes.Select(s => s.Promotion.Name).ToArray())
+					Subscribes = string.Join(", ", r.Subscribes.Select(s => s.Promotion.Name).ToArray()),
+					Contacts = r.Client.ContactGroups.Any()
+						? string.Join(", ", r.Client.ContactGroups.First(g => g.ContactGroupTypeId == ContactGroupType.Marketing).Contacts.OrderBy(o => o.ContactType).Select(c => c.ContactText).ToArray())
+						: ""
 				})
 				.OrderBy(r => r.Name);
 			return result.ToList();
@@ -60,19 +70,8 @@ namespace Marketing.Controllers
 		public ActionResult Add()
 		{
 			var model = new MemberViewModel();
-			var exist = DbSession.Query<PromotionMember>()
-				.Where(r => r.Promoter == CurrentPromoter)
-				.Select(r => r.Client)
-				.ToList();
-			model.AvailableMembers = DbSession.Query<Client>()
-				.Where(r => r.Status)
-				.Where(r => !exist.Contains(r))
-				.OrderBy(r => r.Name)
-				.Select(r => new SelectListItem {
-					Value = r.Id.ToString(),
-					Text = r.Name
-				})
-				.ToList();
+			model.AvailableMembers = GetClientList("");
+			ViewBag.AvailableRegions = SearchRegions("");
 			return View(model);
 		}
 
@@ -97,14 +96,81 @@ namespace Marketing.Controllers
 			return RedirectToAction("Index");
 		}
 
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public ActionResult FilterAdd(MemberViewModel model, string regionIdList = "")
+		{
+			model.AvailableMembers = GetClientList(regionIdList);
+			ViewBag.AvailableRegions = SearchRegions("", regionIdList);
+			return View("Add", model);
+		}
+
+		private List<MemberListViewModel> GetClientList(string regionIdList)
+		{
+			var exist = DbSession.Query<PromotionMember>()
+				.Where(r => r.Promoter == CurrentPromoter)
+				.Select(r => r.Client)
+				.ToList();
+			var clients = DbSession.Query<Client>()
+				.Where(r => r.Status)
+				.Where(r => !exist.Contains(r));
+			if (!string.IsNullOrEmpty(regionIdList)) {
+				var regionIds = regionIdList.Split(',').Select(r => ulong.Parse(r)).ToList();
+				clients = clients.Where(r => regionIds.Contains(r.Region.Id));
+			}
+			var result = clients
+				.OrderBy(r => r.Name)
+				//.Select(r => new SelectListItem
+				//{
+				//	Value = r.Id.ToString(),
+				//	Text = r.Name
+				//})
+				.Select(r => new MemberListViewModel
+				{
+					ClientId = r.Id,
+					Name = r.Name,
+					RegionName = r.Region.Name
+				})
+				.ToList();
+			//result.Insert(0, new SelectListItem() { Value = "", Text = ""});
+			return result;
+		}
+
+		public ActionResult GetTrailInfo(uint id)
+		{
+			var client = DbSession.Query<Client>()
+				.FirstOrDefault(r => r.Id == id);
+			if (client == null)
+				return HttpNotFound();
+
+			var model = new TrailInfoViewModel() {
+				RegionName = client.Region.Name,
+				Email = client.ContactGroups
+					.FirstOrDefault(r => r.ContactGroupTypeId == ContactGroupType.Marketing)?
+					.Contacts.FirstOrDefault(r => r.ContactType == ContactType.Email)?.ContactText,
+				Phone = client.ContactGroups
+					.FirstOrDefault(r => r.ContactGroupTypeId == ContactGroupType.Marketing)?
+					.Contacts.FirstOrDefault(r => r.ContactType == ContactType.Phone)?.ContactText
+			};
+			return PartialView("_TrailInfo", model);
+		}
+
 		public ActionResult Edit(uint id)
 		{
 			var client = DbSession.Query<PromotionMember>()
 				.FirstOrDefault(r => r.Id == id)
 				.Client;
 			var model = new ClientViewModel {
+				ClientId = client.Id,
 				Name = client.Name,
-				Addresses = client.Addresses
+				RegionName = client.Region.Name,
+				Addresses = client.Addresses,
+				Email = client.ContactGroups.Any()
+					? client.ContactGroups.First(r => r.ContactGroupTypeId == ContactGroupType.Marketing).Contacts.FirstOrDefault(r => r.ContactType == ContactType.Email)?.ContactText
+					: null,
+				Phone = client.ContactGroups.Any()
+					? client.ContactGroups.First(r => r.ContactGroupTypeId == ContactGroupType.Marketing).Contacts.FirstOrDefault(r => r.ContactType == ContactType.Phone)?.ContactText
+					: null
 			};
 			return View(model);
 		}
@@ -113,6 +179,58 @@ namespace Marketing.Controllers
 		[ValidateAntiForgeryToken]
 		public ActionResult Edit(ClientViewModel model)
 		{
+			var client = DbSession.Query<Client>().FirstOrDefault(r => r.Id == model.ClientId);
+			if (client == null) {
+				ModelState.AddModelError("", $"Клиент с идентификатором {model.ClientId} не найден.");
+				return View(model);
+			}
+
+			uint ownerId;
+			var contactGroup = client.ContactGroups.FirstOrDefault(r => r.ContactGroupTypeId == ContactGroupType.Marketing);
+			if (contactGroup == null) {
+				var owner = new ContactOwner();
+				DbSession.Save(owner);
+				ownerId = owner.Id;
+				DbSession.CreateSQLQuery(@"
+insert into Contacts.Contact_groups (Id, Name, `Type`, ContactGroupOwnerId)
+	values (:ownerId, 'Маркетинг', :groupType, :groupOwnerId);")
+					.SetParameter("ownerId", owner.Id)
+					.SetParameter("groupType", ContactGroupType.Marketing)
+					.SetParameter("groupOwnerId", client.ContactGroupOwnerId)
+					.ExecuteUpdate();
+			} else
+				ownerId = contactGroup.Id;
+
+			var email = DbSession.Query<Contact>().FirstOrDefault(r => r.ContactOwnerId == ownerId && r.ContactType == ContactType.Email);
+			if (string.IsNullOrWhiteSpace(model.Email)) {
+				if (email != null)
+					DbSession.Delete(email);
+			} else {
+				if (email == null) {
+					email = new Contact {
+						ContactType = ContactType.Email,
+						ContactOwnerId = ownerId
+					};
+				}
+				email.ContactText = model.Email;
+				DbSession.SaveOrUpdate(email);
+			}
+
+			var phone = DbSession.Query<Contact>().FirstOrDefault(r => r.ContactOwnerId == ownerId && r.ContactType == ContactType.Phone);
+			if (string.IsNullOrWhiteSpace(model.Phone)) {
+				if (phone != null)
+					DbSession.Delete(phone);
+			} else {
+				if (phone == null) {
+					phone = new Contact {
+						ContactType = ContactType.Phone,
+						ContactOwnerId = ownerId
+					};
+				}
+				phone.ContactText = model.Phone;
+				DbSession.SaveOrUpdate(phone);
+			}
+
 			return RedirectToAction("Index");
 		}
 

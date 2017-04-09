@@ -1,7 +1,8 @@
 ﻿@using Marketing.ViewModels
 @model MemberViewModel
 @{
-    ViewBag.Title = "Добавление участника";
+	ViewBag.Title = "Добавление участника";
+	var regions = (List<ViewModelList>)ViewBag.AvailableRegions;
 }
 
 <div class="form-group">
@@ -16,19 +17,47 @@
     </ol>
 </div>
 <h2>@ViewBag.Title</h2>
-@using (Html.BeginForm("Add", "Members", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-{
-	@Html.AntiForgeryToken()
-	@Html.ValidationSummary("", new { @class = "text-danger" })
-	<div class="form-group">
-			@Html.LabelFor(m => m.MemberId, new { @class = "col-md-2 control-label" })
-			<div class="col-md-10">
-					@Html.DropDownListFor(m => m.MemberId, Model.AvailableMembers, new { @class = "form-control" })
-			</div>
-	</div>
-  <div class="form-group">
-    <div class="col-md-offset-2 col-md-10">
-      <input type="submit" class="btn btn-default" value="Добавить" />
+<form class="form-horizontal">
+    @Html.AntiForgeryToken()
+    <div class="col-md-12">
+        <div class="form-group">
+            <div class="pull-left">
+                @Html.Partial("../_default/RegionsFilterData", regions)
+                @Html.Partial("../_default/RegionsFilterLogic", regions)
+            </div>
+            <button type="submit" class="btn btn-xs btn-default pull-left" formaction="FilterAdd" formmethod="post">Отобрать</button>
+        </div>
     </div>
-  </div>
+    <hr />
+    @Html.ValidationSummary("", new { @class = "text-danger" })
+    <div class="form-group">
+        @*@Html.LabelFor(m => m.MemberId, new { @class = "col-md-2 control-label" })*@
+        <div class="col-md-12">
+            <div class="pull-left">
+                @Html.Partial("_MembersList", Model.AvailableMembers)
+            </div>
+						<div id="trailInfo" class="pull-left trail-info"></div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-12">
+            <button type="submit" class="btn btn-primary" formaction="Add" formmethod="post">Добавить</button>
+        </div>
+    </div>
+</form>
+
+@section scripts{
+	<script>
+    	function getTrailInfo(id) {
+    		$("#ajaxLoader").show();
+    		var url = "@Url.Action("GetTrailInfo")/" + id;
+    		$.get(url,
+					function (data) {
+						$("#trailInfo").html(data);
+					}
+				)
+				.fail(function () { alert("Ошибка сервера."); })
+				.always(function () { $("#ajaxLoader").hide(); });
+    	}
+	</script>
 }

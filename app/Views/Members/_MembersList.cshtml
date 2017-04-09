@@ -1,0 +1,28 @@
+﻿@using System.Web.UI.WebControls
+@using Marketing.ViewModels
+@model List<MemberListViewModel>
+
+@{
+  var regions = string.Join(",", ((List<ViewModelList>)ViewBag.AvailableRegions)
+      .Where(r => r.Selected)
+      .Select(r => r.Value.ToString()).ToArray());
+}
+
+@Html.DevExpress().ComboBox(settings =>
+{
+    settings.Properties.Caption = "Участник";
+    settings.Name = "MemberId";
+    settings.Width = 280;
+    settings.SelectedIndex = -1;
+    settings.Properties.DropDownWidth = 280;
+    settings.Properties.DropDownStyle = DropDownStyle.DropDownList;
+    settings.CallbackRouteValues = new { Controller = "Members", Action = "AvailableMembers", regionIdList = regions };
+    settings.Properties.IncrementalFilteringMode = IncrementalFilteringMode.Contains;
+    settings.Properties.TextFormatString = "{0}";
+    settings.Properties.ValueField = "ClientId";
+    settings.Properties.ValueType = typeof(string);
+    settings.Properties.ClientSideEvents.ValueChanged = "function (s, e) {var id = s.GetValue(); getTrailInfo(id);}";
+
+    settings.Properties.Columns.Add("Name", "Название", Unit.Percentage(100));
+    settings.Properties.Columns.Add("RegionName", "Регион", 100);
+}).BindList(Model).GetHtml()

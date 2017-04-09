@@ -23,6 +23,9 @@ namespace Marketing.Models
 
 		public virtual string FullName { get; set; }
 
+		public virtual uint ContactGroupOwnerId { get; set; }
+		public virtual IList<ContactGroup> ContactGroups { get; set; }
+
 		public virtual Region Region { get; set; }
 
 		public virtual IList<Address> Addresses { get; set; }

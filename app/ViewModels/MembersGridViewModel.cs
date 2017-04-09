@@ -16,5 +16,7 @@ namespace Marketing.ViewModels
 		[Required]
 		public int AddressCount { get; set; }
 		public string Subscribes { get; set; }
+
+		public string Contacts { get; set; }
 	}
 }
