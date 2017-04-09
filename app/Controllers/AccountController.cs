@@ -3,6 +3,7 @@ using Marketing.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.DirectoryServices;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -11,13 +12,9 @@ using System.Web.Security;
 
 namespace Marketing.Controllers
 {
-#if !DEBUG
 	[Authorize]
-#endif
 	public class AccountController : BaseController
 	{
-		public const string ACC_LOGIN_PREFIX = "Marketing_";
-
 		[AllowAnonymous]
 		public ActionResult Login()
 		{
@@ -33,9 +30,11 @@ namespace Marketing.Controllers
 			if (!ModelState.IsValid)
 				return View(model);
 
-			var login = ACC_LOGIN_PREFIX + model.Login;
+			var login = Promoter.ACC_LOGIN_PREFIX + model.Login;
 			var skipValidation = false;
+#if DEBUG
 			skipValidation = !String.IsNullOrEmpty(ConfigurationManager.AppSettings["SkipLogonAD"]);
+#endif
 			if (!skipValidation) {
 				if (!Membership.ValidateUser(login, model.Password)) {
 					login = model.Login;
@@ -99,20 +98,36 @@ namespace Marketing.Controllers
 				model.Login = promoter.Login;
 
 				model.Password = GeneratePassword();
-#if DEBUG
-				var user = Membership.CreateUser(ACC_LOGIN_PREFIX + promoter.Login, model.Password);
-				user.IsApproved = true;
-				Membership.UpdateUser(user);
-#endif
+				CreateUserInAD(Promoter.ACC_LOGIN_PREFIX + promoter.Login, model.Password);
 			}
 			catch (Exception ex) {
 				DbSession.Transaction.Rollback();
-				Membership.DeleteUser(ACC_LOGIN_PREFIX + model.Login);
-				ModelState.AddModelError("", ex);
+#if !DEBUG
+				Membership.DeleteUser(Promoter.ACC_LOGIN_PREFIX + model.Login);
+#endif
+				ModelState.AddModelError("", ex.Message);
 				return View(model);
 			}
 
 			return View("Confirm", model);
+		}
+
+		private void CreateUserInAD(string login, string password)
+		{
+#if !DEBUG
+			var root = new DirectoryEntry("LDAP://OU=Пользователи,OU=Клиенты,DC=adc,DC=analit,DC=net");
+			var userGroup = new DirectoryEntry("LDAP://CN=Базовая группа клиентов - получателей данных,OU=Группы,OU=Клиенты,DC=adc,DC=analit,DC=net");
+			var user = root.Children.Add("CN=" + login, "user");
+			user.Properties["samAccountName"].Value = login;
+			user.Properties["description"].Value = "Пользователь Интерфейса маркетолога";
+			user.CommitChanges();
+			user.Invoke("SetPassword", password);
+			user.Properties["userAccountControl"].Value = 66048;
+			user.CommitChanges();
+			userGroup.Invoke("Add", user.Path);
+			userGroup.CommitChanges();
+			root.CommitChanges();
+#endif
 		}
 
 		[HttpPost]
