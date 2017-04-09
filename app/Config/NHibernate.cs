@@ -157,6 +157,39 @@ namespace Marketing
 			});
 			Mapper.Class<Client>(m => {
 				m.ManyToOne(c => c.Region, mapper => mapper.Column("RegionCode"));
+				m.Bag(o => o.ContactGroups, c => {
+					c.Cascade(Cascade.None);
+					c.Key(k => {
+						k.PropertyRef(x => x.ContactGroupOwnerId);
+						k.Column("ContactGroupOwnerId");
+					});
+				});
+			});
+			Mapper.Class<Contact>(m => {
+				m.Schema("Contacts");
+				m.Table("Contacts");
+				m.Property(x => x.ContactType, mapper => mapper.Column("Type"));
+			});
+			Mapper.Class<ContactGroup>(m => {
+				m.Id(x => x.Id, mapper => mapper.Generator(new AssignedGeneratorDef()));
+				m.Schema("Contacts");
+				m.Table("Contact_groups");
+				m.Property(x => x.ContactGroupTypeId, mapper => mapper.Column("Type"));
+				m.Bag(o => o.Contacts, c => {
+					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
+					c.Key(k => {
+						k.PropertyRef(x => x.Id);
+						k.Column("ContactOwnerId");
+					});
+				});
+			});
+			Mapper.Class<ContactOwner>(m => {
+				m.Schema("Contacts");
+				m.Table("Contact_owners");
+			});
+			Mapper.Class<ContactGroupOwner>(m => {
+				m.Schema("Contacts");
+				m.Table("Contact_group_owners");
 			});
 
 			var types = MappingAssembly.GetTypes().Where(t =>

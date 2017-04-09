@@ -14,6 +14,7 @@
     settings.PreviewEncodeHtml = false;
     settings.EncodeHtml = false;
     settings.KeyFieldName = "MemberId";
+    settings.Width = Unit.Percentage(100);
 
     settings.Columns.Add(column =>
     {
@@ -33,6 +34,12 @@
         column.FieldName = "AddressCount";
         column.PropertiesEdit.EncodeHtml = false;
         column.Caption = "Кол-во точек";
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "Contacts";
+        column.PropertiesEdit.EncodeHtml = false;
+        column.Caption = "Маркетинг";
     });
     settings.Columns.Add(column =>
     {

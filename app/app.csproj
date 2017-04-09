@@ -190,6 +190,10 @@
     <Compile Include="Helpers\ErrorFilter.cs" />
     <Compile Include="Helpers\PromoterIdentifierFilter.cs" />
     <Compile Include="Helpers\SessionFilter.cs" />
+    <Compile Include="Models\Contact.cs" />
+    <Compile Include="Models\ContactGroup.cs" />
+    <Compile Include="Models\ContactGroupOwner.cs" />
+    <Compile Include="Models\ContactOwner.cs" />
     <Compile Include="Models\Region.cs" />
     <Compile Include="Models\Address.cs" />
     <Compile Include="Models\Catalog.cs" />
@@ -210,6 +214,7 @@
     <Compile Include="ViewModels\ClientViewModel.cs" />
     <Compile Include="ViewModels\DateRangeViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
+    <Compile Include="ViewModels\MemberListViewModel.cs" />
     <Compile Include="ViewModels\MembersGridViewModel.cs" />
     <Compile Include="ViewModels\MemberSubscribesViewModel.cs" />
     <Compile Include="ViewModels\MemberViewModel.cs" />
@@ -218,6 +223,7 @@
     <Compile Include="ViewModels\RegisterViewModel.cs" />
     <Compile Include="ViewModels\PromoterProducersViewModel.cs" />
     <Compile Include="ViewModels\PromotionTableSelectorViewModel.cs" />
+    <Compile Include="ViewModels\TrailInfoViewModel.cs" />
     <Compile Include="ViewModels\ViewModelList.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -308,6 +314,8 @@
     <Content Include="Views\Marketing\partials\_DateRange.cshtml" />
     <Content Include="Views\Marketing\partials\_PromotionEditRegionFilterLogic.cshtml" />
     <None Include="Views\Marketing\partials\_PromotionEditRegionFilterData.cshtml" />
+    <Content Include="Views\Members\_TrailInfo.cshtml" />
+    <Content Include="Views\Members\_MembersList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Helpers\GridViews\" />
