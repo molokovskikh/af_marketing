@@ -1,6 +1,6 @@
 ﻿
-@using Marketing.ViewModels
-@model List<MarketingEventGridModel>
+@using Marketing.Models
+@model List<PromoterProducer>
 
 @{
     ViewBag.Title = "Маркетинговые мероприятия";
@@ -15,7 +15,7 @@
 </div>
 <h2>@ViewBag.Title</h2>
 <div class="form-group">
-    <a href="@Url.Action("Add", "Marketing")" class="btn btn-primary">Добавить</a>
+    <a href="@Url.Action("ProducerAdd", "Marketing")" class="btn btn-primary">Добавить</a>
 </div>
 
 <div class="form-group width-100">

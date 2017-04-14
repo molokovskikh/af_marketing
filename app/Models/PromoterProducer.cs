@@ -13,14 +13,21 @@ namespace Marketing.Models
 	/// </summary>
 	public class PromoterProducer
 	{
+		public PromoterProducer()
+		{
+			Promotions = new List<ProducerPromotion>();
+		}
+
 		public virtual uint Id { get; set; }
 
-		public virtual MarketingEvent MarketingEvent { get; set; }
+		public virtual Promoter Promoter { get; set; }
 
 		public virtual Producer Producer { get; set; }
 
 		[Display(Name="Контакты")]
 		public virtual string Contacts { get; set; }
+
+		public virtual IList<ProducerPromotion> Promotions { get; set; }
 
 		/// <summary>
 		/// TODO: удалить после проработки корректного алгоритма

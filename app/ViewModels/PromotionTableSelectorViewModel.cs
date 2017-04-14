@@ -52,7 +52,7 @@ INNER JOIN catalogs.Products as pr ON pr.CatalogId = ct.Id
 WHERE pr.Id NOT IN ({0})
 AND pp.ProducerId IN ({1})
 ORDER BY Text
-", string.IsNullOrEmpty(selectedList) ? "0" : selectedList, promotion./*Producers.Producer.*/Id)).ToList();
+", string.IsNullOrEmpty(selectedList) ? "0" : selectedList, promotion.Producer.Producer.Id)).ToList();
 				return;
 			}
 
@@ -67,7 +67,7 @@ INNER JOIN catalogs.Products as pr ON pr.CatalogId = ct.Id
 WHERE pr.Id IN ({0})
 AND pp.ProducerId IN ({1})
 ORDER BY Text
-", string.IsNullOrEmpty(selectedList) ? "0" : selectedList, promotion./*Producers.Producer.*/Id)).ToList();
+", string.IsNullOrEmpty(selectedList) ? "0" : selectedList, promotion.Producer.Producer.Id)).ToList();
 				return;
 			}
 			if (type == RequestType.SuppliersListToGet) {

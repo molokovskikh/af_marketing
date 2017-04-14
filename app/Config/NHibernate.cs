@@ -84,49 +84,49 @@ namespace Marketing
 				m.Table("Catalog");
 			});
 			Mapper.Class<Promoter>(m => {
-				m.Bag(o => o.MarketingEvents, c => {
+				m.Bag(o => o.Producers, c => {
 					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
+					c.Inverse(true);
 				});
 				m.Bag(o => o.Members, c => {
 					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
-				});
-			});
-			Mapper.Class<MarketingEvent>(m => {
-				m.Bag(o => o.Producers, c => {
-					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
-				});
-				m.Bag(o => o.Promotions, c => {
-					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
+					c.Inverse(true);
 				});
 			});
 			Mapper.Class<PromoterProducer>(m => {
-				m.ManyToOne(s => s.Producer, mapper => mapper.Column("ProducerId"));
-				m.ManyToOne(s => s.MarketingEvent, mapper => mapper.Column("MarketingEventId"));
+				m.Bag(o => o.Promotions, c => {
+					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
+					c.Inverse(true);
+				});
 			});
 			Mapper.Class<PromotionMember>(m => {
 				m.Bag(o => o.Subscribes, c => {
 					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
+					c.Inverse(true);
 					c.Key(k => k.Column("MemberId"));
 				});
 			});
 			Mapper.Class<PromotionProduct>(m => {
-				m.ManyToOne(s => s.Product, mapper => mapper.Column("ProductId"));
-				m.ManyToOne(s => s.Promotion, mapper => mapper.Column("PromotionId"));
+				m.ManyToOne(s => s.Product, mapper => mapper.ForeignKey("ProductId"));
+				m.ManyToOne(s => s.Promotion, mapper => mapper.ForeignKey("PromotionId"));
 			});
 			Mapper.Class<PromotionSupplier>(m => {
-				m.ManyToOne(s => s.Supplier, mapper => mapper.Column("SupplierId"));
-				m.ManyToOne(s => s.Promotion, mapper => mapper.Column("PromotionId"));
+				m.ManyToOne(s => s.Supplier, mapper => mapper.ForeignKey("SupplierId"));
+				m.ManyToOne(s => s.Promotion, mapper => mapper.ForeignKey("PromotionId"));
 			});
 			Mapper.Class<ProducerPromotion>(m => {
-				m.ManyToOne(s => s.MarketingEvent, mapper => mapper.Column("MarketingEventId"));
+				m.ManyToOne(s => s.Producer, mapper => mapper.Column("PromoterProducerId"));
 				m.Bag(o => o.Products, c => {
 					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
+					c.Key(s => s.Column("PromotionId"));
 				}, map => map.OneToMany(s => s.Class(typeof (PromotionProduct))));
 				m.Bag(o => o.Suppliers, c => {
 					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
+					c.Key(s => s.Column("PromotionId"));
 				}, map => map.OneToMany(s => s.Class(typeof (PromotionSupplier))));
 				m.Bag(o => o.Subscribes, c => {
 					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
+					c.Key(s => s.Column("PromotionId"));
 				}, map => map.OneToMany(s => s.Class(typeof (PromotionSubscribe))));
 			});
 			Mapper.Class<PromotionSubscribe>(m => {
