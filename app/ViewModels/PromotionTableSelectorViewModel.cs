@@ -44,6 +44,9 @@ namespace Marketing.ViewModels
 			if (type == RequestType.ProductsListToGet) {
 				Height = 600;
 				var promotion = dbSession.Query<ProducerPromotion>().First(s => s.Id == promotionId);
+				var producerIds = string.Join(",", promotion.MarketingEvent.Producers.Select(r => r.Id.ToString()).ToArray());
+				if (string.IsNullOrEmpty(producerIds))
+					producerIds = "0";
 				ItemsList = dbSession.Connection.Query<SelectListItem>(string.Format(@"
 SELECT pr.Id as 'Value',CONCAT(ct.Name,' ',IFNULL(pr.Properties,'')) as 'Text' FROM
 catalogs.assortment as pp
@@ -52,13 +55,16 @@ INNER JOIN catalogs.Products as pr ON pr.CatalogId = ct.Id
 WHERE pr.Id NOT IN ({0})
 AND pp.ProducerId IN ({1})
 ORDER BY Text
-", string.IsNullOrEmpty(selectedList) ? "0" : selectedList, promotion./*Producers.Producer.*/Id)).ToList();
+", string.IsNullOrEmpty(selectedList) ? "0" : selectedList, producerIds)).ToList();
 				return;
 			}
 
 			if (type == RequestType.ProductsListToSet) {
 				Height = 600;
 				var promotion = dbSession.Query<ProducerPromotion>().First(s => s.Id == promotionId);
+				var producerIds = string.Join(",", promotion.MarketingEvent.Producers.Select(r => r.Id.ToString()).ToArray());
+				if (string.IsNullOrEmpty(producerIds))
+					producerIds = "0";
 				ItemsList = dbSession.Connection.Query<SelectListItem>(string.Format(@"
 SELECT pr.Id as 'Value',CONCAT(ct.Name,' ',IFNULL(pr.Properties,'')) as 'Text' FROM
 catalogs.assortment as pp
@@ -67,7 +73,7 @@ INNER JOIN catalogs.Products as pr ON pr.CatalogId = ct.Id
 WHERE pr.Id IN ({0})
 AND pp.ProducerId IN ({1})
 ORDER BY Text
-", string.IsNullOrEmpty(selectedList) ? "0" : selectedList, promotion./*Producers.Producer.*/Id)).ToList();
+", string.IsNullOrEmpty(selectedList) ? "0" : selectedList, producerIds)).ToList();
 				return;
 			}
 			if (type == RequestType.SuppliersListToGet) {

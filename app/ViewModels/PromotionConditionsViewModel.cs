@@ -10,7 +10,7 @@ namespace Marketing.ViewModels
 	public class PromotionConditionsViewModel
 	{
 		public ProducerPromotion Promotion { get; set; }
-		public Producer Producer { get; set; }
+		public MarketingEvent MarketingEvent { get; set; }
 		public IList<ConditionsGridViewModel> Conditions { get; set; }
 	}
 

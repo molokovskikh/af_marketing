@@ -45,7 +45,7 @@
         column.SetDataItemTemplateContent(c => {
             var text = DataBinder.Eval(c.DataItem, "PromotionCount").ToString();
             var value = DataBinder.Eval(c.DataItem, "MarketingEventId").ToString();
-            string htmlContent = $"<a href=\"{Url.Action("Index", "Promotions", new {id = value})}\">{text}</a>";
+            string htmlContent = $"<a href=\"{Url.Action("PromotionList", "Marketing", new {id = value})}\">{text}</a>";
             ViewContext.Writer.Write(htmlContent);
         });
     });
@@ -58,7 +58,7 @@
         {
             var text = DataBinder.Eval(c.DataItem, "EnabledPromotionCount").ToString();
             var value = DataBinder.Eval(c.DataItem, "MarketingEventId").ToString();
-            string htmlContent = $"<a href=\"{Url.Action("Index", "Promotions", new { id = value })}\">{text}</a>";
+            string htmlContent = $"<a href=\"{Url.Action("PromotionList", "Marketing", new { id = value })}\">{text}</a>";
             ViewContext.Writer.Write(htmlContent);
         });
     });
@@ -71,7 +71,7 @@
         {
             var text = DataBinder.Eval(c.DataItem, "ActivePromotionCount").ToString();
             var value = DataBinder.Eval(c.DataItem, "MarketingEventId").ToString();
-            string htmlContent = $"<a href=\"{Url.Action("Index", "Promotions", new { id = value })}\">{text}</a>";
+            string htmlContent = $"<a href=\"{Url.Action("PromotionList", "Marketing", new { id = value })}\">{text}</a>";
             ViewContext.Writer.Write(htmlContent);
         });
     });

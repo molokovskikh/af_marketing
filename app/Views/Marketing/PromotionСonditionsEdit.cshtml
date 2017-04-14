@@ -2,7 +2,7 @@
 @using Marketing.ViewModels
 @model PromotionConditionsViewModel
 @{
-	ViewBag.Title = $"Условия по акции {Model.Promotion.Name} по производителю {Model.Producer.Name}";
+  ViewBag.Title = $"Условия по акции {Model.Promotion.Name} мероприятия {Model.MarketingEvent.Name}";
 }
 
 <div class="form-group">
@@ -14,7 +14,7 @@
             <a href="@Url.Action("Index", "Marketing")">Маркетинговые мероприятия</a>
         </li>
         <li>
-            <a href="@Url.Action("PromotionList", "Marketing", new {id = Model.Promotion.Producer.Id})">@Model.Producer.Name</a>
+            <a href="@Url.Action("PromotionList", "Marketing", new {id = Model.Promotion.MarketingEvent.Id})">@Model.MarketingEvent.Name</a>
         </li>
         <li class="active">Условия по акции</li>
     </ol>

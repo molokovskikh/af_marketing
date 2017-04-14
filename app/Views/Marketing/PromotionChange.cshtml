@@ -3,8 +3,8 @@
 @model ProducerPromotion
 
 @{
-    var producer = (PromoterProducer) ViewBag.Producer;
-    ViewBag.Title = $"Изменение акции от \"{producer.Producer.Name}\"";
+    var marketingEvent = (MarketingEvent) ViewBag.MarketingEvent;
+    ViewBag.Title = $"Изменение акции от \"{marketingEvent.Name}\"";
 }
 
 <div class="form-group">
@@ -16,7 +16,7 @@
             <a href="@Url.Action("Index", "Marketing")">Маркетинговые мероприятия</a>
         </li>
         <li>
-            <a href="@Url.Action("PromotionList", "Marketing", new {id = producer.Id})">@producer.Producer.Name</a>
+            <a href="@Url.Action("PromotionList", "Marketing", new {id = marketingEvent.Id})">@marketingEvent.Name</a>
         </li>
         <li class="active">@ViewBag.Title</li>
     </ol>
@@ -36,6 +36,12 @@
     <div class="form-group">
         <label class="col-md-2 control-label">Период</label>
         @Html.Partial("partials/_DateRange", new DateRangeViewModel { DateBegin = Model.DateStarted, DateEnd = Model.DateFinished })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Enabled, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.CheckBoxFor(m => m.Enabled, new { @class = "checkbox" })
+        </div>
     </div>
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">

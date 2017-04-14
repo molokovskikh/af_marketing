@@ -318,6 +318,7 @@
     <Content Include="Views\Marketing\partials\_PromotionEditRegionFilterLogic.cshtml" />
     <Content Include="Views\Marketing\Add.cshtml" />
     <Content Include="Views\Marketing\partials\_AddGridView.cshtml" />
+    <Content Include="Views\Marketing\Edit.cshtml" />
     <None Include="Views\Marketing\partials\_PromotionEditRegionFilterData.cshtml" />
     <Content Include="Views\Members\_TrailInfo.cshtml" />
     <Content Include="Views\Members\_MembersList.cshtml" />
