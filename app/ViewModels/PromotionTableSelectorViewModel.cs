@@ -140,9 +140,9 @@ ORDER BY Text
 			DbSuppliers = dbSession.Connection.Query<T>(@"
 SELECT sp.Id AS 'Value', sp.Name AS 'Text', rg.Region AS 'Region', sp.RegionMask AS 'RegionId'  FROM customers.suppliers AS sp
 INNER JOIN farm.Regions as rg ON rg.RegionCode & sp.HomeRegion  > 0
-WHERE sp.Disabled = 0 AND sp.Name IS NOT NULL
+WHERE sp.Disabled = 0 AND sp.Name IS NOT NULL AND sp.HomeRegion <> 524288
 ORDER BY Text
-").ToList();
+").ToList(); //524288 - регион inforoom (список регионов отдельно*)
 		}
 
 		private List<ulong> GetUlongListForString(string selectedList)

@@ -26,6 +26,9 @@
             c.FieldName = "Region";
             c.Caption = "Регион";
         });
+        settings.SettingsPager.PageSize = 20;
+    } else {
+        settings.SettingsPager.PageSize = 40;
     }
     settings.Columns.Add(c => {
         c.FieldName = "Value";
@@ -47,7 +50,6 @@
     settings.CallbackRouteValues = new {Controller = "Marketing", Action = "PromotionEditListManager"};
     settings.SettingsBehavior.AllowFocusedRow = true;
     settings.SettingsSearchPanel.Visible = true;
-    settings.SettingsPager.PageSize = 20;
     settings.SettingsPager.Mode = GridViewPagerMode.EndlessPaging;
     settings.ClientSideEvents.BeginCallback = $"{Model.Name}BeginCallback";
     settings.ClientSideEvents.FocusedRowChanged = $"{Model.Name}FocusedRowChanged";
