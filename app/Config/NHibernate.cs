@@ -94,10 +94,8 @@ namespace Marketing
 				});
 			});
 			Mapper.Class<PromoterProducer>(m => {
-				m.Bag(o => o.Promotions, c => {
-					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
-					c.Inverse(true);
-				});
+				m.ManyToOne(s => s.Producer, mapper => mapper.Column("ProducerId"));
+				m.ManyToOne(s => s.MarketingEvent, mapper => mapper.Column("MarketingEventId"));
 			});
 			Mapper.Class<PromotionMember>(m => {
 				m.Bag(o => o.Subscribes, c => {
@@ -115,7 +113,7 @@ namespace Marketing
 				m.ManyToOne(s => s.Promotion, mapper => mapper.ForeignKey("PromotionId"));
 			});
 			Mapper.Class<ProducerPromotion>(m => {
-				m.ManyToOne(s => s.Producer, mapper => mapper.Column("PromoterProducerId"));
+				m.ManyToOne(s => s.MarketingEvent, mapper => mapper.Column("MarketingEventId"));
 				m.Bag(o => o.Products, c => {
 					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
 					c.Key(s => s.Column("PromotionId"));

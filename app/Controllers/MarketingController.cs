@@ -5,6 +5,8 @@ using DevExpress.Web.Mvc;
 using Marketing.Models;
 using Marketing.ViewModels;
 using NHibernate.Linq;
+using System.Collections.Generic;
+using NHibernate.Util;
 
 namespace Marketing.Controllers
 {
@@ -20,10 +22,14 @@ namespace Marketing.Controllers
 	{
 		public ActionResult Index()
 		{
+			var model = GetGridData();
+			return View(model);
 		}
 
 		public ActionResult IndexGridView()
 		{
+			var model = GetGridData();
+			return PartialView("partials/_IndexGridView", model);
 		}
 
 		private IList<MarketingEventGridModel> GetGridData()

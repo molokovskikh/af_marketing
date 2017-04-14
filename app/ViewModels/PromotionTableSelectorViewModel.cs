@@ -72,8 +72,9 @@ namespace Marketing.ViewModels
 			if (type == PromotionTableRequestType.ProductsListToGet) {
 				Height = 600;
 				var promotion = dbSession.Query<ProducerPromotion>().First(s => s.Id == promotionId);
+				var producerIds = string.Join(",", promotion.MarketingEvent.Producers.Select(r => r.Id.ToString()).ToArray());
 				if (DbProducts.Count == 0) {
-					UpdateDbProducts(dbSession, promotion.Producer.Producer.Id.ToString());
+					UpdateDbProducts(dbSession, producerIds);
 				}
 				var itemList = GetUlongListForString(selectedList);
 				ItemsList = DbProducts.Where(s => itemList.All(n => n != s.Value)).ToList();
@@ -84,8 +85,9 @@ namespace Marketing.ViewModels
 				Height = 600;
 				var itemList = GetUlongListForString(selectedList);
 				var promotion = dbSession.Query<ProducerPromotion>().First(s => s.Id == promotionId);
+				var producerIds = string.Join(",", promotion.MarketingEvent.Producers.Select(r => r.Id.ToString()).ToArray());
 				if (DbProducts.Count == 0) {
-					UpdateDbProducts(dbSession, promotion.Producer.Producer.Id.ToString());
+					UpdateDbProducts(dbSession, producerIds);
 				}
 				ItemsList = DbProducts.Where(s => itemList.Any(n => n == s.Value)).ToList();
 				return;
@@ -123,7 +125,7 @@ namespace Marketing.ViewModels
 			}
 		}
 
-		private void UpdateDbProducts(ISession dbSession, string producerId)
+		private void UpdateDbProducts(ISession dbSession, string producerIds)
 		{
 			DbProducts = dbSession.Connection.Query<T>(string.Format(@"
 SELECT pr.Id as 'Value',CONCAT(ct.Name,' ',IFNULL(pr.Properties,'')) as 'Text' FROM
@@ -132,7 +134,7 @@ INNER JOIN catalogs.catalog AS ct ON ct.Id = pp.CatalogId
 INNER JOIN catalogs.Products as pr ON pr.CatalogId = ct.Id
 WHERE pp.ProducerId IN ({0})
 ORDER BY Text
-", producerId)).ToList();
+", producerIds)).ToList();
 		}
 
 		private void UpdateDbSuppliers(ISession dbSession)

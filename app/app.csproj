@@ -216,6 +216,8 @@
     <Compile Include="ViewModels\ClientViewModel.cs" />
     <Compile Include="ViewModels\DateRangeViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
+    <Compile Include="ViewModels\MarketingEventGridModel.cs" />
+    <Compile Include="ViewModels\MarketingEventViewModel.cs" />
     <Compile Include="ViewModels\MemberListViewModel.cs" />
     <Compile Include="ViewModels\MembersGridViewModel.cs" />
     <Compile Include="ViewModels\MemberSubscribesViewModel.cs" />
