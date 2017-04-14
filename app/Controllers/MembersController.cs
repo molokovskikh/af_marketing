@@ -319,7 +319,7 @@ insert into Contacts.Contact_groups (Id, Name, `Type`, ContactGroupOwnerId)
 			return PartialView("../_default/RegionsFilterLogic", model);
 		}
 
-		private List<ViewModelList> SearchRegions(string term, string currentValues = "")
+		private List<ViewModelListItem> SearchRegions(string term, string currentValues = "")
 		{
 			term = string.IsNullOrEmpty((term ?? "").Trim()) ? "%" : term;
 			currentValues = string.IsNullOrEmpty(currentValues) ? "0" : currentValues;
@@ -327,9 +327,9 @@ insert into Contacts.Contact_groups (Id, Name, `Type`, ContactGroupOwnerId)
 			var result = DbSession.Query<Region>()
 				.Where(r => r.Id > 0)
 				.ToList()
-				.Select(r => new ViewModelList {
+				.Select(r => new ViewModelListItem {
 					Value = r.Id,
-					Text = r.Name,
+					Text =r.Name,
 					Selected = itemsIdList.Any(f => f == r.Id)
 				}).ToList();
 			return result;

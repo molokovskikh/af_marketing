@@ -1,5 +1,5 @@
 ﻿@using System.Web.UI.WebControls
-@model Marketing.ViewModels.PromotionTableSelectorViewModel
+@using Marketing.ViewModels
 
 
 @Html.DevExpress().GridView(settings => {
@@ -11,17 +11,31 @@
     settings.CommandColumn.Width = Unit.Pixel(30);
 
 
+    settings.EnableRowsCache = true;
+
     settings.Columns.Add(c => {
         c.FieldName = "Text";
         c.Caption = "Наименование";
         c.Settings.AllowAutoFilter = DefaultBoolean.True;
         c.Settings.AutoFilterCondition = AutoFilterCondition.Contains;
     });
+
+    if (Model.Name == PromotionTableRequestType.SuppliersListToGet.ToString()
+        || Model.Name == PromotionTableRequestType.SuppliersListToSet.ToString()) {
+        settings.Columns.Add(c => {
+            c.FieldName = "Region";
+            c.Caption = "Регион";
+        });
+    }
     settings.Columns.Add(c => {
         c.FieldName = "Value";
         c.Visible = false;
     });
-
+    settings.CustomJSProperties = (sender, e) =>
+    {
+        MVCxGridView grid = (MVCxGridView)sender;
+        e.Properties["cpVisibleTotalCount"] = Model.ItemsList.Count;
+    };
 
     settings.DataBound = (sender, e) => {
         var filterCurrent = (MVCxGridView) sender;
@@ -38,4 +52,6 @@
     settings.ClientSideEvents.BeginCallback = $"{Model.Name}BeginCallback";
     settings.ClientSideEvents.FocusedRowChanged = $"{Model.Name}FocusedRowChanged";
     settings.ClientSideEvents.SelectionChanged = $"{Model.Name}SelectionChanged";
+    settings.ClientSideEvents.EndCallback = $"{Model.Name}EndCallback";
+
 }).Bind(Model.ItemsList).GetHtml()

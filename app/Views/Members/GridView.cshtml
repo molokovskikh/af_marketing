@@ -2,7 +2,7 @@
 @using Marketing.ViewModels
 @model List<MembersGridViewModel>
 @{
-	var regions = string.Join(",", ((List<ViewModelList>)ViewBag.AvailableRegions)
+	var regions = string.Join(",", ((List<ViewModelListItem>)ViewBag.AvailableRegions)
 		.Where(r => r.Selected)
 		.Select(r => r.Value.ToString()).ToArray());
 }

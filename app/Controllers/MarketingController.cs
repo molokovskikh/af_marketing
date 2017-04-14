@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using Dapper;
-using Marketing.Helpers;
+using DevExpress.Web.Mvc;
 using Marketing.Models;
 using Marketing.ViewModels;
-using NHibernate;
 using NHibernate.Linq;
-using DevExpress.Web.Mvc;
 
 namespace Marketing.Controllers
 {
@@ -43,17 +38,17 @@ namespace Marketing.Controllers
 			var model = new PromoterProducersViewModel();
 			model.ProducersList = DbSession.Query<Producer>().OrderBy(s => s.Name).ToList()
 				.Where(s => CurrentPromoter.Producers.All(f => f.Producer.Id != s.Id))
-				.Select(s => new SelectListItem {Value = s.Id.ToString(), Text = s.Name}).ToList();
+				.Select(s => new ViewModelListItem(){Value = s.Id, Text = s.Name}).ToList();
 			return View(model);
 		}
 
 		[HttpPost]
 		public ActionResult ProducerAdd(PromoterProducersViewModel model)
 		{
-			if (!this.ModelState.IsValid) {
+			if (!ModelState.IsValid) {
 				model.ProducersList = DbSession.Query<Producer>().OrderBy(s => s.Name).ToList()
-				.Where(s => CurrentPromoter.Producers.All(f => f.Producer.Id != s.Id))
-					.Select(s => new SelectListItem {Value = s.Id.ToString(), Text = s.Name})
+					.Where(s => CurrentPromoter.Producers.All(f => f.Producer.Id != s.Id))
+					.Select(s => new ViewModelListItem {Value = s.Id, Text = s.Name})
 					.ToList();
 				return View(model);
 			}
@@ -79,10 +74,9 @@ namespace Marketing.Controllers
 		{
 			var result = DbSession.Query<Producer>().OrderBy(s => s.Name).ToList()
 				.Where(s => CurrentPromoter.Producers.All(f => f.Producer.Id != s.Id))
-				.Select(s => new SelectListItem { Value = s.Id.ToString(), Text = s.Name })
+				.Select(s => new ViewModelListItem {Value = s.Id, Text = s.Name})
 				.ToList();
 			return PartialView("../_default/ProducerAddFilter", result);
-
 		}
 
 		[HttpGet]
@@ -100,6 +94,7 @@ namespace Marketing.Controllers
 			SuccessMessage($"Контакты поставщика \"{model.Producer.Name}\" успешно изменен.");
 			return RedirectToAction("Index");
 		}
+
 		public ActionResult ProducerDelete(uint id)
 		{
 			var model = DbSession.Query<PromoterProducer>().First(s => s.Id == id);
@@ -112,7 +107,7 @@ namespace Marketing.Controllers
 		{
 			var currentProducer = DbSession.Query<PromoterProducer>().First(s => s.Id == id);
 			var promoterProducers = DbSession.Query<ProducerPromotion>()
-				.Where(s => s.Producer== currentProducer).OrderBy(s => s.Name).ToList();
+				.Where(s => s.Producer == currentProducer).OrderBy(s => s.Name).ToList();
 
 			ViewBag.Producer = currentProducer;
 			return View(promoterProducers);
@@ -139,12 +134,11 @@ namespace Marketing.Controllers
 		public ActionResult PromotionAdd(ProducerPromotion model)
 		{
 			var currentProducer = DbSession.Query<PromoterProducer>().First(s => s.Id == model.Producer.Id);
-			if (!this.ModelState.IsValid)
-			{
+			if (!ModelState.IsValid) {
 				ViewBag.Producer = currentProducer;
 				return View(model);
 			}
-			var newItem = new ProducerPromotion() {
+			var newItem = new ProducerPromotion {
 				Producer = currentProducer,
 				Name = model.Name,
 				DateStarted = model.DateStarted,
@@ -159,21 +153,27 @@ namespace Marketing.Controllers
 
 
 		public ActionResult PromotionEditListManager(uint id, string list,
-			PromotionTableSelectorViewModel.RequestType type, string regionList)
+			PromotionTableRequestType type, string regionList)
 		{
-			var model = new PromotionTableSelectorViewModel();
-			model.SetData(DbSession, id, type, list, regionList);
-			return PartialView("partials/_PromotionEditListGridView", model);
+			if (type == PromotionTableRequestType.SuppliersListToGet || type == PromotionTableRequestType.SuppliersListToSet) {
+				var model = new PromotionTableSelectorViewModel<ViewModelRegionListItem>();
+				model.SetData(DbSession, id, type, list, regionList);
+				return PartialView("partials/_PromotionEditListGridView", model);
+			} else {
+				var model = new PromotionTableSelectorViewModel<ViewModelListItem>();
+				model.SetData(DbSession, id, type, list, regionList);
+				return PartialView("partials/_PromotionEditListGridView", model);
+			}
 		}
+
 		public ActionResult GetFilterRegion(string currentValues = "")
 		{
 			var model =
 				DbSession.Query<Region>()
-					.Where(s => s.Id != 0)
+					.Where(s => s.Id != 0 && s.Name != "Inforoom")
 					.OrderBy(s => s.Name)
-					.Select(s => new SelectListItem {Text = s.Name, Value = s.Id.ToString()})
+					.Select(s => new ViewModelListItem {Text = s.Name, Value = s.Id})
 					.ToList();
-		//	model.Insert(0,new SelectListItem() {Value = "0",Text = "Все регионы"});
 			return PartialView("partials/_PromotionEditRegionFilterLogic", model);
 		}
 
@@ -214,7 +214,7 @@ namespace Marketing.Controllers
 			var promotion = DbSession.Query<ProducerPromotion>().First(s => s.Id == id);
 			DbSession.Delete(promotion);
 			SuccessMessage($"Акция \"{promotion.Name}\" успешно удалена.");
-			return RedirectToAction("PromotionList", new { id = promotion.Producer.Id });
+			return RedirectToAction("PromotionList", new {id = promotion.Producer.Id});
 		}
 
 
@@ -224,7 +224,7 @@ namespace Marketing.Controllers
 
 			promotion.UpdateProductsAndSuppliersByIds(DbSession, model.ProductsListToSetList, model.SuppliersListToSetList);
 
-			return RedirectToAction("PromotionList",new {id = promotion.Producer.Id});
+			return RedirectToAction("PromotionList", new {id = promotion.Producer.Id});
 		}
 
 		[HttpGet]
@@ -241,7 +241,8 @@ namespace Marketing.Controllers
 		}
 
 		[ValidateInput(false)]
-		public ActionResult EditConditionsBatch(uint id, MVCxGridViewBatchUpdateValues<ConditionsGridViewModel, int> updateValues)
+		public ActionResult EditConditionsBatch(uint id,
+			MVCxGridViewBatchUpdateValues<ConditionsGridViewModel, int> updateValues)
 		{
 			foreach (var item in updateValues.Update) {
 				if (updateValues.IsValid(item))
@@ -267,8 +268,7 @@ namespace Marketing.Controllers
 				.Fetch(r => r.Product)
 				.ThenFetch(r => r.Catalog);
 			var conditions = query
-				.Select(r => new ConditionsGridViewModel
-				{
+				.Select(r => new ConditionsGridViewModel {
 					PromotionId = promotion.Id,
 					ConditionId = r.Id,
 					ProductName = r.Product.Catalog.Name,
@@ -277,8 +277,7 @@ namespace Marketing.Controllers
 					MemberPercent = r.MemberPercent
 				})
 				.ToList();
-			var model = new PromotionConditionsViewModel
-			{
+			var model = new PromotionConditionsViewModel {
 				Conditions = conditions,
 				Promotion = promotion,
 				Producer = producer.Producer

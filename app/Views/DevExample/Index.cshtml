@@ -7,10 +7,10 @@
   ViewBag.Title = "DevExample";
   DateTime dateFrom = ViewBag.DateFrom ?? DateTime.Now.Date.AddDays(-6);
   DateTime dateTo = ViewBag.DateTo ?? DateTime.Now;
-  List<ViewModelList> currentCatalogs = ViewBag.CurrentCatalogs ?? new List<ViewModelList> ();
-  List<ViewModelList> currentSuppliers = ViewBag.CurrentSuppliers ?? new List<ViewModelList>();
-  List<ViewModelList> currentProducers = ViewBag.CurrentProducers ?? new List<ViewModelList>();
-  List<ViewModelList> currentAddresses = ViewBag.CurrentAddresses ?? new List<ViewModelList>();
+  List<ViewModelListItem> currentCatalogs = ViewBag.CurrentCatalogs ?? new List<ViewModelListItem> ();
+  List<ViewModelListItem> currentSuppliers = ViewBag.CurrentSuppliers ?? new List<ViewModelListItem>();
+  List<ViewModelListItem> currentProducers = ViewBag.CurrentProducers ?? new List<ViewModelListItem>();
+  List<ViewModelListItem> currentAddresses = ViewBag.CurrentAddresses ?? new List<ViewModelListItem>();
 }
 <div class="form-group">
 
