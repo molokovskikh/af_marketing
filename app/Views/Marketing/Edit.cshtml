@@ -1,0 +1,55 @@
+﻿@using System.Web.UI.WebControls
+@using Marketing.ViewModels
+@model MarketingEventViewModel
+@{
+  ViewBag.Title = $"Редактирование маркетингового мероприятия \"{Model.Name}\"";
+}
+
+<div class="form-group">
+    <ol class="breadcrumb">
+        <li>
+            <a href="@Url.Action("Index", "Home")">Меню</a>
+        </li>
+        <li>
+            <a href="@Url.Action("Index", "Marketing")">Маркетинговые мероприятия</a>
+        </li>
+        <li class="active">@Model.Name</li>
+    </ol>
+</div>
+<h2>@ViewBag.Title</h2>
+@using (Html.BeginForm("Edit", "Marketing", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+	@Html.AntiForgeryToken()
+	@Html.ValidationSummary("", new { @class = "text-danger" })
+	@Html.HiddenFor(m => m.SelectedProducerIds)
+	<div class="form-group">
+			<div class="col-md-2">
+					@Html.DisplayNameFor(m => m.Name)
+			</div>
+			<div class="col-md-10">
+					@Html.EditorFor(m => m.Name)
+			</div>
+	</div>
+	<script>
+		function switchSelection(s, e) {
+			s.GetSelectedFieldValues("Id", GetSelectedIdsCallback);
+			if ($("#@Html.IdFor(m => m.Name)").val() == "")
+				s.GetSelectedFieldValues("Name", GetSelectedNamesCallback);
+		}
+		function GetSelectedIdsCallback(ids) {
+			var valStr = ids.join(',');
+			$("#@Html.IdFor(m => m.SelectedProducerIds)").val(valStr);
+		}
+		function GetSelectedNamesCallback(names) {
+			var name = names[0];
+			if (name && name != "")
+				$("#@Html.IdFor(m => m.Name)").val(name);
+		}
+	</script>
+	@Html.Partial("partials/_AddGridView", Model)
+	<div class="form-group">
+			<div class="col-md-12">
+					<input type="submit" class="btn btn-primary" value="Сохранить" />
+			</div>
+	</div>
+}

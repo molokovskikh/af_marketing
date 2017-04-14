@@ -1,45 +1,87 @@
 ﻿@using System.Web.UI.WebControls
-
-
+@using Marketing.ViewModels
+@model List<MarketingEventGridModel>
 
 @Html.DevExpress().GridView(settings => {
     settings.Name = "Таблица";
     settings.CallbackRouteValues = new { Action = "IndexGridView", Controller = "Marketing"};
-
+    settings.KeyFieldName = "MarketingEventId";
     settings.PreviewEncodeHtml = false;
     settings.EncodeHtml = false;
+    settings.Width = Unit.Percentage(100);
 
     settings.Columns.Add(column =>
     {
-        column.FieldName = "Producer.Name";
-        column.PropertiesEdit.EncodeHtml = false;
+        column.FieldName = "Name";
         column.Caption = "Наименование";
+        column.PropertiesEdit.EncodeHtml = false;
         column.SetDataItemTemplateContent(c =>
         {
-            var value = DataBinder.Eval(c.DataItem, "Id").ToString();
-            var text = DataBinder.Eval(c.DataItem, "Producer.Name").ToString();
-            string htmlContent = $"<a href=\"{Url.Action("PromotionList", new { id = value })}\">{text}</a>";
+            var value = DataBinder.Eval(c.DataItem, "MarketingEventId").ToString();
+            var text = DataBinder.Eval(c.DataItem, "Name").ToString();
+            string htmlContent = $"<a href=\"{Url.Action("Edit", new { id = value })}\">{text}</a>";
             ViewContext.Writer.Write(htmlContent);
         });
     });
-
-    settings.Columns.Add(column => {
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "Producers";
         column.PropertiesEdit.EncodeHtml = false;
-        column.Caption = "Контакты";
-        column.SetDataItemTemplateContent(c => {
-            var value = DataBinder.Eval(c.DataItem, "Id").ToString();
-            string htmlContent = $"<a href=\"{Url.Action("ProducerEdit", new {id = value})}\"  class=\"href-dots\">...</a>";
+        column.Caption = "Производители";
+        column.SetDataItemTemplateContent(c =>
+        {
+            var value = DataBinder.Eval(c.DataItem, "MarketingEventId").ToString();
+            var text = DataBinder.Eval(c.DataItem, "Producers").ToString();
+            if (string.IsNullOrWhiteSpace(text))
+                text = "[добавить]";
+            string htmlContent = $"<a href=\"{Url.Action("Edit", new { id = value })}\">{text}</a>";
             ViewContext.Writer.Write(htmlContent);
         });
     });
-
+    settings.Columns.Add(column => {
+        column.FieldName = "PromotionCount";
+        column.PropertiesEdit.EncodeHtml = false;
+        column.Caption = "Акций всего";
+        column.SetDataItemTemplateContent(c => {
+            var text = DataBinder.Eval(c.DataItem, "PromotionCount").ToString();
+            var value = DataBinder.Eval(c.DataItem, "MarketingEventId").ToString();
+            string htmlContent = $"<a href=\"{Url.Action("PromotionList", "Marketing", new {id = value})}\">{text}</a>";
+            ViewContext.Writer.Write(htmlContent);
+        });
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "EnabledPromotionCount";
+        column.PropertiesEdit.EncodeHtml = false;
+        column.Caption = "Акций в работе";
+        column.SetDataItemTemplateContent(c =>
+        {
+            var text = DataBinder.Eval(c.DataItem, "EnabledPromotionCount").ToString();
+            var value = DataBinder.Eval(c.DataItem, "MarketingEventId").ToString();
+            string htmlContent = $"<a href=\"{Url.Action("PromotionList", "Marketing", new { id = value })}\">{text}</a>";
+            ViewContext.Writer.Write(htmlContent);
+        });
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "ActivePromotionCount";
+        column.PropertiesEdit.EncodeHtml = false;
+        column.Caption = "Действующих акций";
+        column.SetDataItemTemplateContent(c =>
+        {
+            var text = DataBinder.Eval(c.DataItem, "ActivePromotionCount").ToString();
+            var value = DataBinder.Eval(c.DataItem, "MarketingEventId").ToString();
+            string htmlContent = $"<a href=\"{Url.Action("PromotionList", "Marketing", new { id = value })}\">{text}</a>";
+            ViewContext.Writer.Write(htmlContent);
+        });
+    });
     settings.Columns.Add(column => {
         column.PropertiesEdit.EncodeHtml = false;
         column.Caption = "Действие";
         column.SetDataItemTemplateContent(c => {
-            var value = DataBinder.Eval(c.DataItem, "Id").ToString();
-            var text = DataBinder.Eval(c.DataItem, "Producer.Name").ToString();
-            string htmlContent = $"<a class='c-pointer' onclick=\"submit('Вы действительно ходите удалить производителя `{text}`?', 'Да','Нет','{Url.Action("ProducerDelete", new {id = value})}')\">удалить</a>";
+            var value = DataBinder.Eval(c.DataItem, "MarketingEventId").ToString();
+            var text = DataBinder.Eval(c.DataItem, "Name").ToString();
+            string htmlContent = $"<a class='c-pointer' onclick=\"submit('Вы действительно ходите удалить мероприятие `{text}`?', 'Да','Нет','{Url.Action("Delete", new {id = value})}')\">удалить</a>";
             ViewContext.Writer.Write(htmlContent);
         });
     });

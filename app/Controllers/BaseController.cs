@@ -13,6 +13,7 @@ namespace Marketing.Controllers
 	{
 		protected ISession DbSession => HttpContext.Items[typeof (ISession)] as ISession;
 		public Promoter CurrentPromoter => HttpContext.Items[typeof (Promoter)] as Promoter;
+		public MarketingEvent CurrentMarketingEvent => System.Web.HttpContext.Current.Session["MarketingEvent"] as MarketingEvent;
 
 		public void SuccessMessage(string message)
 		{

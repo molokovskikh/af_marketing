@@ -3,8 +3,8 @@
 @model List<ProducerPromotion>
 
 @{
-    var producer = (PromoterProducer) ViewBag.Producer;
-    ViewBag.Title = $"Акции, проводимые \"{producer.Producer.Name}\"";
+    var marketingEvent = (MarketingEvent) ViewBag.MarketingEvent;
+    ViewBag.Title = $"Акции, проводимые \"{marketingEvent.Name}\"";
 }
 <div class="form-group">
     <ol class="breadcrumb">
@@ -14,18 +14,18 @@
         <li>
             <a href="@Url.Action("Index", "Marketing")">Маркетинговые мероприятия</a>
         </li>
-        <li class="active">Акции от "@producer.Producer.Name"</li>
+        <li class="active">Акции от "@marketingEvent.Name"</li>
     </ol>
 </div>
 <h2>@ViewBag.Title</h2>
 <div class="form-group">
-    <a href="@Url.Action("PromotionAdd", "Marketing",new {id = producer .Id})" class="btn btn-primary">Добавить</a>
+    <a href="@Url.Action("PromotionAdd", "Marketing", new {id = marketingEvent .Id})" class="btn btn-primary">Добавить</a>
 </div>
 
 <script type="text/javascript">
     //Здесь нужно собать все значения, которые должны быть учтены при фильтрации
     function gridVIewBeginCallback(s, e) {
-        e.customArgs["id"] = @producer.Id;
+        e.customArgs["id"] = @marketingEvent.Id;
     }
 </script>
 

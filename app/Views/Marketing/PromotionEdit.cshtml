@@ -21,7 +21,7 @@
             <a href="@Url.Action("Index", "Marketing")">Маркетинговые мероприятия</a>
         </li>
         <li>
-            <a href="@Url.Action("PromotionList", "Marketing", new {id = Model.Promotion.Producer.Id})">@Model.Promotion.Producer.Producer.Name</a>
+            <a href="@Url.Action("PromotionList", "Marketing", new {id = Model.Promotion.MarketingEvent.Id})">@Model.Promotion.MarketingEvent.Name</a>
         </li>
         <li class="active">@ViewBag.Title</li>
     </ol>
