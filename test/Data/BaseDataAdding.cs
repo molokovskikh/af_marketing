@@ -54,7 +54,8 @@ namespace test.Data
 			string contacts = null)
 		{
 			var newItem = new PromoterProducer();
-			newItem.Promoter = promoter;
+			// todo исправить после окончательного изменения структуры БД
+			//newItem.Promoter = promoter;
 			newItem.Producer = producer;
 			if (contacts == null)
 				newItem.Contacts = "+7 (000) 00 00";
