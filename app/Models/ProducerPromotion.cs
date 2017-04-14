@@ -9,7 +9,7 @@ using NHibernate.Linq;
 namespace Marketing.Models
 {
 	/// <summary>
-	/// Акция производителя
+	/// Маркетинговые акции
 	/// </summary>
 	public class ProducerPromotion
 	{
@@ -27,7 +27,7 @@ namespace Marketing.Models
 		[Display(Name = "Наименование")]
 		public virtual string Name { get; set; }
 
-		public virtual PromoterProducer Producer { get; set; }
+		public virtual MarketingEvent MarketingEvent { get; set; }
 
 		public virtual IList<PromotionProduct> Products { get; set; }
 
@@ -44,6 +44,10 @@ namespace Marketing.Models
 		[DataType(DataType.Date), DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
 		[Display(Name = "Дата окончания")]
 		public virtual DateTime DateFinished { get; set; }
+
+		[Required]
+		[Display(Name = "В работе")]
+		public virtual bool Enabled { get; set; }
 
 		public virtual void UpdateProductsAndSuppliersByIds(ISession dbSession, string productsIds, string suppliersIds)
 		{

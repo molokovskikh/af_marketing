@@ -54,7 +54,7 @@ namespace test.Data
 			string contacts = null)
 		{
 			var newItem = new PromoterProducer();
-			newItem.Promoter = promoter;
+			//newItem.MarketingEvent = promoter;
 			newItem.Producer = producer;
 			if (contacts == null)
 				newItem.Contacts = "+7 (000) 00 00";
