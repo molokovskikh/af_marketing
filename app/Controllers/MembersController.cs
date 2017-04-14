@@ -296,7 +296,7 @@ insert into Contacts.Contact_groups (Id, Name, `Type`, ContactGroupOwnerId)
 				.Where(r => r.Member == member)
 				.ToList();
 			var promotions = DbSession.Query<ProducerPromotion>()
-				.Where(r => r.Producer.Promoter == promoter)
+				//.Where(r => r.Producers.Promoter == promoter)
 				.OrderBy(r => r.Name)
 				.ToList()
 				.Select(r => new MemberSubscribe {

@@ -195,6 +195,7 @@
     <Compile Include="Models\ContactGroup.cs" />
     <Compile Include="Models\ContactGroupOwner.cs" />
     <Compile Include="Models\ContactOwner.cs" />
+    <Compile Include="Models\MarketingEvent.cs" />
     <Compile Include="Models\Region.cs" />
     <Compile Include="Models\Address.cs" />
     <Compile Include="Models\Catalog.cs" />
@@ -215,6 +216,8 @@
     <Compile Include="ViewModels\ClientViewModel.cs" />
     <Compile Include="ViewModels\DateRangeViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
+    <Compile Include="ViewModels\MarketingEventGridModel.cs" />
+    <Compile Include="ViewModels\MarketingEventViewModel.cs" />
     <Compile Include="ViewModels\MemberListViewModel.cs" />
     <Compile Include="ViewModels\MembersGridViewModel.cs" />
     <Compile Include="ViewModels\MemberSubscribesViewModel.cs" />
@@ -313,6 +316,8 @@
     <Content Include="Views\Marketing\PromotionChange.cshtml" />
     <Content Include="Views\Marketing\partials\_DateRange.cshtml" />
     <Content Include="Views\Marketing\partials\_PromotionEditRegionFilterLogic.cshtml" />
+    <Content Include="Views\Marketing\Add.cshtml" />
+    <Content Include="Views\Marketing\partials\_AddGridView.cshtml" />
     <None Include="Views\Marketing\partials\_PromotionEditRegionFilterData.cshtml" />
     <Content Include="Views\Members\_TrailInfo.cshtml" />
     <Content Include="Views\Members\_MembersList.cshtml" />
