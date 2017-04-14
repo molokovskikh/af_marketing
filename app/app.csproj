@@ -225,7 +225,7 @@
     <Compile Include="ViewModels\PromoterProducersViewModel.cs" />
     <Compile Include="ViewModels\PromotionTableSelectorViewModel.cs" />
     <Compile Include="ViewModels\TrailInfoViewModel.cs" />
-    <Compile Include="ViewModels\ViewModelList.cs" />
+    <Compile Include="ViewModels\ViewModelListItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />

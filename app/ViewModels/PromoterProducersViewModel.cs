@@ -12,10 +12,10 @@ namespace Marketing.ViewModels
 	{
 		public PromoterProducersViewModel()
 		{
-			ProducersList = new List<SelectListItem>();
+			ProducersList = new List<ViewModelListItem>();
 		}
 
-		public List<SelectListItem> ProducersList { get; set; }
+		public List<ViewModelListItem> ProducersList { get; set; }
 
 
 		[Range(1, int.MaxValue, ErrorMessage = "Необходимо выбрать поставщика")]

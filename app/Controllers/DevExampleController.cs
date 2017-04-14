@@ -231,7 +231,7 @@ namespace Marketing.Controllers
 			return PartialView("../_default/CatalogsFilterLogic", model);
 		}
 
-		private List<ViewModelList> SearchCatalogs(string term, string currentValues = "")
+		private List<ViewModelListItem> SearchCatalogs(string term, string currentValues = "")
 		{
 			term = string.IsNullOrEmpty((term ?? "").Trim()) ? "%" : term;
 			currentValues = string.IsNullOrEmpty(currentValues) ? "0" : currentValues;
@@ -243,7 +243,7 @@ namespace Marketing.Controllers
 			var result =
 				DevExampleData.Select(
 					s =>
-						new ViewModelList {
+						new ViewModelListItem {
 							Value = (uint) s.CatalogId,
 							Text = s.CatalogName,
 							Selected = itemsIdList.Any(f => f == (uint) s.CatalogId)
@@ -259,7 +259,7 @@ namespace Marketing.Controllers
 			return PartialView("../_default/SuppliersFilterLogic", model);
 		}
 
-		private List<ViewModelList> SearchSuppliers(string currentValues = "")
+		private List<ViewModelListItem> SearchSuppliers(string currentValues = "")
 		{
 			uint currentClient = 777;
 			currentValues = string.IsNullOrEmpty(currentValues) ? "0" : currentValues;
@@ -270,7 +270,7 @@ namespace Marketing.Controllers
 			var result =
 				DevExampleData.Select(
 					s =>
-						new ViewModelList {
+						new ViewModelListItem {
 							Value = (uint) s.SupplierId,
 							Text = s.SupplierName,
 							Selected = itemsIdList.Any(f => f == (uint) s.SupplierId)
@@ -286,7 +286,7 @@ namespace Marketing.Controllers
 			return PartialView("../_default/ProducersFilterLogic", model);
 		}
 
-		private List<ViewModelList> SearchProducers(string term, string currentValues = "")
+		private List<ViewModelListItem> SearchProducers(string term, string currentValues = "")
 		{
 			term = string.IsNullOrEmpty((term ?? "").Trim()) ? "%" : term;
 			currentValues = string.IsNullOrEmpty(currentValues) ? "0" : currentValues;
@@ -298,7 +298,7 @@ namespace Marketing.Controllers
 			var result =
 				DevExampleData.Select(
 					s =>
-						new ViewModelList {
+						new ViewModelListItem {
 							Value = (uint) s.ProducerId,
 							Text = s.ProducerName,
 							Selected = itemsIdList.Any(f => f == (uint) s.ProducerId)

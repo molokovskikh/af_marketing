@@ -35,3 +35,5 @@ textarea {
 .c-pointer{ cursor: pointer !important;}
 .dv-black .dxflGroupBoxCaption_MetropolisBlue{ color: black !important;}
 .trail-info{padding-left:15px}
+.hid{ display: none !important;}
+.red {color:#da2d2d !important;}

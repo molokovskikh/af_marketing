@@ -1,5 +1,5 @@
 ﻿@using Marketing.ViewModels
-@model List<SelectListItem>
+@model List<ViewModelListItem>
 
 @*Разделение JS, сопутствующих параметров и данного кода необходимо для корректной работы компонента*@
 
@@ -10,7 +10,7 @@
         if (!$("[name='regionIdList']").hasClass("busy")) {
             s.GetSelectedFieldValues("Value", function(val) {
                 $("[name='regionIdList']").val(val);
-                @(PromotionTableSelectorViewModel.RequestType.SuppliersListToGet.ToString()).PerformCallback();
+                @(PromotionTableRequestType.SuppliersListToGet.ToString()).PerformCallback();
             });
         }
     }
