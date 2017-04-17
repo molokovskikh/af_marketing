@@ -189,6 +189,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\ErrorFilter.cs" />
+    <Compile Include="Helpers\MailHelper.cs" />
     <Compile Include="Helpers\PromoterIdentifierFilter.cs" />
     <Compile Include="Helpers\SessionFilter.cs" />
     <Compile Include="Models\Contact.cs" />

@@ -30,6 +30,9 @@
 @using (Html.BeginForm("Confirm", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
 	@Html.AntiForgeryToken()
+	@Html.HiddenFor(model => model.Name)
+	@Html.HiddenFor(model => model.Login)
+	@Html.HiddenFor(model => model.Password)
 	<div class="form-horizontal">
 		<div class="form-group">
 			<div class="col-md-12">

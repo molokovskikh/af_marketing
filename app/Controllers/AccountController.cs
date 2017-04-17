@@ -1,4 +1,5 @@
-﻿using Marketing.Models;
+﻿using Marketing.Helpers;
+using Marketing.Models;
 using Marketing.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -128,8 +129,22 @@ namespace Marketing.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult Confirm(bool sendEmail)
+		public ActionResult Confirm(RegisterViewModel model)
 		{
+			if (model.SendEmail) {
+				var body = $"Зарегистрирован новый организатор маркетинговых мероприятий <b>\"{model.Name}\"</b><br/>" +
+					$"Логин: <b>{model.Login}</b><br/>" +
+					$"Пароль: <b>{model.Password}</b><br/>";
+#if DEBUG
+				var email = ConfigurationManager.AppSettings["DebugEmail"];
+#else
+				var user = Membership.GetUser(User.Identity.Name);
+				var email = user.Email;
+				if (string.IsNullOrEmpty(email))
+					email = ConfigurationManager.AppSettings["DebugEmail"];
+#endif
+				MailHelper.SendMail("Интерфейс маркетолога: регистрация организатора", body, email);
+			}
 			return RedirectToAction("Register");
 		}
 
