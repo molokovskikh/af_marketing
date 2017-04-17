@@ -84,7 +84,7 @@ namespace Marketing
 				m.Table("Catalog");
 			});
 			Mapper.Class<Promoter>(m => {
-				m.Bag(o => o.Producers, c => {
+				m.Bag(o => o.MarketingEvents, c => {
 					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
 					c.Inverse(true);
 				});
@@ -116,14 +116,17 @@ namespace Marketing
 				m.ManyToOne(s => s.MarketingEvent, mapper => mapper.Column("MarketingEventId"));
 				m.Bag(o => o.Products, c => {
 					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
+					c.Inverse(true);
 					c.Key(s => s.Column("PromotionId"));
 				}, map => map.OneToMany(s => s.Class(typeof (PromotionProduct))));
 				m.Bag(o => o.Suppliers, c => {
 					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
+					c.Inverse(true);
 					c.Key(s => s.Column("PromotionId"));
 				}, map => map.OneToMany(s => s.Class(typeof (PromotionSupplier))));
 				m.Bag(o => o.Subscribes, c => {
 					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
+					c.Inverse(true);
 					c.Key(s => s.Column("PromotionId"));
 				}, map => map.OneToMany(s => s.Class(typeof (PromotionSubscribe))));
 			});
@@ -154,6 +157,7 @@ namespace Marketing
 				m.ManyToOne(c => c.Region, mapper => mapper.Column("RegionCode"));
 				m.Bag(o => o.ContactGroups, c => {
 					c.Cascade(Cascade.None);
+					c.Inverse(true);
 					c.Key(k => {
 						k.PropertyRef(x => x.ContactGroupOwnerId);
 						k.Column("ContactGroupOwnerId");
@@ -172,6 +176,7 @@ namespace Marketing
 				m.Property(x => x.ContactGroupTypeId, mapper => mapper.Column("Type"));
 				m.Bag(o => o.Contacts, c => {
 					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
+					c.Inverse(true);
 					c.Key(k => {
 						k.PropertyRef(x => x.Id);
 						k.Column("ContactOwnerId");

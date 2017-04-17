@@ -107,7 +107,7 @@ namespace Marketing.Controllers
 			var model = new MarketingEventViewModel() {
 				MarketingEventId = marketingEvent.Id,
 				Name = marketingEvent.Name,
-				SelectedProducerIds = string.Join(",", marketingEvent.Producers.Select(r => r.Id.ToString()).ToArray())
+				SelectedProducerIds = string.Join(",", marketingEvent.Producers.Select(r => r.Producer.Id.ToString()).ToArray())
 			};
 			model.AvailableProducers = DbSession.Query<Producer>()
 				.OrderBy(r => r.Name)
@@ -125,17 +125,18 @@ namespace Marketing.Controllers
 			marketingEvent.Name = model.Name;
 			DbSession.Update(marketingEvent);
 
-			//if (!string.IsNullOrWhiteSpace(model.SelectedProducerIds))
-			//{
-			//	var ids = model.SelectedProducerIds.Split(',').Select(p => uint.Parse(p)).ToArray();
-			//	ids.ForEach(p => {
-			//		DbSession.CreateSQLQuery(
-			//				"insert into Customers.PromoterProducers (ProducerId, MarketingEventId) values (:id, :eventId)")
-			//			.SetParameter("id", p)
-			//			.SetParameter("eventId", marketingEvent.Id)
-			//			.ExecuteUpdate();
-			//	});
-			//}
+			var producers = DbSession.Query<PromoterProducer>()
+				.Where(r => r.MarketingEvent == marketingEvent)
+				.ToArray();
+			var ids = model.SelectedProducerIds.Split(',').Select(p => uint.Parse(p)).ToArray();
+			producers.Where(r => !ids.Contains(r.Producer.Id)).ForEach(p => { DbSession.Delete(p); });
+			ids.Where(r => !producers.Any(p => p.Producer.Id == r)).ForEach(x => {
+				DbSession.CreateSQLQuery(
+						"insert into Customers.PromoterProducers (ProducerId, MarketingEventId) values (:id, :eventId)")
+					.SetParameter("id", x)
+					.SetParameter("eventId", marketingEvent.Id)
+					.ExecuteUpdate();
+			});
 
 			return RedirectToAction("Index");
 		}
@@ -150,75 +151,15 @@ namespace Marketing.Controllers
 			return RedirectToAction("Index");
 		}
 
-		//[HttpGet]
-		//public ActionResult ProducerAdd()
-		//{
-		//	var model = new PromoterProducersViewModel();
-		//	model.ProducersList = DbSession.Query<Producer>().OrderBy(s => s.Name).ToList()
-		//		.Where(s => CurrentPromoter.MarketingEvents.First().Producers.All(f => f.Producer.Id != s.Id))
-		//		.Select(s => new SelectListItem { Value = s.Id.ToString(), Text = s.Name }).ToList();
-		//	return View(model);
-		//}
-
-		//[HttpPost]
-		//public ActionResult ProducerAdd(PromoterProducersViewModel model)
-		//{
-		//	if (!this.ModelState.IsValid) {
-		//		model.ProducersList = DbSession.Query<Producer>().OrderBy(s => s.Name).ToList()
-		//			.Where(s => CurrentPromoter.MarketingEvents.All(f => f.Producer.Id != s.Id))
-		//			.Select(s => new SelectListItem {Value = s.Id.ToString(), Text = s.Name})
-		//			.ToList();
-		//		return View(model);
-		//	}
-		//	var currentProducer = DbSession.Query<Producer>().First(s => s.Id == model.SelectedProducerId);
-		//	if (CurrentPromoter.MarketingEvents.Any(s => s.Producer.Id == currentProducer.Id)) {
-		//		ErrorMessage($"Поставщик \"{currentProducer.Name}\" не может быть добавлен повторно.");
-		//	} else {
-		//		var newItem = new PromoterProducer {
-		//			MarketingEvent = CurrentPromoter,
-		//			Producer = currentProducer,
-		//			Contacts = model.Contacts
-		//		};
-		//		DbSession.Save(newItem);
-
-		//		SuccessMessage($"Поставщик \"{newItem.Producer.Name}\" успешно добавлен.");
-		//	}
-
-		//	return RedirectToAction("Index");
-		//}
-
-		//[HttpPost]
-		//public ActionResult GetFilterProducerAdd()
-		//{
-		//	var result = DbSession.Query<Producer>().OrderBy(s => s.Name).ToList()
-		//		//.Where(s => CurrentPromoter.MarketingEvents.All(f => f.Producer.Id != s.Id))
-		//		.Select(s => new SelectListItem { Value = s.Id.ToString(), Text = s.Name })
-		//		.ToList();
-		//	return PartialView("../_default/ProducerAddFilter", result);
-		//}
-
-		//[HttpGet]
-		//public ActionResult ProducerEdit(uint id)
-		//{
-		//	var model = DbSession.Query<PromoterProducer>().First(s => s.Id == id);
-		//	return View(model);
-		//}
-
-		//[HttpPost]
-		//public ActionResult ProducerEdit(uint id, string contacts)
-		//{
-		//	var model = DbSession.Query<PromoterProducer>().First(s => s.Id == id);
-		//	model.Contacts = contacts;
-		//	SuccessMessage($"Контакты поставщика \"{model.Producer.Name}\" успешно изменен.");
-		//	return RedirectToAction("Index");
-		//}
-		//public ActionResult ProducerDelete(uint id)
-		//{
-		//	var model = DbSession.Query<PromoterProducer>().First(s => s.Id == id);
-		//	DbSession.Delete(model);
-		//	SuccessMessage($"Поставщик \"{model.Producer.Name}\" успешно удален.");
-		//	return RedirectToAction("Index");
-		//}
+		[HttpPost]
+		public ActionResult GetFilterProducerAdd()
+		{
+			var result = DbSession.Query<Producer>().OrderBy(s => s.Name).ToList()
+				.Where(s => CurrentPromoter.MarketingEvents.All(f => f.Producers.All(p => p.Producer.Id != s.Id)))
+				.Select(s => new SelectListItem { Value = s.Id.ToString(), Text = s.Name })
+				.ToList();
+			return PartialView("../_default/ProducerAddFilter", result);
+		}
 
 		public ActionResult PromotionList(uint id)
 		{
