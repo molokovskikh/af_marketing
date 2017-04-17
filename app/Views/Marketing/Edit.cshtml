@@ -21,6 +21,7 @@
 {
 	@Html.AntiForgeryToken()
 	@Html.ValidationSummary("", new { @class = "text-danger" })
+	@Html.HiddenFor(m => m.MarketingEventId)
 	@Html.HiddenFor(m => m.SelectedProducerIds)
 	<div class="form-group">
 			<div class="col-md-2">
@@ -45,8 +46,13 @@
 			if (name && name != "")
 				$("#@Html.IdFor(m => m.Name)").val(name);
 		}
+    	function gridInit() {
+    		var idList = "@Model.SelectedProducerIds";
+    		var keys = idList.split(",");
+    		gridProducers.SelectRowsByKey(keys);
+    	}
 	</script>
-	@Html.Partial("partials/_AddGridView", Model)
+	@Html.Partial("partials/_EditGridView", Model)
 	<div class="form-group">
 			<div class="col-md-12">
 					<input type="submit" class="btn btn-primary" value="Сохранить" />

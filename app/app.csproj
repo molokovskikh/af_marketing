@@ -294,8 +294,6 @@
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Account\Confirm.cshtml" />
     <Content Include="Views\Marketing\Index.cshtml" />
-    <Content Include="Views\Marketing\ProducerAdd.cshtml" />
-    <Content Include="Views\Marketing\ProducerEdit.cshtml" />
     <Content Include="Views\Marketing\PromotionList.cshtml" />
     <Content Include="Views\Marketing\PromotionEdit.cshtml" />
     <Content Include="Views\Marketing\PromotionAdd.cshtml" />
@@ -319,6 +317,7 @@
     <Content Include="Views\Marketing\Add.cshtml" />
     <Content Include="Views\Marketing\partials\_AddGridView.cshtml" />
     <Content Include="Views\Marketing\Edit.cshtml" />
+    <Content Include="Views\Marketing\partials\_EditGridView.cshtml" />
     <None Include="Views\Marketing\partials\_PromotionEditRegionFilterData.cshtml" />
     <Content Include="Views\Members\_TrailInfo.cshtml" />
     <Content Include="Views\Members\_MembersList.cshtml" />
