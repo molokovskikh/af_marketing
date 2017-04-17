@@ -61,7 +61,7 @@ namespace Marketing.Controllers
 					Subscribes = r.Subscribes.Any()
 						? string.Join(", ", r.Subscribes.Select(s => s.Promotion.Name).ToArray())
 						: "",
-					Contacts = r.Client.ContactGroups.Any()
+					Contacts = r.Client.ContactGroups.Any(x => x.ContactGroupTypeId == ContactGroupType.Marketing)
 						? string.Join(", ", r.Client.ContactGroups.First(g => g.ContactGroupTypeId == ContactGroupType.Marketing).Contacts.OrderBy(o => o.ContactType).Select(c => c.ContactText).ToArray())
 						: ""
 				})
