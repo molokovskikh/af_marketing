@@ -66,7 +66,6 @@ namespace Marketing.Controllers
 		}
 
 		[HttpPost]
-		[ValidateAntiForgeryToken]
 		public ActionResult Logout()
 		{
 			FormsAuthentication.SignOut();
@@ -80,7 +79,6 @@ namespace Marketing.Controllers
 		}
 
 		[HttpPost]
-		[ValidateAntiForgeryToken]
 		public ActionResult Register(RegisterViewModel model)
 		{
 			if (!ModelState.IsValid)
@@ -130,7 +128,6 @@ namespace Marketing.Controllers
 		}
 
 		[HttpPost]
-		[ValidateAntiForgeryToken]
 		public ActionResult Confirm(bool sendEmail)
 		{
 			return RedirectToAction("Register");

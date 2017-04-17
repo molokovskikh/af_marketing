@@ -62,7 +62,6 @@ namespace Marketing.Controllers
 		}
 
 		[HttpPost]
-		[ValidateAntiForgeryToken]
 		public ActionResult Add(MarketingEventViewModel model)
 		{
 			if (!ModelState.IsValid)
