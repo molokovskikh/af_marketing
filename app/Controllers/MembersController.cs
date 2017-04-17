@@ -76,7 +76,6 @@ namespace Marketing.Controllers
 		}
 
 		[HttpPost]
-		[ValidateAntiForgeryToken]
 		public ActionResult Add(MemberViewModel model)
 		{
 			if (!ModelState.IsValid)
@@ -97,7 +96,6 @@ namespace Marketing.Controllers
 		}
 
 		[HttpPost]
-		[ValidateAntiForgeryToken]
 		public ActionResult FilterAdd(MemberViewModel model, string regionIdList = "")
 		{
 			model.AvailableMembers = GetClientList(regionIdList);
@@ -176,7 +174,6 @@ namespace Marketing.Controllers
 		}
 
 		[HttpPost]
-		[ValidateAntiForgeryToken]
 		public ActionResult Edit(ClientViewModel model)
 		{
 			var client = DbSession.Query<Client>().FirstOrDefault(r => r.Id == model.ClientId);
@@ -259,7 +256,6 @@ insert into Contacts.Contact_groups (Id, Name, `Type`, ContactGroupOwnerId)
 		}
 
 		[HttpPost]
-		[ValidateAntiForgeryToken]
 		public ActionResult Subscribes(uint memberId, string promotionsIdList)
 		{
 			var member = DbSession.Query<PromotionMember>().Single(r => r.Id == memberId);
