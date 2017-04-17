@@ -58,7 +58,9 @@ namespace Marketing.Controllers
 					Name = r.Client.Name,
 					Region = r.Client.Region.Name,
 					AddressCount = r.Client.Addresses.Count,
-					Subscribes = string.Join(", ", r.Subscribes.Select(s => s.Promotion.Name).ToArray()),
+					Subscribes = r.Subscribes.Any()
+						? string.Join(", ", r.Subscribes.Select(s => s.Promotion.Name).ToArray())
+						: "",
 					Contacts = r.Client.ContactGroups.Any()
 						? string.Join(", ", r.Client.ContactGroups.First(g => g.ContactGroupTypeId == ContactGroupType.Marketing).Contacts.OrderBy(o => o.ContactType).Select(c => c.ContactText).ToArray())
 						: ""
