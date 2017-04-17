@@ -25,6 +25,8 @@ textarea {
 .filterWrapper table label {
 	    width: 120px !important;
 }
+.jumbotron h1{font-size:48px}
+.navbar-default .nav-pills > li > a{font-size:18px}
 .href-dots{ font-weight: bold;font-size: 18px;}
 .server-message{font-size: 1.5em; text-align: center; margin-top: 10px;}
 .width-100 .dxgvControl_MetropolisBlue{ width: 100% !important;}
