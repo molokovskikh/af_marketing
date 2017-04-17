@@ -68,11 +68,10 @@ namespace Marketing.ViewModels
 				? "Доступные"
 				: "Участвующие в акции";
 
-
 			if (type == PromotionTableRequestType.ProductsListToGet) {
 				Height = 600;
 				var promotion = dbSession.Query<ProducerPromotion>().First(s => s.Id == promotionId);
-				var producerIds = string.Join(",", promotion.MarketingEvent.Producers.Select(r => r.Id.ToString()).ToArray());
+				var producerIds = string.Join(",", promotion.MarketingEvent.Producers.Select(r => r.Producer.Id.ToString()).ToArray());
 				if (DbProducts.Count == 0) {
 					UpdateDbProducts(dbSession, producerIds);
 				}
@@ -85,7 +84,7 @@ namespace Marketing.ViewModels
 				Height = 600;
 				var itemList = GetUlongListForString(selectedList);
 				var promotion = dbSession.Query<ProducerPromotion>().First(s => s.Id == promotionId);
-				var producerIds = string.Join(",", promotion.MarketingEvent.Producers.Select(r => r.Id.ToString()).ToArray());
+				var producerIds = string.Join(",", promotion.MarketingEvent.Producers.Select(r => r.Producer.Id.ToString()).ToArray());
 				if (DbProducts.Count == 0) {
 					UpdateDbProducts(dbSession, producerIds);
 				}
@@ -143,6 +142,7 @@ ORDER BY Text
 SELECT sp.Id AS 'Value', sp.Name AS 'Text', rg.Region AS 'Region', sp.RegionMask AS 'RegionId'  FROM customers.suppliers AS sp
 INNER JOIN farm.Regions as rg ON rg.RegionCode & sp.HomeRegion  > 0
 WHERE sp.Disabled = 0 AND sp.Name IS NOT NULL AND sp.HomeRegion <> 524288
+ AND rg.DrugsSearchRegion = 0
 ORDER BY Text
 ").ToList(); //524288 - регион inforoom (список регионов отдельно*)
 		}

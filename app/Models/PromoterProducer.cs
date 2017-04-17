@@ -22,21 +22,5 @@ namespace Marketing.Models
 		[Display(Name="Контакты")]
 		public virtual string Contacts { get; set; }
 
-		/// <summary>
-		/// TODO: удалить после проработки корректного алгоритма
-		/// </summary>
-		/// <param name="dbSession"></param>
-		/// <param name="producerId"></param>
-		public static void GeneRateCashForProducts(ISession dbSession, uint producerId)
-		{
-			using (var session = dbSession.SessionFactory.OpenSession()) {
-				session.Connection.Query(@"
-				INSERT INTO customers.promotion_producersproducts
-				SELECT DISTINCT ProductId, ProducerId
-				 FROM documents.documentbodies as doc
-				HAVING ProducerId = @producerId
-				", new {@producerId});
-			}
-		}
 	}
 }
