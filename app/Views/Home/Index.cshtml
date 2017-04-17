@@ -5,22 +5,42 @@
 }
 
 <div class="jumbotron">
-    <h1>@(Model?.Name ?? "[Пользователь не определён]")</h1>
+    <h1>Ассоциация "@(Model?.Name ?? "[Пользователь не определён]")"</h1>
 </div>
 
 <div class="row">
     <div class="col-md-4">
-        <ul>
-            <li>
-                <p>
-                    <a href="@Url.Action("Index", "Members")">Участники</a>
-                </p>
-            </li>
-            <li>
-                <p>
-                    <a href="@Url.Action("Index", "Marketing")">Маркетинговые мероприятия</a>
-                </p>
-            </li>
-        </ul>
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main_menu">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+                <div class="collapse navbar-collapse" id="main_menu">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li>
+                            <a href="@Url.Action("Index", "Members")">Участники</a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Index", "Marketing")">Маркетинговые мероприятия</a>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Отчёты On-line <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li>
+                                    <a href="@Url.Action("Members", "Report")">Отчёт по участникам</a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("MarketingEvents", "Report")">Отчёт по мероприятиям (производителям)</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
     </div>
 </div>
