@@ -15,7 +15,8 @@ namespace Marketing.Helpers
 			using (var message = new MailMessage {
 				From = new MailAddress(string.IsNullOrWhiteSpace(from) ? defSender : from),
 				Subject = subject,
-				Body = body
+				Body = body,
+				IsBodyHtml = true
 			}) {
 				var recipientList = to.Split(';').ToArray();
 				foreach (var recipient in recipientList) {
