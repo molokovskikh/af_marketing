@@ -4,15 +4,17 @@
 @Html.DevExpress().GridView(settings =>
 {
     settings.Name = "gridProducers";
-    settings.CallbackRouteValues = new { Action = "GetProducersList", Controller = "Marketing" };
+    settings.CallbackRouteValues = new { Action = "GetAvailableProducersList", Controller = "Marketing" };
     settings.KeyFieldName = "Id";
     settings.PreviewEncodeHtml = false;
     settings.EncodeHtml = false;
+    settings.Width = Unit.Percentage(100);
 
     settings.CommandColumn.Visible = true;
     settings.CommandColumn.ShowSelectCheckbox = true;
-    settings.ClientSideEvents.SelectionChanged = "switchSelection";
-    settings.ClientSideEvents.Init = "gridInit";
+    settings.CommandColumn.SelectAllCheckboxMode = GridViewSelectAllCheckBoxMode.AllPages;
+    settings.CommandColumn.Width = Unit.Pixel(30);
+    settings.ClientSideEvents.SelectionChanged = "switchAvailable";
 
     settings.Columns.Add(column =>
     {
@@ -21,12 +23,8 @@
         column.PropertiesEdit.EncodeHtml = false;
     });
 
-    settings.SettingsPager.PageSize = 10;
     settings.SettingsSearchPanel.Visible = true;
-    settings.SettingsPager.Position = PagerPosition.TopAndBottom;
-    settings.SettingsPager.FirstPageButton.Visible = true;
-    settings.SettingsPager.LastPageButton.Visible = true;
-    settings.SettingsPager.PageSizeItemSettings.Visible = true;
-    settings.SettingsPager.PageSizeItemSettings.Items = new string[] { "10", "20", "50", "100", "150", "200" };
+    settings.SettingsPager.PageSize = 20;
+    settings.SettingsPager.Mode = GridViewPagerMode.EndlessPaging;
 }).Bind(Model.AvailableProducers).GetHtml()
 

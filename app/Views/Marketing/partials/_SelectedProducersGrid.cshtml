@@ -1,0 +1,30 @@
+﻿@using System.Web.UI.WebControls
+@using Marketing.ViewModels
+@model MarketingEventViewModel
+@Html.DevExpress().GridView(settings =>
+{
+    settings.Name = "gridSelected";
+    settings.CallbackRouteValues = new { Action = "GetSelectedProducersList", Controller = "Marketing" };
+    settings.KeyFieldName = "Id";
+    settings.PreviewEncodeHtml = false;
+    settings.EncodeHtml = false;
+    settings.Width = Unit.Percentage(100);
+
+    settings.CommandColumn.Visible = true;
+    settings.CommandColumn.ShowSelectCheckbox = true;
+    settings.CommandColumn.SelectAllCheckboxMode = GridViewSelectAllCheckBoxMode.AllPages;
+    settings.CommandColumn.Width = Unit.Pixel(30);
+    settings.ClientSideEvents.SelectionChanged = "switchSelected";
+
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "Name";
+        column.Caption = "Наименование";
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+
+    settings.SettingsSearchPanel.Visible = true;
+    settings.SettingsPager.PageSize = 20;
+    settings.SettingsPager.Mode = GridViewPagerMode.EndlessPaging;
+}).Bind(Model.SelectedProducers).GetHtml()
+

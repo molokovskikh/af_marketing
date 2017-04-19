@@ -2,7 +2,9 @@
 @using Marketing.ViewModels
 @model MarketingEventViewModel
 @{
-  ViewBag.Title = $"Редактирование маркетингового мероприятия \"{Model.Name}\"";
+	ViewBag.Title = Model.AddMode
+		? "Добавление маркетингового мероприятия"
+		: $"Редактирование маркетингового мероприятия \"{Model.Name}\"";
 }
 
 <div class="form-group">
@@ -13,16 +15,18 @@
         <li>
             <a href="@Url.Action("Index", "Marketing")">Маркетинговые мероприятия</a>
         </li>
-        <li class="active">@Model.Name</li>
+        <li class="active">@(Model.AddMode ? "Добавление" : Model.Name)</li>
     </ol>
 </div>
 <h2>@ViewBag.Title</h2>
-@using (Html.BeginForm("Edit", "Marketing", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+@using (Html.BeginForm("Save", "Marketing", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
 	@Html.AntiForgeryToken()
 	@Html.ValidationSummary("", new { @class = "text-danger" })
+	@Html.HiddenFor(m => m.AddMode)
 	@Html.HiddenFor(m => m.MarketingEventId)
 	@Html.HiddenFor(m => m.SelectedProducerIds)
+	@Html.HiddenFor(m => m.RemovingProducerIds)
 	<div class="form-group">
 			<div class="col-md-2">
 					@Html.DisplayNameFor(m => m.Name)
@@ -32,7 +36,7 @@
 			</div>
 	</div>
 	<script>
-		function switchSelection(s, e) {
+		function switchAvailable(s, e) {
 			s.GetSelectedFieldValues("Id", GetSelectedIdsCallback);
 			if ($("#@Html.IdFor(m => m.Name)").val() == "")
 				s.GetSelectedFieldValues("Name", GetSelectedNamesCallback);
@@ -46,16 +50,69 @@
 			if (name && name != "")
 				$("#@Html.IdFor(m => m.Name)").val(name);
 		}
-    	function gridInit() {
-    		var idList = "@Model.SelectedProducerIds";
-    		var keys = idList.split(",");
-    		gridProducers.SelectRowsByKey(keys);
-    	}
+
+   	function switchSelected(s, e) {
+   		s.GetSelectedFieldValues("Id", GetRemovingIdsCallback);
+   	}
+   	function GetRemovingIdsCallback(ids) {
+   		var valStr = ids.join(',');
+   		$("#@Html.IdFor(m => m.RemovingProducerIds)").val(valStr);
+   	}
+
+   	function addProducers() {
+   		var list = $("#@Html.IdFor(m => m.SelectedProducerIds)").val();
+   		if (list != "") {
+   			$("#ajaxLoader").show();
+   			var url = "@Url.Action("AddProducers", "Marketing")";
+   			$.post(url, { selectedIds: list })
+					.done(function () {
+						$("#@Html.IdFor(m => m.SelectedProducerIds)").val("");
+						$("#@Html.IdFor(m => m.RemovingProducerIds)").val("");
+						gridSelected.PerformCallback();
+						gridProducers.PerformCallback();
+					})
+					.fail(function () { alert("Ошибка сервера"); })
+					.always(function () { $("#ajaxLoader").hide(); });
+   		}
+   	}
+   	function removeProducers() {
+   		var list = $("#@Html.IdFor(m => m.RemovingProducerIds)").val();
+   		if (list != "") {
+   			$("#ajaxLoader").show();
+   			var url = "@Url.Action("RemoveProducers", "Marketing")";
+   			$.post(url, { selectedIds: list })
+					.done(function () {
+						$("#@Html.IdFor(m => m.SelectedProducerIds)").val("");
+						$("#@Html.IdFor(m => m.RemovingProducerIds)").val("");
+						gridSelected.PerformCallback();
+						gridProducers.PerformCallback();
+					})
+					.fail(function () { alert("Ошибка сервера"); })
+					.always(function () { $("#ajaxLoader").hide(); });
+   		}
+   	}
 	</script>
-	@Html.Partial("partials/_EditGridView", Model)
-	<div class="form-group">
-			<div class="col-md-12">
-					<input type="submit" class="btn btn-primary" value="Сохранить" />
-			</div>
-	</div>
+	<h3>Производители, участвующие в маркетинговом мероприятии</h3>
+	<div class="row">
+		<div class="col-md-5">
+			@Html.Partial("partials/_SelectingProducersGrid", Model)
+		</div>
+    <div class="col-md-2 text-center">
+      <div class="form-group">
+        <button type="button" class="btn btn-primary glyphicon glyphicon-arrow-right button-arrow" onclick="addProducers();" data-toggle="tooltip" data-placement="top" title="Добавить отмеченных производителей"></button>
+      </div>
+      <div class="form-group">
+        <button type="button" class="btn btn-primary glyphicon glyphicon-arrow-left button-arrow" onclick="removeProducers();" data-toggle="tooltip" data-placement="top" title="Исключить отмеченных производителей"></button>
+      </div>
+    </div>
+    <div class="col-md-5">
+			@Html.Partial("partials/_SelectedProducersGrid", Model)
+    </div>
+  </div>
+	<div class="clearfix">&nbsp;</div>
+  <div class="form-group">
+    <div class="col-md-12">
+      <input type="submit" class="btn btn-primary" value="@(Model.AddMode ? "Добавить" : "Сохранить")" data-toggle="tooltip" data-placement="right" title="Сохранить маркетинговое мероприятие" />
+    </div>
+  </div>
 }

@@ -316,15 +316,14 @@
     <Content Include="Views\Marketing\PromotionChange.cshtml" />
     <Content Include="Views\Marketing\partials\_DateRange.cshtml" />
     <Content Include="Views\Marketing\partials\_PromotionEditRegionFilterLogic.cshtml" />
-    <Content Include="Views\Marketing\Add.cshtml" />
-    <Content Include="Views\Marketing\partials\_AddGridView.cshtml" />
     <Content Include="Views\Marketing\Edit.cshtml" />
-    <Content Include="Views\Marketing\partials\_EditGridView.cshtml" />
+    <Content Include="Views\Marketing\partials\_SelectingProducersGrid.cshtml" />
     <None Include="Views\Marketing\partials\_PromotionEditRegionFilterData.cshtml" />
     <Content Include="Views\Members\_TrailInfo.cshtml" />
     <Content Include="Views\Members\_MembersList.cshtml" />
     <Content Include="Views\Report\Members.cshtml" />
     <Content Include="Views\Report\MarketingEvents.cshtml" />
+    <Content Include="Views\Marketing\partials\_SelectedProducersGrid.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Helpers\GridViews\" />
