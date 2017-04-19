@@ -93,6 +93,18 @@ namespace Marketing
 					c.Inverse(true);
 				});
 			});
+			Mapper.Class<MarketingEvent>(m => {
+				m.Bag(o => o.Producers, c => {
+					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
+					c.Inverse(true);
+					c.Key(k => k.Column("MarketingEventId"));
+				});
+				m.Bag(o => o.Promotions, c => {
+					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
+					c.Inverse(true);
+					c.Key(k => k.Column("MarketingEventId"));
+				});
+			});
 			Mapper.Class<PromoterProducer>(m => {
 				m.ManyToOne(s => s.Producer, mapper => mapper.Column("ProducerId"));
 				m.ManyToOne(s => s.MarketingEvent, mapper => mapper.Column("MarketingEventId"));

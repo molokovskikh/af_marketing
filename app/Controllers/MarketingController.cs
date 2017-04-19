@@ -20,6 +20,22 @@ namespace Marketing.Controllers
 	[Authorize]
 	public class MarketingController : BaseController
 	{
+		private MarketingEventViewModel _editedEvent;
+		private MarketingEventViewModel EditedEvent
+		{
+			get
+			{
+				if (_editedEvent == null)
+					_editedEvent = System.Web.HttpContext.Current.Session["editedEvent"] as MarketingEventViewModel;
+				return _editedEvent;
+			}
+			set
+			{
+				_editedEvent = null;
+				System.Web.HttpContext.Current.Session["editedEvent"] = value;
+			}
+		}
+
 		public ActionResult Index()
 		{
 			var model = GetGridData();
@@ -55,47 +71,102 @@ namespace Marketing.Controllers
 		public ActionResult Add()
 		{
 			var model = new MarketingEventViewModel();
+			model.AddMode = true;
 			model.AvailableProducers = DbSession.Query<Producer>()
 				.OrderBy(r => r.Name)
 				.ToList();
-			return View(model);
+			EditedEvent = model;
+			return View("Edit", model);
 		}
 
 		[HttpPost]
-		public ActionResult Add(MarketingEventViewModel model)
+		public ActionResult Save(MarketingEventViewModel model)
 		{
 			if (!ModelState.IsValid)
-				return View(model);
+				return View("Edit", model);
 
-			var marketingEvent = new MarketingEvent {
-				Promoter = CurrentPromoter,
-				Name = model.Name
-			};
-			DbSession.Save(marketingEvent);
+			if (model.AddMode) {
+				var marketingEvent = new MarketingEvent {
+					Promoter = CurrentPromoter,
+					Name = model.Name
+				};
+				DbSession.Save(marketingEvent);
 
-			if (!string.IsNullOrWhiteSpace(model.SelectedProducerIds)) {
-				var ids = model.SelectedProducerIds.Split(',').Select(p => uint.Parse(p)).ToArray();
-				ids.ForEach(p => {
+				EditedEvent.SelectedProducers.ForEach(p => {
 					DbSession.CreateSQLQuery(
 							"insert into Customers.PromoterProducers (ProducerId, MarketingEventId) values (:id, :eventId)")
-						.SetParameter("id", p)
+						.SetParameter("id", p.Id)
+						.SetParameter("eventId", marketingEvent.Id)
+						.ExecuteUpdate();
+				});
+			}
+			else {
+				var marketingEvent = DbSession.Query<MarketingEvent>().FirstOrDefault(r => r.Id == model.MarketingEventId);
+				if (marketingEvent == null)
+					return HttpNotFound();
+				marketingEvent.Name = model.Name;
+
+				var producers = DbSession.Query<PromoterProducer>()
+					.Where(r => r.MarketingEvent == marketingEvent)
+					.ToArray();
+				producers.Where(r => !EditedEvent.SelectedProducers.Contains(r.Producer)).ForEach(p => { DbSession.Delete(p); });
+				EditedEvent.SelectedProducers.Where(r => !producers.Any(p => p.Producer == r)).ForEach(x => {
+					DbSession.CreateSQLQuery(
+							"insert into Customers.PromoterProducers (ProducerId, MarketingEventId) values (:id, :eventId)")
+						.SetParameter("id", x.Id)
 						.SetParameter("eventId", marketingEvent.Id)
 						.ExecuteUpdate();
 				});
 			}
 
+			EditedEvent = null;
+
 			return RedirectToAction("Index");
 		}
 
 		[HttpPost]
-		public ActionResult GetProducersList()
+		public ActionResult GetAvailableProducersList()
 		{
-			var model = new MarketingEventViewModel {
-				AvailableProducers = DbSession.Query<Producer>()
-					.OrderBy(r => r.Name)
-					.ToList()
-			};
-			return PartialView("partials/_AddGridView", model);
+			return PartialView("partials/_SelectingProducersGrid", EditedEvent);
+		}
+
+		[HttpPost]
+		public ActionResult GetSelectedProducersList()
+		{
+			return PartialView("partials/_SelectedProducersGrid", EditedEvent);
+		}
+
+		[HttpPost]
+		public string AddProducers(string selectedIds)
+		{
+			var ids = selectedIds.Split(',').Select(r => uint.Parse(r)).ToArray();
+			ids.ForEach(r => {
+				var item = DbSession.Query<Producer>().FirstOrDefault(p => p.Id == r);
+				if (item != null)
+					EditedEvent.SelectedProducers.Add(item);
+			});
+			EditedEvent.SelectedProducers = EditedEvent.SelectedProducers.OrderBy(r => r.Name).ToList();
+			EditedEvent.AvailableProducers = DbSession.Query<Producer>()
+				.ToList()
+				.Where(r => !EditedEvent.SelectedProducers.Contains(r))
+				.ToList();
+			return "";
+		}
+
+		[HttpPost]
+		public string RemoveProducers(string selectedIds)
+		{
+			var ids = selectedIds.Split(',').Select(r => uint.Parse(r)).ToArray();
+			ids.ForEach(r => {
+				var item = EditedEvent.SelectedProducers.FirstOrDefault(p => p.Id == r);
+				if (item != null)
+					EditedEvent.SelectedProducers.Remove(item);
+			});
+			EditedEvent.AvailableProducers = DbSession.Query<Producer>()
+				.ToList()
+				.Where(r => !EditedEvent.SelectedProducers.Contains(r))
+				.ToList();
+			return "";
 		}
 
 		public ActionResult Edit(uint id)
@@ -107,38 +178,19 @@ namespace Marketing.Controllers
 			var model = new MarketingEventViewModel() {
 				MarketingEventId = marketingEvent.Id,
 				Name = marketingEvent.Name,
-				SelectedProducerIds = string.Join(",", marketingEvent.Producers.Select(r => r.Producer.Id.ToString()).ToArray())
 			};
-			model.AvailableProducers = DbSession.Query<Producer>()
+			model.SelectedProducers = DbSession.Query<Producer>()
+				.ToList()
+				.Where(r => marketingEvent.Producers.Any(p => p.Producer == r))
 				.OrderBy(r => r.Name)
 				.ToList();
+			model.AvailableProducers = DbSession.Query<Producer>()
+				.Where(r => !model.SelectedProducers.Contains(r))
+				.OrderBy(r => r.Name)
+				.ToList();
+			EditedEvent = model;
+
 			return View(model);
-		}
-
-		[HttpPost]
-		public ActionResult Edit(MarketingEventViewModel model)
-		{
-			if (!ModelState.IsValid)
-				return View(model);
-
-			var marketingEvent = DbSession.Query<MarketingEvent>().SingleOrDefault(r => r.Id == model.MarketingEventId);
-			marketingEvent.Name = model.Name;
-			DbSession.Update(marketingEvent);
-
-			var producers = DbSession.Query<PromoterProducer>()
-				.Where(r => r.MarketingEvent == marketingEvent)
-				.ToArray();
-			var ids = model.SelectedProducerIds.Split(',').Select(p => uint.Parse(p)).ToArray();
-			producers.Where(r => !ids.Contains(r.Producer.Id)).ForEach(p => { DbSession.Delete(p); });
-			ids.Where(r => !producers.Any(p => p.Producer.Id == r)).ForEach(x => {
-				DbSession.CreateSQLQuery(
-						"insert into Customers.PromoterProducers (ProducerId, MarketingEventId) values (:id, :eventId)")
-					.SetParameter("id", x)
-					.SetParameter("eventId", marketingEvent.Id)
-					.ExecuteUpdate();
-			});
-
-			return RedirectToAction("Index");
 		}
 
 		public ActionResult Delete(uint id)
