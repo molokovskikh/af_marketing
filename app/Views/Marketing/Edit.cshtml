@@ -27,6 +27,8 @@
 	@Html.HiddenFor(m => m.MarketingEventId)
 	@Html.HiddenFor(m => m.SelectedProducerIds)
 	@Html.HiddenFor(m => m.RemovingProducerIds)
+	if (!Model.AddMode)
+  {
 	<script>
     	var eventName = "";
     	function enterEditName() {
@@ -56,8 +58,17 @@
 					.always(function () { $("#ajaxLoader").hide(); });
     	}
 	</script>
+  }
 	<div class="form-group">
 			@Html.LabelFor(m => m.Name, new { @class = "col-md-2" })
+			@if (Model.AddMode)
+      {
+			<div class="col-md-10">
+					@Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+			</div>
+      }
+      else
+      {
 			<div id="viewName" class="col-md-10">
           <div class="pull-left">
               <span id="eventName" class="form-control pull-left">
@@ -79,6 +90,7 @@
 							</button>
 					</div>
 			</div>
+			}
 	</div>
 	<script>
 		function switchAvailable(s, e) {
