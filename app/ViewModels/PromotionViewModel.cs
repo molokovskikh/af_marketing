@@ -109,7 +109,7 @@ namespace Marketing.ViewModels
 			SelectedPriceIds = string.Join(",", AvailablePrices.Select(r => r.PriceId).ToArray());
 			if (!string.IsNullOrEmpty(producerIds) && !string.IsNullOrEmpty(SelectedPriceIds)) {
 				var sql =
-					$@"select distinct c0.PriceCode, c0.ProductId, a.ProducerId, c.Name as ProductName, pr.Name as ProducerName,
+					$@"select distinct c0.ProductId, a.ProducerId, c.Name as ProductName, pr.Name as ProducerName,
 		cn.Name as CatalogName, cf.Form as CatalogFormName, p.Properties as CatalogProperty,
 		pr.Name as CatalogProducer, pr.Name as MainCatalogProducer, '' as Package,
 		1 as Multiplier, '' as `Comment`, '' as Document, c.VitallyImportant
