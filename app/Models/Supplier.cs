@@ -15,5 +15,9 @@ namespace Marketing.Models
 		public virtual string Name { get; set; }
 
 		public virtual string FullName { get; set; }
+
+		public virtual ulong RegionMask { get; set; }
+
+		public virtual bool Disabled { get; set; }
 	}
 }

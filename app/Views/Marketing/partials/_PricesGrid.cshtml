@@ -1,0 +1,40 @@
+﻿@using System.Web.UI.WebControls
+@using Marketing.ViewModels
+@model PromotionFromPriceViewModel
+@Html.DevExpress().GridView(settings =>
+{
+    settings.Name = "gridPrices";
+    settings.CallbackRouteValues = new { Action = "GetPricesList", Controller = "Marketing", Id = Model.PromotionId };
+    settings.KeyFieldName = "PriceId";
+    settings.PreviewEncodeHtml = false;
+    settings.EncodeHtml = false;
+    settings.Width = Unit.Percentage(100);
+
+    settings.CommandColumn.Visible = true;
+    settings.CommandColumn.Width = Unit.Pixel(30);
+    settings.CommandColumn.ShowSelectCheckbox = true;
+    settings.CommandColumn.SelectAllCheckboxMode = GridViewSelectAllCheckBoxMode.AllPages;
+
+    settings.ClientSideEvents.SelectionChanged = "switchPrices";
+    settings.ClientSideEvents.EndCallback = "pricesAfterCallback";
+    settings.ClientSideEvents.Init = "pricesInit";
+
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "Name";
+        column.Caption = "Наименование";
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "PriceDate";
+        column.ColumnType = MVCxGridViewColumnType.DateEdit;
+        column.Caption = "Дата прайса";
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+
+    settings.SettingsBehavior.AllowFocusedRow = true;
+    settings.SettingsSearchPanel.Visible = true;
+    settings.SettingsPager.PageSize = 50;
+    settings.SettingsPager.Mode = GridViewPagerMode.EndlessPaging;
+}).Bind(Model.AvailablePrices).GetHtml()

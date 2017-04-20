@@ -1,0 +1,116 @@
+﻿@using System.Web.UI.WebControls
+@using Marketing.ViewModels
+@model PromotionFromPriceViewModel
+@Html.DevExpress().GridView(settings =>
+{
+    settings.Name = "gridGoods";
+    settings.CallbackRouteValues = new { Action = "GetProductsList", Controller = "Marketing", Id = Model.PromotionId };
+    settings.KeyFieldName = "ProductId";
+    settings.PreviewEncodeHtml = false;
+    settings.EncodeHtml = false;
+    settings.Width = Unit.Percentage(100);
+
+    settings.CommandColumn.Visible = true;
+    settings.CommandColumn.Width = Unit.Pixel(30);
+    settings.CommandColumn.ShowSelectCheckbox = true;
+    settings.CommandColumn.SelectAllCheckboxMode = GridViewSelectAllCheckBoxMode.AllPages;
+
+    settings.ClientSideEvents.SelectionChanged = "switchGoods";
+    settings.ClientSideEvents.EndCallback = "goodsAfterCallback";
+    settings.ClientSideEvents.Init = "goodsInit";
+
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "ProductId";
+        column.Caption = "Код товара";
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "ProducerId";
+        column.Caption = "Код производителя";
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "ProductName";
+        column.Caption = "Оригинальное Наименование товара";
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "ProducerName";
+        column.Caption = "Оригинальное Наименование Производителя";
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "CatalogName";
+        column.Caption = "Каталожное Наименование товара";
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "CatalogFormName";
+        column.Caption = "Каталожная форма выпуска и дозировка";
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "CatalogProperty";
+        column.Caption = "Каталожное свойство";
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "CatalogProducer";
+        column.Caption = "Каталожный Производитель";
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "MainCatalogProducer";
+        column.Caption = "Главный Каталожный Производитель";
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "Package";
+        column.Caption = "Цех.упак.";
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "Multiplier";
+        column.Caption = "Кратность";
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "Comment";
+        column.Caption = "Примечание";
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "Document";
+        column.Caption = "Документ";
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "VitallyImportant";
+        column.Caption = "Признак ЖВ";
+        column.ColumnType = MVCxGridViewColumnType.CheckBox;
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+
+    settings.SettingsSearchPanel.Visible = true;
+    settings.Settings.HorizontalScrollBarMode = ScrollBarMode.Auto;
+    settings.SettingsPager.PageSize = 20;
+    settings.SettingsPager.Position = PagerPosition.TopAndBottom;
+    settings.SettingsPager.FirstPageButton.Visible = true;
+    settings.SettingsPager.LastPageButton.Visible = true;
+    settings.SettingsPager.PageSizeItemSettings.Visible = true;
+    settings.SettingsPager.PageSizeItemSettings.Items = new string[] { "10", "20", "50", "100", "150", "200" };
+}).Bind(Model.AvailableProducts).GetHtml()
