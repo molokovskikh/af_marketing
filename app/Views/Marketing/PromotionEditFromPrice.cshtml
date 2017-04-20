@@ -1,0 +1,151 @@
+﻿@using Marketing.ViewModels
+@model PromotionFromPriceViewModel
+
+@{
+  var catalogList = (List<ViewModelListItem>)ViewBag.CatalogList;
+  ViewBag.Title = $"Редактирование акции \"{Model.PromotionName}\"";
+  var selectMethods = new List<SelectListItem> {
+    new SelectListItem { Value = SelectMethod.SelectFromList.ToString(), Text = "Выбор из списка" },
+    new SelectListItem { Value = SelectMethod.SelectFromPrice.ToString(), Text = "Выбор из прайса" }
+  };
+}
+
+<div class="form-group">
+    <ol class="breadcrumb">
+        <li>
+            <a href="@Url.Action("Index", "Home")">Меню</a>
+        </li>
+        <li>
+            <a href="@Url.Action("Index", "Marketing")">Маркетинговые мероприятия</a>
+        </li>
+        <li>
+            <a href="@Url.Action("PromotionList", "Marketing", new {id = Model.MarketingEventId})">@Model.MarketingEventName</a>
+        </li>
+        <li class="active">@ViewBag.Title</li>
+    </ol>
+</div>
+<h2>@ViewBag.Title</h2>
+
+<form id="promotionForm" action="@Url.Action("PromotionEdit", "Marketing", new { id = Model.PromotionId })" method="post" novalidate="novalidate">
+	@Html.AntiForgeryToken()
+	@Html.ValidationSummary("", new {@class = "text-danger"})
+	@Html.HiddenFor(model => model.PromotionId)
+	@Html.HiddenFor(m => m.SelectedSupplierIds)
+	@Html.HiddenFor(m => m.SelectedPriceIds)
+	@Html.HiddenFor(m => m.SelectedProductIds)
+
+		<script>
+        	function suppliersInit(s, e) {
+        		var valStr = $("#@Html.IdFor(m => m.SelectedSupplierIds)").val();
+        		if (valStr == "")
+        			return;
+        		var arr = valStr.split(',');
+        		s.SelectRowsByKey(arr);
+        	}
+        	function pricesInit(s, e) {
+        		var valStr = $("#@Html.IdFor(m => m.SelectedPriceIds)").val();
+        		if (valStr == "")
+        			return;
+        		var arr = valStr.split(',');
+        		s.SelectRowsByKey(arr);
+        	}
+        	function goodsInit(s, e) {
+        		var valStr = $("#@Html.IdFor(m => m.SelectedProductIds)").val();
+        		if (valStr == "")
+        			return;
+        		var arr = valStr.split(',');
+        		s.SelectRowsByKey(arr);
+        	}
+
+        	function switchSuppliers(s, e) {
+        		s.GetSelectedFieldValues("Id", GetSelectedSupplierIdsCallback);
+					}
+        	function GetSelectedSupplierIdsCallback(ids) {
+        		var valStr = ids.join(',');
+        		$("#@Html.IdFor(m => m.SelectedSupplierIds)").val(valStr);
+        		loadPrices();
+        	}
+
+        	function switchPrices(s, e) {
+        		s.GetSelectedFieldValues("PriceId", GetSelectedPriceIdsCallback);
+					}
+        	function GetSelectedPriceIdsCallback(ids) {
+        		var valStr = ids.join(',');
+        		$("#@Html.IdFor(m => m.SelectedPriceIds)").val(valStr);
+        		loadGoods();
+        	}
+
+        	function switchGoods(s, e) {
+        		s.GetSelectedFieldValues("ProductId", GetSelectedGoodsIdsCallback);
+        	}
+        	function GetSelectedGoodsIdsCallback(ids) {
+        		var valStr = ids.join(',');
+        		$("#@Html.IdFor(m => m.SelectedProductIds)").val(valStr);
+        	}
+
+        	function loadPrices() {
+        		$("#ajaxLoader").show();
+        		var url = "@Url.Action("ChangeSupplierList", "Marketing")";
+        		var ids = $("#@Html.IdFor(m => m.SelectedSupplierIds)").val();
+        		$.post(url, { selectedIds: ids })
+							.done(function () { gridPrices.PerformCallback(); })
+							.fail(function () { alert("Ошибка сервера"); })
+							.always(function () { $("#ajaxLoader").hide(); });
+        	}
+        	function loadGoods() {
+        		$("#ajaxLoader").show();
+        		var url = "@Url.Action("ChangePriceList", "Marketing")";
+        		var ids = $("#@Html.IdFor(m => m.SelectedPriceIds)").val();
+        		$.post(url, { selectedIds: ids })
+							.done(function () { gridGoods.PerformCallback(); })
+							.fail(function () { alert("Ошибка сервера"); })
+							.always(function () { $("#ajaxLoader").hide(); });
+					}
+
+        	function pricesAfterCallback(s, e) {
+        		s.GetSelectedFieldValues("PriceId", GetSelectedPriceIdsAfterCallback);
+        	}
+        	function GetSelectedPriceIdsAfterCallback(ids) {
+        		var valStr = ids.join(',');
+        		$("#@Html.IdFor(m => m.SelectedPriceIds)").val(valStr);
+        	}
+        	function goodsAfterCallback(s, e) {
+        		switchGoods(s, e);
+        	}
+
+        	$(document).ready(function () {
+        		function selectMethod(){
+        			$("#promotionForm").submit();
+        		}
+        		$("#@Html.IdFor(m => m.Method)").on("change", selectMethod);
+        	});
+		</script>
+<div class="form-group">
+    <button type="submit" formaction="@Url.Action("PromotionFromPriceSave", "Marketing")" class="btn btn-primary" data-toggle="tooltip" data-placement="right" title="Сохранить списки отобранных поставщиков и товаров">Сохранить</button>
+</div>
+<div class="form-group">
+		@Html.DropDownListFor(m => m.Method, selectMethods)
+</div>
+</form>
+
+<div class="container-fluid">
+		<div class="row">
+				<div class="col-md-6">
+						<h3>Поставщики</h3>
+						@Html.Partial("partials/_SuppliersGrid", Model)
+				</div>
+				<div class="col-md-6">
+						<h3>Прайсы</h3>
+						@Html.Partial("partials/_PricesGrid", Model)
+				</div>
+		</div>
+		<div class="row">
+				<div class="col-md-12">
+						<h3>Товары</h3>
+						@Html.Partial("partials/_GoodsGrid", Model)
+				</div>
+		</div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

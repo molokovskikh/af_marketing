@@ -224,6 +224,8 @@
     <Compile Include="ViewModels\MembersGridViewModel.cs" />
     <Compile Include="ViewModels\MemberSubscribesViewModel.cs" />
     <Compile Include="ViewModels\MemberViewModel.cs" />
+    <Compile Include="ViewModels\PricesGridViewModel.cs" />
+    <Compile Include="ViewModels\ProductsGridViewModel.cs" />
     <Compile Include="ViewModels\PromotionConditionsViewModel.cs" />
     <Compile Include="ViewModels\PromotionViewModel.cs" />
     <Compile Include="ViewModels\RegisterViewModel.cs" />
@@ -324,6 +326,11 @@
     <Content Include="Views\Report\Members.cshtml" />
     <Content Include="Views\Report\MarketingEvents.cshtml" />
     <Content Include="Views\Marketing\partials\_SelectedProducersGrid.cshtml" />
+
+    <Content Include="Views\Marketing\PromotionEditFromPrice.cshtml" />
+    <Content Include="Views\Marketing\partials\_SuppliersGrid.cshtml" />
+    <Content Include="Views\Marketing\partials\_PricesGrid.cshtml" />
+    <Content Include="Views\Marketing\partials\_GoodsGrid.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Helpers\GridViews\" />
