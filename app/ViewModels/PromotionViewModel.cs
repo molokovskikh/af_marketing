@@ -87,7 +87,8 @@ namespace Marketing.ViewModels
 				.ToList();
 
 			var producerIds = string.Join(",", Producers.Select(r => r.Id.ToString()).ToArray());
-			var sql = $@"select pd.PriceCode as PriceId, pd.PriceName as Name, pi.PriceDate
+			if (!string.IsNullOrEmpty(SelectedSupplierIds) && !string.IsNullOrEmpty(producerIds)) {
+				var sql = $@"select pd.PriceCode as PriceId, pd.PriceName as Name, pi.PriceDate
 	from usersettings.pricesdata pd
 		inner join usersettings.pricescosts pc on pc.PriceCode = pd.pricecode
 		inner join usersettings.PriceItems pi on pi.Id = pc.PriceItemId
@@ -102,10 +103,13 @@ namespace Marketing.ViewModels
 				where p.Hidden = 0
 					and a.ProducerId in ({producerIds})
 			)";
-			AvailablePrices = dbSession.Connection.Query<PricesGridViewModel>(sql).ToList();
+				AvailablePrices = dbSession.Connection.Query<PricesGridViewModel>(sql).ToList();
+			}
 
 			SelectedPriceIds = string.Join(",", AvailablePrices.Select(r => r.PriceId).ToArray());
-			sql = $@"select distinct c0.PriceCode, c0.ProductId, a.ProducerId, c.Name as ProductName, pr.Name as ProducerName,
+			if (!string.IsNullOrEmpty(producerIds) && !string.IsNullOrEmpty(SelectedPriceIds)) {
+				var sql =
+					$@"select distinct c0.PriceCode, c0.ProductId, a.ProducerId, c.Name as ProductName, pr.Name as ProducerName,
 		cn.Name as CatalogName, cf.Form as CatalogFormName, p.Properties as CatalogProperty,
 		pr.Name as CatalogProducer, pr.Name as MainCatalogProducer, '' as Package,
 		1 as Multiplier, '' as `Comment`, '' as Document, c.VitallyImportant
@@ -119,7 +123,8 @@ namespace Marketing.ViewModels
 	where p.Hidden = 0
 		and a.ProducerId in ({producerIds})
 		and c0.PriceCode in ({SelectedPriceIds})";
-			AvailableProducts = dbSession.Connection.Query<ProductsGridViewModel>(sql).ToList();
+				AvailableProducts = dbSession.Connection.Query<ProductsGridViewModel>(sql).ToList();
+			}
 		}
 	}
 
