@@ -15,10 +15,10 @@
         <li>
             <a href="@Url.Action("Index", "Marketing")">Маркетинговые мероприятия</a>
         </li>
-        <li class="active">@(Model.AddMode ? "Добавление" : Model.Name)</li>
+        <li class="active" id="breadcrumb">@(Model.AddMode ? "Добавление" : Model.Name)</li>
     </ol>
 </div>
-<h2>@ViewBag.Title</h2>
+<h2 id="title">@ViewBag.Title</h2>
 @using (Html.BeginForm("Save", "Marketing", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
 	@Html.AntiForgeryToken()
@@ -27,12 +27,57 @@
 	@Html.HiddenFor(m => m.MarketingEventId)
 	@Html.HiddenFor(m => m.SelectedProducerIds)
 	@Html.HiddenFor(m => m.RemovingProducerIds)
+	<script>
+    	var eventName = "";
+    	function enterEditName() {
+    		eventName = $("#@Html.IdFor(m => m.Name)").val();
+    		$("#viewName").hide();
+    		$("#editName").show();
+    	}
+    	function enterViewName() {
+    		$("#@Html.IdFor(m => m.Name)").val(eventName);
+    		$("#editName").hide();
+    		$("#viewName").show();
+    	}
+    	function saveName() {
+    		$("#ajaxLoader").show();
+    		var url = "@Url.Action("SaveName", "Marketing")";
+    		var name = $("#@Html.IdFor(m => m.Name)").val();
+    		var id = $("#@Html.IdFor(m => m.MarketingEventId)").val();
+    		$.post(url, { id: id, name: name })
+					.done(function () {
+						eventName = name;
+						$("#eventName").html(name);
+						enterViewName();
+						$("#breadcrumb").html(name);
+						$("#title").html(name);
+					})
+					.fail(function () { alert("Ошибка сервера"); })
+					.always(function () { $("#ajaxLoader").hide(); });
+    	}
+	</script>
 	<div class="form-group">
-			<div class="col-md-2">
-					@Html.DisplayNameFor(m => m.Name)
+			@Html.LabelFor(m => m.Name, new { @class = "col-md-2" })
+			<div id="viewName" class="col-md-10">
+          <div class="pull-left">
+              <span id="eventName" class="form-control pull-left">
+                  @Html.DisplayFor(m => m.Name)
+              </span>
+          </div>
+          <button type="button" class="btn btn-default" onclick="enterEditName();" data-toggle="tooltip" data-placement="right" title="Изменить наименование">
+							<span class="glyphicon glyphicon-pencil"></span>
+					</button>
 			</div>
-			<div class="col-md-10">
-					@Html.EditorFor(m => m.Name)
+			<div id="editName" class="col-md-10" style="display:none">
+					@Html.TextBoxFor(m => m.Name, new { @class = "form-control pull-left" })
+					<div class="btn-group" role="group">
+              <button type="button" class="btn btn-default" onclick="saveName();" data-toggle="tooltip" data-placement="top" title="Сохранить новое наименование">
+									<span class="glyphicon glyphicon-ok"></span>
+							</button>
+              <button type="button" class="btn btn-default" onclick="enterViewName();" data-toggle="tooltip" data-placement="right" title="Отменить сделанные изменения">
+									<span class="glyphicon glyphicon-remove"></span>
+							</button>
+					</div>
 			</div>
 	</div>
 	<script>
