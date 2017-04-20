@@ -104,7 +104,6 @@ namespace Marketing.Controllers
 				var marketingEvent = DbSession.Query<MarketingEvent>().FirstOrDefault(r => r.Id == model.MarketingEventId);
 				if (marketingEvent == null)
 					return HttpNotFound();
-				marketingEvent.Name = model.Name;
 
 				var producers = DbSession.Query<PromoterProducer>()
 					.Where(r => r.MarketingEvent == marketingEvent)
@@ -191,6 +190,18 @@ namespace Marketing.Controllers
 			EditedEvent = model;
 
 			return View(model);
+		}
+
+		[HttpPost]
+		public ActionResult SaveName(uint id, string name)
+		{
+			var marketingEvent = DbSession.Query<MarketingEvent>().FirstOrDefault(r => r.Id == id);
+			if (marketingEvent == null)
+				return HttpNotFound();
+			marketingEvent.Name = name;
+			DbSession.Update(marketingEvent);
+			EditedEvent.Name = name;
+			return Content("");
 		}
 
 		public ActionResult Delete(uint id)
