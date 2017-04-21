@@ -19,13 +19,12 @@ namespace Marketing.Controllers
 		[AllowAnonymous]
 		public ActionResult Login()
 		{
-			ViewBag.ReturnUrl = Request.QueryString["returnUrl"] ?? "/";
 			return View(new LoginViewModel());
 		}
 
 		[AllowAnonymous]
 		[HttpPost]
-		public ActionResult Login(LoginViewModel model, string returnUrl)
+		public ActionResult Login(LoginViewModel model)
 		{
 			if (!ModelState.IsValid)
 				return View(model);
@@ -61,9 +60,7 @@ namespace Marketing.Controllers
 			FormsAuthentication.SetAuthCookie(login, model.RememberMe);
 			System.Web.HttpContext.Current.Session["promoter"] = user;
 
-			if ((returnUrl ?? "/") == "/")
-				returnUrl = "/marketing/";
-			return Redirect(returnUrl);
+			return Redirect("~");
 		}
 
 		[HttpPost]

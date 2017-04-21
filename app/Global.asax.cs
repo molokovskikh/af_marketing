@@ -35,5 +35,11 @@ namespace Marketing
 				throw;
 			}
 		}
+
+		public void Application_Error(object sender, EventArgs e)
+		{
+			Log.Error("Ошибка при обработке запроса", Server.GetLastError());
+			Server.ClearError();
+		}
 	}
 }
