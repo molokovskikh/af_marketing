@@ -345,7 +345,7 @@ namespace Marketing.Controllers
 		public ActionResult PromotionEditFromPrice(uint id)
 		{
 			var model = new PromotionFromPriceViewModel();
-			model.SetData(DbSession, id);
+			model.Init(DbSession, id);
 			EditedPromotionFromPrice = model;
 			return View("PromotionEditFromPrice", model);
 		}
@@ -403,7 +403,9 @@ namespace Marketing.Controllers
 
 			EditedPromotionFromPrice.AvailableProducts = EditedPromotionFromPrice.GetProductsList(DbSession, producerIds, selectedIds);
 
-			return Content("");
+			var countNoProducer = EditedPromotionFromPrice.AvailableProducts.Count(r => string.IsNullOrEmpty(r.CatalogProducer));
+
+			return Json(new { countNoProducer = countNoProducer });
 		}
 
 		[HttpPost]

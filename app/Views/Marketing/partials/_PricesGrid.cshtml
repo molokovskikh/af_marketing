@@ -34,6 +34,12 @@
         column.Caption = "Дата прайса";
         column.PropertiesEdit.EncodeHtml = false;
     });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "SupplierName";
+        column.Caption = "Поставщик";
+        column.PropertiesEdit.EncodeHtml = false;
+    });
 
     settings.SettingsBehavior.AllowFocusedRow = true;
     settings.SettingsSearchPanel.Visible = true;
