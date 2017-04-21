@@ -8,11 +8,13 @@ namespace Marketing.ViewModels
 {
 	public class ProductsGridViewModel
 	{
-		[Display(Name = "Код товара")]
 		public uint ProductId { get; set; }
 
+		[Display(Name = "Код товара")]
+		public string Code { get; set; }
+
 		[Display(Name = "Код производителя")]
-		public uint ProducerId { get; set; }
+		public string CodeCr { get; set; }
 
 		[Display(Name = "Оригинальное Наименование товара")]
 		public string ProductName { get; set; }

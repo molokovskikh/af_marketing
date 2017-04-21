@@ -87,13 +87,23 @@ namespace Marketing.ViewModels
 				.ToList();
 
 			var producerIds = string.Join(",", Producers.Select(r => r.Id.ToString()).ToArray());
-			if (!string.IsNullOrEmpty(SelectedSupplierIds) && !string.IsNullOrEmpty(producerIds)) {
-				var sql = $@"select pd.PriceCode as PriceId, pd.PriceName as Name, pi.PriceDate
+			AvailablePrices = GetPricesList(dbSession, producerIds, SelectedSupplierIds);
+
+			SelectedPriceIds = string.Join(",", AvailablePrices.Select(r => r.PriceId).ToArray());
+			AvailableProducts = GetProductsList(dbSession, producerIds, SelectedPriceIds);
+		}
+
+		public IList<PricesGridViewModel> GetPricesList(ISession dbSession, string producerIds, string supplierIds)
+		{
+			if (string.IsNullOrEmpty(supplierIds) || string.IsNullOrEmpty(producerIds))
+				return new List<PricesGridViewModel>();
+
+			var sql = $@"select pd.PriceCode as PriceId, pd.PriceName as Name, pi.PriceDate
 	from usersettings.pricesdata pd
 		inner join usersettings.pricescosts pc on pc.PriceCode = pd.pricecode
 		inner join usersettings.PriceItems pi on pi.Id = pc.PriceItemId
 	where pd.Enabled = 1
-		and pd.FirmCode in ({SelectedSupplierIds})
+		and pd.FirmCode in ({supplierIds})
 		and pd.PriceCode in (
 			select c0.PriceCode
 				from Farm.Core0 c0
@@ -103,28 +113,43 @@ namespace Marketing.ViewModels
 				where p.Hidden = 0
 					and a.ProducerId in ({producerIds})
 			)";
-				AvailablePrices = dbSession.Connection.Query<PricesGridViewModel>(sql).ToList();
-			}
+			return dbSession.Connection.Query<PricesGridViewModel>(sql).ToList();
+		}
 
-			SelectedPriceIds = string.Join(",", AvailablePrices.Select(r => r.PriceId).ToArray());
-			if (!string.IsNullOrEmpty(producerIds) && !string.IsNullOrEmpty(SelectedPriceIds)) {
-				var sql =
-					$@"select distinct c0.ProductId, a.ProducerId, c.Name as ProductName, pr.Name as ProducerName,
-		cn.Name as CatalogName, cf.Form as CatalogFormName, p.Properties as CatalogProperty,
-		pr.Name as CatalogProducer, pr.Name as MainCatalogProducer, '' as Package,
-		1 as Multiplier, '' as `Comment`, '' as Document, c.VitallyImportant
+		public IList<ProductsGridViewModel> GetProductsList(ISession dbSession, string producerIds, string priceIds)
+		{
+			if (string.IsNullOrEmpty(producerIds) || string.IsNullOrEmpty(priceIds))
+				return new List<ProductsGridViewModel>();
+
+			var sql =
+				$@"select distinct c0.ProductId, c0.Code, c0.CodeCr, ifnull(s.Synonym, c.Name) as ProductName,
+		ifnull(sf.Synonym, pr.Name) as ProducerName, cn.Name as CatalogName, cf.Form as CatalogFormName,
+		(select cast(
+				group_concat(ifnull(cpv.Value, '')
+					order by cp.PropertyName, cpv.Value
+					separator ', ')
+				as char)
+			from Catalogs.ProductProperties cpp
+				left join Catalogs.PropertyValues cpv on cpv.Id = cpp.PropertyValueId
+				left join Catalogs.Properties cp on cp.Id = cpv.PropertyId
+			where cpp.ProductId = p.Id
+		) as CatalogProperty,
+		ifnull(ppr.Name, '') as CatalogProducer, ifnull(ppr.Name, '') as MainCatalogProducer, c0.Unit as Package,
+		c0.RequestRatio as Multiplier, c0.Note as `Comment`, c0.Doc as Document, c.VitallyImportant
 	from Farm.Core0 c0
-		inner join Catalogs.products p on c0.ProductId = p.Id
-		inner join Catalogs.catalog c on p.CatalogId = c.Id
+		inner join Catalogs.Products p on c0.ProductId = p.Id
+		inner join Catalogs.Catalog c on p.CatalogId = c.Id
 		inner join Catalogs.Assortment a on a.CatalogId = c.Id
 		inner join Catalogs.Producers pr on a.ProducerId = pr.Id
 		inner join Catalogs.CatalogNames cn on c.NameId = cn.Id
 		inner join Catalogs.CatalogForms cf on c.FormId = cf.Id
+		left join Farm.Synonym s on c0.SynonymCode = s.SynonymCode
+		left join Farm.SynonymFirmCr sf on c0.SynonymFirmCrCode = sf.SynonymFirmCrCode
+		left join Catalogs.Producers ppr on c0.CodeFirmCr = ppr.Id
 	where p.Hidden = 0
 		and a.ProducerId in ({producerIds})
-		and c0.PriceCode in ({SelectedPriceIds})";
-				AvailableProducts = dbSession.Connection.Query<ProductsGridViewModel>(sql).ToList();
-			}
+		and c0.PriceCode in ({priceIds})";
+			return dbSession.Connection.Query<ProductsGridViewModel>(sql).ToList();
 		}
 	}
 
