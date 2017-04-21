@@ -1,15 +1,8 @@
 ﻿@using System.Web.UI.WebControls
 @using Marketing.ViewModels
 @model PromotionFromPriceViewModel
-@{
-	var countNoProducer = Model.AvailableProducts.Count(r => string.IsNullOrEmpty(r.CatalogProducer));
-}
 @if (Model != null)
 {
-    if (countNoProducer > 0)
-    {
-		<div class="alert-warning">В выбранных данных не формализованы производители в @countNoProducer товарах</div>
-    }
 @Html.DevExpress().GridView(settings =>
 {
     settings.Name = "gridGoods";
