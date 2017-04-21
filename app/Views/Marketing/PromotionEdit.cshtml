@@ -262,7 +262,7 @@
         	});
 		</script>
 <div class="form-group">
-    <button type="submit" formaction="PromotionEditGet" class="btn btn-primary">Сохранить</button>
+    <button type="submit" formaction="@Url.Action("PromotionEditGet", "Marketing")" class="btn btn-primary">Сохранить</button>
 </div>
 <div class="form-group">
 		@Html.DropDownListFor(m => m.Method, selectMethods)

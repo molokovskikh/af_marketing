@@ -30,6 +30,7 @@ namespace Marketing
 				BundleConfig.RegisterBundles(BundleTable.Bundles);
 
 				ModelBinders.Binders.DefaultBinder = new DevExpress.Web.Mvc.DevExpressEditorsBinder();
+				Log.Info("Приложение успешно запущено");
 			} catch (Exception e) {
 				Log.Error("Ошибка при инициализации приложения", e);
 				throw;
@@ -39,7 +40,6 @@ namespace Marketing
 		public void Application_Error(object sender, EventArgs e)
 		{
 			Log.Error("Ошибка при обработке запроса", Server.GetLastError());
-			Server.ClearError();
 		}
 	}
 }
