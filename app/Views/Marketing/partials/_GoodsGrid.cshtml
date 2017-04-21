@@ -1,8 +1,15 @@
 ﻿@using System.Web.UI.WebControls
 @using Marketing.ViewModels
 @model PromotionFromPriceViewModel
+@{
+	var countNoProducer = Model.AvailableProducts.Count(r => string.IsNullOrEmpty(r.CatalogProducer));
+}
 @if (Model != null)
 {
+    if (countNoProducer > 0)
+    {
+		<div class="alert-warning">В выбранных данных не формализованы производители в @countNoProducer товарах</div>
+    }
 @Html.DevExpress().GridView(settings =>
 {
     settings.Name = "gridGoods";
@@ -11,6 +18,7 @@
     settings.PreviewEncodeHtml = false;
     settings.EncodeHtml = false;
     settings.Width = Unit.Percentage(100);
+    settings.ControlStyle.Wrap = DefaultBoolean.True;
 
     settings.CommandColumn.Visible = true;
     settings.CommandColumn.Width = Unit.Pixel(30);
@@ -23,62 +31,71 @@
 
     settings.Columns.Add(column =>
     {
-        column.FieldName = "ProductId";
+        column.FieldName = "Code";
         column.Caption = "Код товара";
         column.PropertiesEdit.EncodeHtml = false;
     });
     settings.Columns.Add(column =>
     {
-        column.FieldName = "ProducerId";
+        column.FieldName = "CodeCr";
         column.Caption = "Код производителя";
+        column.HeaderStyle.Wrap = DefaultBoolean.True;
         column.PropertiesEdit.EncodeHtml = false;
     });
     settings.Columns.Add(column =>
     {
         column.FieldName = "ProductName";
-        column.Caption = "Оригинальное Наименование товара";
+        column.Caption = "Оригинальное наименование товара";
+        column.HeaderStyle.Wrap = DefaultBoolean.True;
         column.PropertiesEdit.EncodeHtml = false;
     });
     settings.Columns.Add(column =>
     {
         column.FieldName = "ProducerName";
-        column.Caption = "Оригинальное Наименование Производителя";
+        column.Caption = "Оригинальное наименование производителя";
+        column.HeaderStyle.Wrap = DefaultBoolean.True;
         column.PropertiesEdit.EncodeHtml = false;
     });
     settings.Columns.Add(column =>
     {
         column.FieldName = "CatalogName";
-        column.Caption = "Каталожное Наименование товара";
+        column.Caption = "Каталожное наименование товара";
+        column.HeaderStyle.Wrap = DefaultBoolean.True;
         column.PropertiesEdit.EncodeHtml = false;
     });
     settings.Columns.Add(column =>
     {
         column.FieldName = "CatalogFormName";
         column.Caption = "Каталожная форма выпуска и дозировка";
+        column.HeaderStyle.Wrap = DefaultBoolean.True;
         column.PropertiesEdit.EncodeHtml = false;
     });
     settings.Columns.Add(column =>
     {
         column.FieldName = "CatalogProperty";
         column.Caption = "Каталожное свойство";
+        column.HeaderStyle.Wrap = DefaultBoolean.True;
         column.PropertiesEdit.EncodeHtml = false;
     });
     settings.Columns.Add(column =>
     {
         column.FieldName = "CatalogProducer";
-        column.Caption = "Каталожный Производитель";
+        column.Caption = "Каталожный производитель";
+        column.HeaderStyle.Wrap = DefaultBoolean.True;
         column.PropertiesEdit.EncodeHtml = false;
     });
     settings.Columns.Add(column =>
     {
         column.FieldName = "MainCatalogProducer";
-        column.Caption = "Главный Каталожный Производитель";
+        column.Caption = "Главный каталожный производитель";
+        column.HeaderStyle.Wrap = DefaultBoolean.True;
         column.PropertiesEdit.EncodeHtml = false;
     });
     settings.Columns.Add(column =>
     {
         column.FieldName = "Package";
         column.Caption = "Цех.упак.";
+        column.HeaderStyle.Wrap = DefaultBoolean.True;
         column.PropertiesEdit.EncodeHtml = false;
     });
     settings.Columns.Add(column =>
@@ -106,6 +123,8 @@
         column.ColumnType = MVCxGridViewColumnType.CheckBox;
         column.PropertiesEdit.EncodeHtml = false;
     });
+
+		settings.FormatConditions.AddHighlight("CatalogProducer", "[CatalogProducer] != \"\"", GridConditionHighlightFormat.LightRedFill);
 
     settings.SettingsSearchPanel.Visible = true;
     settings.Settings.HorizontalScrollBarMode = ScrollBarMode.Auto;
