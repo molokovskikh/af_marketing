@@ -70,7 +70,7 @@ namespace Marketing.ViewModels
 		public string SelectedProductIds { get; set; }
 		public IList<ProductsGridViewModel> AvailableProducts { get; set; }
 
-		public void SetData(ISession dbSession, uint promotionId)
+		public void Init(ISession dbSession, uint promotionId)
 		{
 			var promotion = dbSession.Query<ProducerPromotion>()
 				.First(r => r.Id == promotionId);
@@ -98,10 +98,11 @@ namespace Marketing.ViewModels
 			if (string.IsNullOrEmpty(supplierIds) || string.IsNullOrEmpty(producerIds))
 				return new List<PricesGridViewModel>();
 
-			var sql = $@"select pd.PriceCode as PriceId, pd.PriceName as Name, pi.PriceDate
+			var sql = $@"select pd.PriceCode as PriceId, pd.PriceName as Name, pi.PriceDate, s.Name as SupplierName
 	from usersettings.pricesdata pd
 		inner join usersettings.pricescosts pc on pc.PriceCode = pd.pricecode
 		inner join usersettings.PriceItems pi on pi.Id = pc.PriceItemId
+		inner join Customers.Suppliers s on pd.FirmCode = s.Id
 	where pd.Enabled = 1
 		and pd.FirmCode in ({supplierIds})
 		and pd.PriceCode in (
@@ -112,7 +113,8 @@ namespace Marketing.ViewModels
 					inner join Catalogs.Assortment a on a.CatalogId = c.Id
 				where p.Hidden = 0
 					and a.ProducerId in ({producerIds})
-			)";
+			)
+	order by s.Name, pi.PriceDate desc, pd.PriceName";
 			return dbSession.Connection.Query<PricesGridViewModel>(sql).ToList();
 		}
 

@@ -117,7 +117,7 @@
         column.PropertiesEdit.EncodeHtml = false;
     });
 
-		settings.FormatConditions.AddHighlight("CatalogProducer", "[CatalogProducer] != \"\"", GridConditionHighlightFormat.LightRedFill);
+    settings.FormatConditions.AddHighlight("CatalogProducer", "[CatalogProducer] = \"\"", GridConditionHighlightFormat.LightRedFill);
 
     settings.SettingsSearchPanel.Visible = true;
     settings.Settings.HorizontalScrollBarMode = ScrollBarMode.Auto;
