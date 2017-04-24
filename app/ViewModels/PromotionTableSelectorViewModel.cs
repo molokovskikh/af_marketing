@@ -72,7 +72,7 @@ namespace Marketing.ViewModels
 				Height = 600;
 				var promotion = dbSession.Query<ProducerPromotion>().First(s => s.Id == promotionId);
 				var producerIds = string.Join(",", promotion.MarketingEvent.Producers.Select(r => r.Producer.Id.ToString()).ToArray());
-				if (DbProducts.Count > 0) {
+				if (DbProducts.Count == 0) {
 					UpdateDbProducts(dbSession, producerIds);
 				}
 				var itemList = GetUlongListForString(selectedList);
@@ -85,7 +85,7 @@ namespace Marketing.ViewModels
 				var itemList = GetUlongListForString(selectedList);
 				var promotion = dbSession.Query<ProducerPromotion>().First(s => s.Id == promotionId);
 				var producerIds = string.Join(",", promotion.MarketingEvent.Producers.Select(r => r.Producer.Id.ToString()).ToArray());
-				if (DbProducts.Count > 0) {
+				if (DbProducts.Count == 0) {
 					UpdateDbProducts(dbSession, producerIds);
 				}
 				ItemsList = DbProducts.Where(s => itemList.Any(n => n == s.Value)).ToList();
