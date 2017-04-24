@@ -126,6 +126,8 @@ namespace Marketing.ViewModels
 
 		private void UpdateDbProducts(ISession dbSession, string producerIds)
 		{
+			if (string.IsNullOrEmpty(producerIds))
+				producerIds = "0";
 			DbProducts = dbSession.Connection.Query<T>(string.Format(@"
 SELECT pr.Id as 'Value',CONCAT(ct.Name,' ',IFNULL(pr.Properties,'')) as 'Text' FROM
 catalogs.assortment as pp
