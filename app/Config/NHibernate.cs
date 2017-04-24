@@ -84,11 +84,29 @@ namespace Marketing
 				m.Table("Catalog");
 			});
 			Mapper.Class<Promoter>(m => {
+				m.Bag(o => o.Associations, c => {
+					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
+					c.Inverse(true);
+				});
+			});
+			Mapper.Class<Association>(m => {
+				m.Bag(o => o.Members, c => {
+					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
+					c.Inverse(true);
+				});
 				m.Bag(o => o.MarketingEvents, c => {
 					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
 					c.Inverse(true);
 				});
-				m.Bag(o => o.Members, c => {
+				m.Bag(o => o.Promoters, c => {
+					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
+					c.Inverse(true);
+				});
+				m.Bag(o => o.Regions, c => {
+					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
+					c.Inverse(true);
+				});
+				m.Bag(o => o.Contacts, c => {
 					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
 					c.Inverse(true);
 				});

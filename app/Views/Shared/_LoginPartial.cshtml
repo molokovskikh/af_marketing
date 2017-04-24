@@ -1,8 +1,5 @@
 ﻿@using Microsoft.AspNet.Identity
 @using Marketing.Models
-@{
-  var currentPromoter = ViewBag.CurrentPromoter as Promoter;
-}
 @if (Request.IsAuthenticated)
 {
     using (Html.BeginForm("Logout", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
@@ -11,7 +8,7 @@
 
     <ul class="nav navbar-nav navbar-right">
         <li>
-           <a>Вы вошли как <strong>@(currentPromoter?.Name) </strong></a>
+						<a href="@Url.Action("PromoterProfile", "Account")">Вы вошли как <strong>@((ViewBag.CurrentPromoter as Promoter)?.Name)</strong></a>
         </li>
         <li><a href="javascript:document.getElementById('logoutForm').submit()">Выход</a></li>
     </ul>

@@ -20,7 +20,7 @@ namespace Marketing.Models
 
 		public virtual string Name { get; set; }
 
-		public virtual Promoter Promoter { get; set; }
+		public virtual Association Association { get; set; }
 
 		public virtual IList<PromoterProducer> Producers { get; set; }
 

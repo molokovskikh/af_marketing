@@ -24,6 +24,7 @@ namespace Marketing
 				GlobalFilters.Filters.Add(new ErrorFilter(),0);
 				GlobalFilters.Filters.Add(new SessionFilter(hibernate.Factory),1);
 				GlobalFilters.Filters.Add(new PromoterIdentifierFilter(), 2);
+				GlobalFilters.Filters.Add(new AssociationFilter(), 3);
 
 				AreaRegistration.RegisterAllAreas();
 				RouteConfig.RegisterRoutes(RouteTable.Routes);

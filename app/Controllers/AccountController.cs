@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
+using NHibernate.Linq;
 
 namespace Marketing.Controllers
 {
@@ -44,9 +45,9 @@ namespace Marketing.Controllers
 				}
 			}
 
-			var user = DbSession.QueryOver<Promoter>().Where(r => r.Login == model.Login).List().FirstOrDefault();
+			var user = DbSession.Query<Promoter>().Where(r => r.Login == model.Login).FirstOrDefault();
 			if (user == null) {
-				var admin = DbSession.QueryOver<RegionalAdmin>().Where(r => r.Name == model.Login).List().Count > 0;
+				var admin = DbSession.Query<RegionalAdmin>().Any(r => r.Name == model.Login);
 				if (admin) {
 					FormsAuthentication.SetAuthCookie(model.Login, model.RememberMe);
 					return RedirectToAction("Register");
@@ -59,6 +60,16 @@ namespace Marketing.Controllers
 
 			FormsAuthentication.SetAuthCookie(login, model.RememberMe);
 			System.Web.HttpContext.Current.Session["promoter"] = user;
+
+			Association lastAssociation = null;
+			if (user.LastAssociationId.HasValue) {
+				lastAssociation = DbSession.Query<Association>().FirstOrDefault(r => r.Id == user.LastAssociationId);
+			}
+			if (lastAssociation == null) {
+				lastAssociation = DbSession.Query<PromoterAssociation>().First(r => r.Promoter == user).Association;
+				user.LastAssociationId = lastAssociation.Id;
+			}
+			System.Web.HttpContext.Current.Session["association"] = lastAssociation;
 
 			return Redirect("~");
 		}
@@ -153,6 +164,60 @@ namespace Marketing.Controllers
 			while (password.Length < 8)
 				password += availableChars[random.Next(0, availableChars.Length - 1)];
 			return password;
+		}
+
+		public ActionResult PromoterProfile()
+		{
+			var model = new ProfileViewModel();
+			model.AvailableAssociations = GetAssociationList();
+			model.AssociationId = CurrentAssociation.Id;
+			return View(model);
+		}
+
+		[HttpPost]
+		public ActionResult PromoterProfile(ProfileViewModel model)
+		{
+			if (!ModelState.IsValid) {
+				model.AvailableAssociations = GetAssociationList();
+				return View(model);
+			}
+
+			var promoter = DbSession.Query<Promoter>().FirstOrDefault(r => r.Id == CurrentPromoter.Id);
+			if (promoter == null)
+				return HttpNotFound();
+			var association = DbSession.Query<Association>().FirstOrDefault(r => r.Id == model.AssociationId);
+			if (association == null)
+				return HttpNotFound();
+			CurrentAssociation = association;
+			promoter.LastAssociationId = association.Id;
+			DbSession.Flush();
+			CurrentPromoter.LastAssociationId = promoter.LastAssociationId;
+			DbSession.Evict(CurrentPromoter);
+
+			return RedirectToAction("Index", "Home");
+		}
+
+		[HttpPost]
+		public ActionResult AssociationList()
+		{
+			var model = new ProfileViewModel();
+			model.AvailableAssociations = GetAssociationList();
+			return PartialView("_AssociationList", model);
+		}
+
+		private IList<AssociationViewModel> GetAssociationList()
+		{
+			return DbSession.Query<PromoterAssociation>()
+				.Where(r => r.Promoter == CurrentPromoter)
+				.Select(r => r.Association)
+				.OrderBy(r => r.Name)
+				.ToList()
+				.Select(r => new AssociationViewModel {
+					AssociationId = r.Id,
+					Name = r.Name,
+					Regions = string.Join(", ", r.Regions.Select(x => x.Region.Name).OrderBy(x => x))
+				})
+				.ToList();
 		}
 	}
 }

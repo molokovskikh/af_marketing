@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using Marketing.Models
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -81,7 +82,8 @@
         <hr/>
 				@Html.Partial("_confirmationModalDialog")
         <footer>
-            <p>&copy; @DateTime.Now.Year - АналитФармация</p>
+            <p class="pull-left">&copy; @DateTime.Now.Year - АналитФармация</p>
+						<p class="pull-right">@((ViewBag.Association as Association)?.Name)</p>
         </footer>
     </div>
 

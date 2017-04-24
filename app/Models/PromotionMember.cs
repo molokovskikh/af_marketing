@@ -17,7 +17,7 @@ namespace Marketing.Models
 
 		public virtual uint Id { get; set; }
 
-		public virtual Promoter Promoter { get; set; }
+		public virtual Association Association { get; set; }
 
 		public virtual Client Client { get; set; }
 

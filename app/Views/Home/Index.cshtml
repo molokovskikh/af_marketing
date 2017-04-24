@@ -1,11 +1,12 @@
 ﻿@using Marketing.Models
 @model Promoter
 @{
-    ViewBag.Title = "Главная";
+  ViewBag.Title = "Главная";
+	var association = ViewBag.Association as Association;
 }
 
 <div class="jumbotron">
-    <h1>Ассоциация "@(Model?.Name ?? "[Пользователь не определён]")"</h1>
+    <h1>Ассоциация "@(association?.Name ?? "[не определена]")"</h1>
 </div>
 
 <div class="row">

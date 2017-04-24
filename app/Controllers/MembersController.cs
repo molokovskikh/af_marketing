@@ -46,7 +46,7 @@ namespace Marketing.Controllers
 		private List<MembersGridViewModel> GetMemberList(string idList = "")
 		{
 			var list = DbSession.Query<PromotionMember>()
-				.Where(r => r.Promoter == CurrentPromoter)
+				.Where(r => r.Association == CurrentAssociation)
 				.ToList();
 			if (!string.IsNullOrWhiteSpace(idList)) {
 				var ids = idList.Split(',').Select(i => ulong.Parse(i)).ToList();
@@ -88,7 +88,7 @@ namespace Marketing.Controllers
 				return HttpNotFound("Выбранный клиент не найден.");
 
 			var member = new PromotionMember {
-				Promoter = CurrentPromoter,
+				Association = CurrentAssociation,
 				Client = client
 			};
 			DbSession.Save(member);
@@ -108,7 +108,7 @@ namespace Marketing.Controllers
 		private List<MemberListViewModel> GetClientList(string regionIdList)
 		{
 			var exist = DbSession.Query<PromotionMember>()
-				.Where(r => r.Promoter == CurrentPromoter)
+				.Where(r => r.Association == CurrentAssociation)
 				.Select(r => r.Client)
 				.ToList();
 			var clients = DbSession.Query<Client>()
@@ -120,11 +120,6 @@ namespace Marketing.Controllers
 			}
 			var result = clients
 				.OrderBy(r => r.Name)
-				//.Select(r => new SelectListItem
-				//{
-				//	Value = r.Id.ToString(),
-				//	Text = r.Name
-				//})
 				.Select(r => new MemberListViewModel
 				{
 					ClientId = r.Id,
@@ -132,7 +127,6 @@ namespace Marketing.Controllers
 					RegionName = r.Region.Name
 				})
 				.ToList();
-			//result.Insert(0, new SelectListItem() { Value = "", Text = ""});
 			return result;
 		}
 
@@ -289,12 +283,12 @@ insert into Contacts.Contact_groups (Id, Name, `Type`, ContactGroupOwnerId)
 		private MemberSubscribesViewModel GetSubscribesModel(uint id)
 		{
 			var member = DbSession.Query<PromotionMember>().Single(r => r.Id == id);
-			var promoter = member.Promoter;
+			var association = member.Association;
 			var subscribes = DbSession.Query<PromotionSubscribe>()
 				.Where(r => r.Member == member)
 				.ToList();
 			var promotions = DbSession.Query<ProducerPromotion>()
-				.Where(r => r.MarketingEvent.Promoter == promoter)
+				.Where(r => r.MarketingEvent.Association == association)
 				.OrderBy(r => r.Name)
 				.ToList()
 				.Select(r => new MemberSubscribe {

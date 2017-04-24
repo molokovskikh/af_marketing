@@ -69,7 +69,7 @@ namespace Marketing.Controllers
 		private IList<MarketingEventGridModel> GetGridData()
 		{
 			return DbSession.Query<MarketingEvent>()
-				.Where(s => s.Promoter == CurrentPromoter)
+				.Where(s => s.Association == CurrentAssociation)
 				.FetchMany(r => r.Producers)
 				.ThenFetch(r => r.Producer)
 				.OrderBy(s => s.Name)
@@ -105,7 +105,7 @@ namespace Marketing.Controllers
 
 			if (model.AddMode) {
 				var marketingEvent = new MarketingEvent {
-					Promoter = CurrentPromoter,
+					Association = CurrentAssociation,
 					Name = model.Name
 				};
 				DbSession.Save(marketingEvent);
@@ -236,7 +236,7 @@ namespace Marketing.Controllers
 		public ActionResult GetFilterProducerAdd()
 		{
 			var result = DbSession.Query<Producer>().OrderBy(s => s.Name).ToList()
-				.Where(s => CurrentPromoter.MarketingEvents.All(f => f.Producers.All(p => p.Producer.Id != s.Id)))
+				.Where(s => CurrentAssociation.MarketingEvents.All(f => f.Producers.All(p => p.Producer.Id != s.Id)))
 				.Select(s => new SelectListItem { Value = s.Id.ToString(), Text = s.Name })
 				.ToList();
 			return PartialView("../_default/ProducerAddFilter", result);
