@@ -11,6 +11,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 using NHibernate.Linq;
+using NHibernate;
 
 namespace Marketing.Controllers
 {
@@ -69,7 +70,9 @@ namespace Marketing.Controllers
 				lastAssociation = DbSession.Query<PromoterAssociation>().First(r => r.Promoter == user).Association;
 				user.LastAssociationId = lastAssociation.Id;
 			}
-			System.Web.HttpContext.Current.Session["association"] = lastAssociation;
+			NHibernateUtil.Initialize(lastAssociation);
+			DbSession.Evict(lastAssociation);
+			CurrentAssociation = lastAssociation;
 
 			return Redirect("~");
 		}
@@ -79,12 +82,37 @@ namespace Marketing.Controllers
 		{
 			FormsAuthentication.SignOut();
 			DbSession.Clear();
+			CurrentAssociation = null;
 			return RedirectToAction("Login");
 		}
 
 		public ActionResult Register()
 		{
-			return View(new RegisterViewModel());
+			var model = new RegisterViewModel();
+			model.AvailableAssociations = GetAllAssociationList();
+			return View(model);
+		}
+
+		[HttpPost]
+		public ActionResult AllAssociationList()
+		{
+			var model = new RegisterViewModel();
+			model.AvailableAssociations = GetAllAssociationList();
+			return View("_AllAssociationList", model);
+		}
+
+		private IList<AssociationItemViewModel> GetAllAssociationList()
+		{
+			return DbSession.Query<Association>()
+				.OrderBy(r => r.Name)
+				.ToList()
+				.Select(r => new AssociationItemViewModel
+				{
+					AssociationId = r.Id,
+					Name = r.Name,
+					Regions = string.Join(", ", r.Regions.Select(x => x.Region.Name).OrderBy(x => x).ToArray())
+				})
+				.ToList();
 		}
 
 		[HttpPost]
@@ -105,6 +133,22 @@ namespace Marketing.Controllers
 
 				model.Password = GeneratePassword();
 				CreateUserInAD(Promoter.ACC_LOGIN_PREFIX + promoter.Login, model.Password);
+
+				Association association;
+				if (model.CreateAssociation) {
+					association = new Association {
+						Name = model.Name
+					};
+					DbSession.Save(association);
+					DbSession.Flush();
+				} else {
+					association = DbSession.Query<Association>().First(r => r.Id == model.AssociationId);
+				}
+				var promoterAssociation = new PromoterAssociation {
+					Association = association,
+					Promoter = promoter
+				};
+				DbSession.Save(promoterAssociation);
 			}
 			catch (Exception ex) {
 				DbSession.Transaction.Rollback();
@@ -169,7 +213,7 @@ namespace Marketing.Controllers
 		public ActionResult PromoterProfile()
 		{
 			var model = new ProfileViewModel();
-			model.AvailableAssociations = GetAssociationList();
+			model.AvailableAssociations = GetPromoterAssociationList();
 			model.AssociationId = CurrentAssociation.Id;
 			return View(model);
 		}
@@ -178,7 +222,7 @@ namespace Marketing.Controllers
 		public ActionResult PromoterProfile(ProfileViewModel model)
 		{
 			if (!ModelState.IsValid) {
-				model.AvailableAssociations = GetAssociationList();
+				model.AvailableAssociations = GetPromoterAssociationList();
 				return View(model);
 			}
 
@@ -201,18 +245,18 @@ namespace Marketing.Controllers
 		public ActionResult AssociationList()
 		{
 			var model = new ProfileViewModel();
-			model.AvailableAssociations = GetAssociationList();
+			model.AvailableAssociations = GetPromoterAssociationList();
 			return PartialView("_AssociationList", model);
 		}
 
-		private IList<AssociationViewModel> GetAssociationList()
+		private IList<AssociationItemViewModel> GetPromoterAssociationList()
 		{
 			return DbSession.Query<PromoterAssociation>()
 				.Where(r => r.Promoter == CurrentPromoter)
 				.Select(r => r.Association)
 				.OrderBy(r => r.Name)
 				.ToList()
-				.Select(r => new AssociationViewModel {
+				.Select(r => new AssociationItemViewModel {
 					AssociationId = r.Id,
 					Name = r.Name,
 					Regions = string.Join(", ", r.Regions.Select(x => x.Region.Name).OrderBy(x => x))

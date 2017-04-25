@@ -17,11 +17,42 @@
 				@Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
 			</div>
 		</div>
-
+    <div class="form-group">
+      <div class="col-md-offset-2 col-md-10">
+					<div class="checkbox">
+              @Html.CheckBoxFor(model => model.CreateAssociation)
+              @Html.LabelFor(model => model.CreateAssociation)
+					</div>
+      </div>
+    </div>
+		<div class="form-group" id="associations" style="display:none">
+			@Html.LabelFor(model => model.AssociationId, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10">
+				@Html.Partial("_AllAssociationList", Model)
+				@Html.ValidationMessageFor(model => model.AssociationId, "", new { @class = "text-danger" })
+			</div>
+		</div>
 		<div class="form-group">
 			<div class="col-md-offset-2 col-md-10">
 				<input type="submit" value="Зарегистрировать" class="btn btn-primary" />
+				@Html.ActionLink("Управление ассоциациями", "Index", "Association", null, new { @class = "btn btn-default" })
 			</div>
 		</div>
 	</div>
+}
+
+@section scripts{
+	<script>
+    	function switchList() {
+    		if ($("#@Html.IdFor(m => m.CreateAssociation)").is(":checked")) {
+    			$("#associations").hide();
+    		} else {
+    			$("#associations").show();
+    		}
+    	}
+
+    	$(document).ready(function () {
+    		$("#@Html.IdFor(mbox => mbox.CreateAssociation)").change(switchList);
+    	});
+	</script>
 }

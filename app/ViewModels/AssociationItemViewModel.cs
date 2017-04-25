@@ -5,7 +5,7 @@ using System.Web;
 
 namespace Marketing.ViewModels
 {
-	public class AssociationViewModel
+	public class AssociationItemViewModel
 	{
 		public uint AssociationId { get; set; }
 		public string Name { get; set; }

@@ -180,6 +180,7 @@
     <Compile Include="Config\RouteConfig.cs" />
     <Compile Include="Config\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AssociationController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\DevExampleController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -220,7 +221,9 @@
     <Compile Include="Models\Supplier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
-    <Compile Include="ViewModels\AssociationViewModel.cs" />
+    <Compile Include="ViewModels\AssociationEditViewModel.cs" />
+    <Compile Include="ViewModels\AssociationGridModel.cs" />
+    <Compile Include="ViewModels\AssociationItemViewModel.cs" />
     <Compile Include="ViewModels\ClientViewModel.cs" />
     <Compile Include="ViewModels\DateRangeViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
@@ -329,6 +332,12 @@
     <Content Include="Views\Marketing\partials\_SelectingProducersGrid.cshtml" />
     <Content Include="Views\Account\PromoterProfile.cshtml" />
     <Content Include="Views\Account\_AssociationList.cshtml" />
+    <Content Include="Views\Account\_AllAssociationList.cshtml" />
+    <Content Include="Views\Association\Index.cshtml" />
+    <Content Include="Views\Association\_IndexGridView.cshtml" />
+    <Content Include="Views\Association\Add.cshtml" />
+    <Content Include="Views\Association\Edit.cshtml" />
+    <Content Include="Views\Association\Regions.cshtml" />
     <None Include="Views\Marketing\partials\_PromotionEditRegionFilterData.cshtml" />
     <Content Include="Views\Members\_TrailInfo.cshtml" />
     <Content Include="Views\Members\_MembersList.cshtml" />

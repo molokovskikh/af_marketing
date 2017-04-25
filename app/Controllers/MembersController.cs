@@ -1,12 +1,9 @@
 ﻿using Marketing.Models;
 using Marketing.ViewModels;
-using NHibernate;
-using NHibernate.Criterion;
 using NHibernate.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace Marketing.Controllers

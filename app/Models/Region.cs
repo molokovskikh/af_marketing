@@ -7,6 +7,8 @@ namespace Marketing.Models
 	/// </summary>
 	public class Region
 	{
+		public const ulong INFOROOM_CODE = 524288;
+
 		public virtual ulong Id { get; set; }
 
 		public virtual string Name { get; set; }

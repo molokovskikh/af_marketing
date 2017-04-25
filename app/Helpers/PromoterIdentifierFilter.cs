@@ -24,8 +24,8 @@ namespace Marketing.Helpers
 					context.Controller.ViewBag.CurrentPromoter = promoter;
 				} else {
 					var controller = context.Controller as BaseController;
-					var isNotAccountController = !(context.Controller is AccountController);
-					if (controller != null && isNotAccountController) {
+					var isNotAdminController = !(context.Controller is AccountController) && !(context.Controller is AssociationController);
+					if (controller != null && isNotAdminController) {
 						context.Result = controller.BaseRedirectToAction("Register", "Account");
 					} else {
 						//для авторизованного пользователя, идущего в AccountController

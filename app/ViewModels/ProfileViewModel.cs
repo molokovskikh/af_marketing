@@ -13,6 +13,6 @@ namespace Marketing.ViewModels
 		[Display(Name = "Текущая ассоциация")]
 		public uint AssociationId { get; set; }
 
-		public IList<AssociationViewModel> AvailableAssociations { get; set; }
+		public IList<AssociationItemViewModel> AvailableAssociations { get; set; }
 	}
 }

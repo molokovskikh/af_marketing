@@ -19,6 +19,8 @@ namespace Marketing.Helpers
 					if (promoter != null && promoter.LastAssociationId.HasValue) {
 						var dbSession = (ISession) context.HttpContext.Items[typeof(ISession)];
 						association = dbSession.Query<Association>().FirstOrDefault(r => r.Id == promoter.LastAssociationId);
+						NHibernateUtil.Initialize(association);
+						dbSession.Evict(association);
 						controller.CurrentAssociation = association;
 					}
 				}

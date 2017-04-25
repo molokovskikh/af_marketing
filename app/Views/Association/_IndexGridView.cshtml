@@ -1,0 +1,84 @@
+﻿@using System.Web.UI.WebControls
+@using Marketing.ViewModels
+@model List<AssociationGridModel>
+
+@Html.DevExpress().GridView(settings =>
+{
+    settings.Name = "gridAssociations";
+    settings.CallbackRouteValues = new { Action = "Associations", Controller = "Association" };
+    settings.KeyFieldName = "AssociationId";
+    settings.PreviewEncodeHtml = false;
+    settings.EncodeHtml = false;
+    settings.Width = Unit.Percentage(100);
+
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "Name";
+        column.Caption = "Наименование";
+        column.PropertiesEdit.EncodeHtml = false;
+        column.SetDataItemTemplateContent(c =>
+        {
+            var value = DataBinder.Eval(c.DataItem, "AssociationId").ToString();
+            var text = DataBinder.Eval(c.DataItem, "Name").ToString();
+            string htmlContent = $"<a href=\"{Url.Action("Edit", new { id = value })}\">{text}</a>";
+            ViewContext.Writer.Write(htmlContent);
+        });
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "Contacts";
+        column.PropertiesEdit.EncodeHtml = false;
+        column.Caption = "Контакты";
+        column.SetDataItemTemplateContent(c =>
+        {
+            var value = DataBinder.Eval(c.DataItem, "AssociationId").ToString();
+            var text = DataBinder.Eval(c.DataItem, "Contacts").ToString();
+            if (string.IsNullOrWhiteSpace(text))
+                text = "[добавить]";
+            string htmlContent = $"<a href=\"{Url.Action("Contacts", new { id = value })}\">{text}</a>";
+            ViewContext.Writer.Write(htmlContent);
+        });
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "Regions";
+        column.PropertiesEdit.EncodeHtml = false;
+        column.Caption = "Регионы работы";
+        column.SetDataItemTemplateContent(c =>
+        {
+            var value = DataBinder.Eval(c.DataItem, "AssociationId").ToString();
+            var text = DataBinder.Eval(c.DataItem, "Regions").ToString();
+            if (string.IsNullOrWhiteSpace(text))
+                text = "[добавить]";
+            string htmlContent = $"<a href=\"{Url.Action("Regions", new { id = value })}\">{text}</a>";
+            ViewContext.Writer.Write(htmlContent);
+        });
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "Comments";
+        column.PropertiesEdit.EncodeHtml = false;
+        column.Caption = "Примечания";
+    });
+    settings.Columns.Add(column =>
+    {
+        column.PropertiesEdit.EncodeHtml = false;
+        column.Caption = "Действие";
+        column.SetDataItemTemplateContent(c =>
+        {
+            var value = DataBinder.Eval(c.DataItem, "AssociationId").ToString();
+            var text = DataBinder.Eval(c.DataItem, "Name").ToString();
+            string htmlContent = $"<a class='c-pointer' onclick=\"submit('Вы действительно ходите удалить ассоциацию `{text}`?', 'Да','Нет','{Url.Action("Delete", new { id = value })}')\">удалить</a>";
+            ViewContext.Writer.Write(htmlContent);
+        });
+    });
+
+    settings.SettingsPager.PageSize = 20;
+    settings.SettingsSearchPanel.Visible = true;
+    settings.SettingsPager.Position = PagerPosition.TopAndBottom;
+    settings.SettingsPager.FirstPageButton.Visible = true;
+    settings.SettingsPager.LastPageButton.Visible = true;
+    settings.SettingsPager.PageSizeItemSettings.Visible = true;
+    settings.SettingsPager.PageSizeItemSettings.Items = new string[] { "10", "20", "50", "100", "150", "200" };
+}).Bind(Model).GetHtml()
+

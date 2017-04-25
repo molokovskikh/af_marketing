@@ -1,0 +1,25 @@
+﻿@using System.Web.UI.WebControls
+@using Marketing.ViewModels
+@model RegisterViewModel
+@{
+	var name = Html.IdFor(m => m.AssociationId).ToString();
+}
+@Html.DevExpress().ComboBox(
+        settings =>
+        {
+            settings.Name = name;
+            settings.Width = 180;
+            settings.Properties.DropDownWidth = 400;
+            settings.Properties.DropDownStyle = DropDownStyle.DropDownList;
+            settings.CallbackRouteValues = new { Controller = "Account", Action = "AllAssociationList" };
+            settings.Properties.CallbackPageSize = 30;
+            settings.Properties.IncrementalFilteringMode = IncrementalFilteringMode.Contains;
+            settings.Properties.TextFormatString = "{0}";
+            settings.Properties.ValueField = "AssociationId";
+            settings.Properties.ValueType = typeof(uint);
+
+            settings.Properties.Columns.Add("Name", "Наименование", 130);
+            settings.Properties.Columns.Add("Regions", "Регионы работы", Unit.Percentage(100));
+        }
+).BindList(Model.AvailableAssociations).Bind(Model.AssociationId).GetHtml()
+
