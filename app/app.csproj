@@ -180,6 +180,7 @@
     <Compile Include="Config\RouteConfig.cs" />
     <Compile Include="Config\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AssociationController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\DevExampleController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -189,15 +190,20 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\AssociationFilter.cs" />
     <Compile Include="Helpers\ErrorFilter.cs" />
     <Compile Include="Helpers\MailHelper.cs" />
     <Compile Include="Helpers\PromoterIdentifierFilter.cs" />
     <Compile Include="Helpers\SessionFilter.cs" />
+    <Compile Include="Models\Association.cs" />
+    <Compile Include="Models\AssociationContact.cs" />
+    <Compile Include="Models\AssociationRegion.cs" />
     <Compile Include="Models\Contact.cs" />
     <Compile Include="Models\ContactGroup.cs" />
     <Compile Include="Models\ContactGroupOwner.cs" />
     <Compile Include="Models\ContactOwner.cs" />
     <Compile Include="Models\MarketingEvent.cs" />
+    <Compile Include="Models\PromoterAssociation.cs" />
     <Compile Include="Models\Region.cs" />
     <Compile Include="Models\Address.cs" />
     <Compile Include="Models\Catalog.cs" />
@@ -215,6 +221,9 @@
     <Compile Include="Models\Supplier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="ViewModels\AssociationEditViewModel.cs" />
+    <Compile Include="ViewModels\AssociationGridModel.cs" />
+    <Compile Include="ViewModels\AssociationItemViewModel.cs" />
     <Compile Include="ViewModels\ClientViewModel.cs" />
     <Compile Include="ViewModels\DateRangeViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
@@ -226,6 +235,7 @@
     <Compile Include="ViewModels\MemberViewModel.cs" />
     <Compile Include="ViewModels\PricesGridViewModel.cs" />
     <Compile Include="ViewModels\ProductsGridViewModel.cs" />
+    <Compile Include="ViewModels\ProfileViewModel.cs" />
     <Compile Include="ViewModels\PromotionConditionsViewModel.cs" />
     <Compile Include="ViewModels\PromotionViewModel.cs" />
     <Compile Include="ViewModels\RegisterViewModel.cs" />
@@ -320,13 +330,22 @@
     <Content Include="Views\Marketing\partials\_PromotionEditRegionFilterLogic.cshtml" />
     <Content Include="Views\Marketing\Edit.cshtml" />
     <Content Include="Views\Marketing\partials\_SelectingProducersGrid.cshtml" />
+    <Content Include="Views\Account\PromoterProfile.cshtml" />
+    <Content Include="Views\Account\_AssociationList.cshtml" />
+    <Content Include="Views\Account\_AllAssociationList.cshtml" />
+    <Content Include="Views\Association\Index.cshtml" />
+    <Content Include="Views\Association\_IndexGridView.cshtml" />
+    <Content Include="Views\Association\Add.cshtml" />
+    <Content Include="Views\Association\Edit.cshtml" />
+    <Content Include="Views\Association\Regions.cshtml" />
+    <Content Include="Views\Association\Contacts.cshtml" />
+    <Content Include="Views\Association\_ContactsGridView.cshtml" />
     <None Include="Views\Marketing\partials\_PromotionEditRegionFilterData.cshtml" />
     <Content Include="Views\Members\_TrailInfo.cshtml" />
     <Content Include="Views\Members\_MembersList.cshtml" />
     <Content Include="Views\Report\Members.cshtml" />
     <Content Include="Views\Report\MarketingEvents.cshtml" />
     <Content Include="Views\Marketing\partials\_SelectedProducersGrid.cshtml" />
-
     <Content Include="Views\Marketing\PromotionEditFromPrice.cshtml" />
     <Content Include="Views\Marketing\partials\_SuppliersGrid.cshtml" />
     <Content Include="Views\Marketing\partials\_PricesGrid.cshtml" />

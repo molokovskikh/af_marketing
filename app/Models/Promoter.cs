@@ -15,8 +15,7 @@ namespace Marketing.Models
 
 		public Promoter()
 		{
-			MarketingEvents = new List<MarketingEvent>();
-			Members = new List<PromotionMember>();
+			Associations = new List<PromoterAssociation>();
 		}
 
 		public virtual uint Id { get; set; }
@@ -27,8 +26,8 @@ namespace Marketing.Models
 		[Display(Name = "Логин")]
 		public virtual string Login { get; set; }
 
-		public virtual IList<MarketingEvent> MarketingEvents { get; set; }
+		public virtual uint? LastAssociationId { get; set; }
 
-		public virtual IList<PromotionMember> Members { get; set; }
+		public virtual IList<PromoterAssociation> Associations { get; set; }
 	}
 }

@@ -1,0 +1,23 @@
+﻿@using Marketing.ViewModels
+@model List<AssociationGridModel>
+
+@{
+  ViewBag.Title = "Ассоциации";
+}
+<div class="form-group">
+    <ol class="breadcrumb">
+        <li>
+            <a href="@Url.Action("Register", "Account")">Регистрация пользователей</a>
+        </li>
+        <li class="active">@ViewBag.Title</li>
+    </ol>
+</div>
+<h2>@ViewBag.Title</h2>
+<div class="form-group">
+    <a href="@Url.Action("Add", "Association")" class="btn btn-primary">Добавить</a>
+</div>
+
+<div class="form-group width-100">
+    @Html.Partial("_IndexGridView", Model)
+</div>
+

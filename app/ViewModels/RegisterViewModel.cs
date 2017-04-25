@@ -11,6 +11,8 @@ namespace Marketing.ViewModels
 		public RegisterViewModel()
 		{
 			SendEmail = true;
+			CreateAssociation = true;
+			AvailableAssociations = new List<AssociationItemViewModel>();
 		}
 
 		[Required]
@@ -27,5 +29,14 @@ namespace Marketing.ViewModels
 
 		[Display(Name = "Отправить email")]
 		public bool SendEmail { get; set; }
+
+		[Display(Name = "Создать ассоциацию")]
+		public bool CreateAssociation { get; set; }
+
+		[Display(Name = "Ассоциация")]
+		public uint? AssociationId { get; set; }
+
+
+		public IList<AssociationItemViewModel> AvailableAssociations { get; set; }
 	}
 }

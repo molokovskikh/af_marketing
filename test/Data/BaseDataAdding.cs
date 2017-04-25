@@ -27,11 +27,26 @@ namespace test.Data
 			return newItem;
 		}
 
-		public static MarketingEvent AddMarketingEvent(ISession dbSession, Promoter promoter)
+		public static Association AddAssociation(ISession dbSession, Promoter promoter)
+		{
+			var newItem = new Association {
+				Name = "new Association"
+			};
+			dbSession.Save(newItem);
+			var link = new PromoterAssociation {
+				Association = newItem,
+				Promoter = promoter
+			};
+			dbSession.Save(link);
+			newItem.Promoters.Add(link);
+			return newItem;
+		}
+
+		public static MarketingEvent AddMarketingEvent(ISession dbSession, Association association)
 		{
 			var newItem = new MarketingEvent();
 			newItem.Name = " new MarketingEvent";
-			newItem.Promoter = promoter;
+			newItem.Association = association;
 			dbSession.Save(newItem);
 			return newItem;
 		}
@@ -63,9 +78,10 @@ namespace test.Data
 		{
 			for (var i = 0; i < 10; i++) {
 				var newPromoter = AddPromoter(DbSession);
+				var newAssociation = AddAssociation(DbSession, newPromoter);
 				var newProducer = DbSession.Query<Producer>().FirstOrDefault(); //AddProducer(DbSession);
 				if (i%2 == 0) {
-					var mev = AddMarketingEvent(DbSession, newPromoter);
+					var mev = AddMarketingEvent(DbSession, newAssociation);
 					var newPromoterProducer = AddPromoterProducer(DbSession, newPromoter, newProducer, mev);
 				}
 			}

@@ -1,0 +1,42 @@
+﻿@using Marketing.ViewModels
+@model AssociationEditViewModel
+@{
+  ViewBag.Title = $"Редактирование ассоциации {Model.Name}";
+}
+<div class="form-group">
+    <ol class="breadcrumb">
+        <li>
+            <a href="@Url.Action("Register", "Account")">Регистрация пользователей</a>
+        </li>
+        <li>
+            <a href="@Url.Action("Index", "Association")">Ассоциации</a>
+        </li>
+        <li class="active">@ViewBag.Title</li>
+    </ol>
+</div>
+<h2>@ViewBag.Title</h2>
+@using (Html.BeginForm("Edit", "Association", FormMethod.Post, new { @class = "form-horizontal" }))
+{
+@Html.AntiForgeryToken()
+@Html.ValidationSummary("", new { @class = "text-danger" })
+@Html.HiddenFor(m => m.AssociationId)
+<div class="form-group">
+    @Html.LabelFor(m => m.Name, new { @class = "col-md-2 control-label" })
+    <div class="col-md-10">
+        @Html.EditorFor(m => m.Name, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+    </div>
+</div>
+<div class="form-group">
+    @Html.LabelFor(m => m.Comments, new { @class = "col-md-2 control-label" })
+    <div class="col-md-10">
+        @Html.TextAreaFor(m => m.Comments, new { @class = "form-control", rows = "5" })
+        @Html.ValidationMessageFor(m => m.Comments, "", new { @class = "text-danger" })
+    </div>
+</div>
+<div class="form-group">
+    <div class="col-md-offset-2 col-md-10">
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </div>
+</div>
+}

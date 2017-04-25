@@ -35,7 +35,7 @@
 	@Html.HiddenFor(model => model.Password)
 	<div class="form-horizontal">
 		<div class="form-group">
-			<div class="col-md-12">
+			<div class="col-md-offset-2 col-md-10">
 				<div class="checkbox">
 					@Html.CheckBoxFor(m => m.SendEmail)
 					@Html.LabelFor(m => m.SendEmail)
@@ -44,8 +44,8 @@
 		</div>
 	</div>
 	<div class="form-group">
-		<div class="col-md-12">
-			<input type="submit" value="Продолжить" class="btn btn-default" />
+		<div class="col-md-offset-2 col-md-10">
+			<input type="submit" value="Продолжить" class="btn btn-primary" />
 		</div>
 	</div>
 }
