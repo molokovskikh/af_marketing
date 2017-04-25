@@ -1,4 +1,4 @@
-use Customers
+use Customers;
 
 create table Associations (
 	Id int(10) unsigned not null auto_increment,
