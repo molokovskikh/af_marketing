@@ -1,0 +1,21 @@
+﻿@using System.Web.UI.WebControls
+@using Marketing.ViewModels
+@model AssociationEditViewModel
+@{
+  ViewBag.Title = $"Контакты ассоциации {Model.Name}";
+}
+<div class="form-group">
+    <ol class="breadcrumb">
+        <li>
+            <a href="@Url.Action("Register", "Account")">Регистрация пользователей</a>
+        </li>
+        <li>
+            <a href="@Url.Action("Index", "Association")">Ассоциации</a>
+        </li>
+        <li class="active">@ViewBag.Title</li>
+    </ol>
+</div>
+<h2>@ViewBag.Title</h2>
+<div class="form-group width-100">
+	@Html.Partial("_ContactsGridView", Model)
+</div>

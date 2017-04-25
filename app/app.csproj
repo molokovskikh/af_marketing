@@ -338,6 +338,8 @@
     <Content Include="Views\Association\Add.cshtml" />
     <Content Include="Views\Association\Edit.cshtml" />
     <Content Include="Views\Association\Regions.cshtml" />
+    <Content Include="Views\Association\Contacts.cshtml" />
+    <Content Include="Views\Association\_ContactsGridView.cshtml" />
     <None Include="Views\Marketing\partials\_PromotionEditRegionFilterData.cshtml" />
     <Content Include="Views\Members\_TrailInfo.cshtml" />
     <Content Include="Views\Members\_MembersList.cshtml" />

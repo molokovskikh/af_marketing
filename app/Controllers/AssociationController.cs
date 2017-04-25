@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using NHibernate.Linq;
 using Marketing.Models;
 using NHibernate;
+using DevExpress.Web.Mvc;
 
 namespace Marketing.Controllers
 {
@@ -141,7 +142,54 @@ namespace Marketing.Controllers
 
 		public ActionResult Contacts(uint id)
 		{
-			return View();
+			var association = DbSession.Query<Association>().First(r => r.Id == id);
+			var model = new AssociationEditViewModel
+			{
+				AssociationId = association.Id,
+				Name = association.Name,
+				Contacts = association.Contacts.ToList()
+			};
+			DbSession.Evict(association);
+
+			return View(model);
+		}
+
+		public ActionResult GridContacts(uint id)
+		{
+			var association = DbSession.Query<Association>().First(r => r.Id == id);
+			var model = new AssociationEditViewModel
+			{
+				AssociationId = association.Id,
+				Name = association.Name,
+				Contacts = association.Contacts.ToList()
+			};
+			DbSession.Evict(association);
+
+			return PartialView("_ContactsGridView", model);
+		}
+
+		[ValidateInput(false)]
+		public ActionResult ContactsSave(uint id, MVCxGridViewBatchUpdateValues<AssociationContact, int> updateValues)
+		{
+			foreach (var contactId in updateValues.DeleteKeys) {
+				var contact = DbSession.Query<AssociationContact>().FirstOrDefault(r => r.Id == contactId);
+				if (contact != null)
+					DbSession.Delete(contact);
+			}
+
+			var association = DbSession.Query<Association>().First(r => r.Id == id);
+			foreach (var contact in updateValues.Insert) {
+				contact.Association = association;
+				DbSession.Save(contact);
+			}
+
+			foreach (var contact in updateValues.Update) {
+				DbSession.Update(contact);
+			}
+
+			DbSession.Flush();
+
+			return GridContacts(id);
 		}
 	}
 }

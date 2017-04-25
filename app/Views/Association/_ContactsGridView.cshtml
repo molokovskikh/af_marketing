@@ -1,0 +1,73 @@
+﻿@using System.Web.UI.WebControls
+@using Marketing.ViewModels
+@using Marketing.Models
+@model AssociationEditViewModel
+@{
+  Html.EnableClientValidation();
+  Html.EnableUnobtrusiveJavaScript();
+}
+@Html.DevExpress().GridView(settings =>
+{
+    settings.Name = "gridContacts";
+    settings.CallbackRouteValues = new { Action = "GridContacts", Controller = "Association", id = Model.AssociationId };
+    settings.KeyFieldName = "Id";
+    settings.PreviewEncodeHtml = false;
+    settings.EncodeHtml = false;
+    settings.Width = Unit.Percentage(100);
+
+    settings.SettingsEditing.Mode = GridViewEditingMode.Batch;
+    settings.SettingsEditing.BatchEditSettings.EditMode = GridViewBatchEditMode.Cell;
+    settings.SettingsEditing.BatchEditSettings.StartEditAction = GridViewBatchStartEditAction.FocusedCellClick;
+    settings.SettingsEditing.BatchUpdateRouteValues = new { Action = "ContactsSave", Controller = "Association", id = Model.AssociationId };
+
+    settings.CommandColumn.Visible = true;
+    settings.CommandColumn.ShowDeleteButton = true;
+    settings.CommandColumn.ShowNewButtonInHeader = true;
+    settings.CommandColumn.Width = Unit.Point(50);
+
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "ContactType";
+        column.Caption = "Тип контакта";
+        column.PropertiesEdit.EncodeHtml = false;
+        column.EditorProperties().ComboBox(p =>
+        {
+            p.TextField = "Text";
+            p.ValueField = "Value";
+            p.ValueType = typeof(AssociationContactType);
+            p.DataSource = AssociationContact.ContactTypeList();
+        });
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "Fio";
+        column.Caption = "ФИО";
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "Phone";
+        column.Caption = "Телефоны";
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "Email";
+        column.Caption = "Почта";
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+
+    settings.CellEditorInitialize = (s, e) =>
+    {
+        ASPxEdit editor = (ASPxEdit)e.Editor;
+        editor.ValidationSettings.Display = Display.None;
+    };
+
+    settings.SettingsPager.PageSize = 20;
+    settings.SettingsSearchPanel.Visible = true;
+    settings.SettingsPager.Position = PagerPosition.TopAndBottom;
+    settings.SettingsPager.FirstPageButton.Visible = true;
+    settings.SettingsPager.LastPageButton.Visible = true;
+    settings.SettingsPager.PageSizeItemSettings.Visible = true;
+    settings.SettingsPager.PageSizeItemSettings.Items = new string[] { "10", "20", "50", "100", "150", "200" };
+}).Bind(Model.Contacts).GetHtml()

@@ -12,6 +12,7 @@ namespace Marketing.ViewModels
 		public AssociationEditViewModel()
 		{
 			AvailableRegions = new List<Region>();
+			Contacts = new List<AssociationContact>();
 		}
 
 		public uint? AssociationId { get; set; }
@@ -27,5 +28,7 @@ namespace Marketing.ViewModels
 
 		public string SelectedRegionIds { get; set; }
 		public IList<Region> AvailableRegions { get; set; }
+
+		public IList<AssociationContact> Contacts { get; set; }
 	}
 }
