@@ -1,7 +1,6 @@
 ﻿@using System.Web.UI.WebControls
 @model Marketing.ViewModels.DateRangeViewModel
 
-
 @Html.Hidden("DateStarted", Model.DateBegin)
 @Html.Hidden("DateFinished", Model.DateEnd)
 
@@ -56,9 +55,9 @@
     if (Model.DateBeginMax != null)
         dateEditSettings.Properties.CalendarProperties.MaxDate = Model.DateBeginMax.Value;
     if (Model.DateBeginMin != null)
-        dateEditSettings.Properties.CalendarProperties.MaxDate = Model.DateBeginMin.Value;
+        dateEditSettings.Properties.CalendarProperties.MinDate = Model.DateBeginMin.Value;
     else
-        dateEditSettings.Properties.CalendarProperties.MaxDate = Model.DateEnd;
+        dateEditSettings.Properties.CalendarProperties.MinDate = DateTime.MinValue;
 
     pickerGroup = settings.Items.AddGroupItem(itemSettings => {
         itemSettings.Caption = "";
@@ -67,11 +66,9 @@
         itemSettings.GroupBoxDecoration = GroupBoxDecoration.None;
     });
 
-
     newItem = pickerGroup.Items.Add(item => Model.DateEnd, itemSettings => ConfigureDateEditItem(itemSettings));
     newItem.Width = Unit.Pixel(234);
     newItem.NestedExtensionSettings.Width = Unit.Pixel(234);
-
 
     newItem.NestedExtensionType = FormLayoutNestedExtensionItemType.DateEdit;
     newItem.Caption = "по:";
@@ -79,11 +76,11 @@
     dateEditSettings.Properties.ClientSideEvents.DateChanged = "DateEndUpdate";
     dateEditSettings.Properties.CalendarProperties.DisabledDates.AddRange(Model.DateEndDisabledDates ?? new List<DateTime>());
     if (Model.DateEndMax != null)
-        dateEditSettings.Properties.CalendarProperties.MaxDate = Model.DateEndMax.Value;
+      dateEditSettings.Properties.CalendarProperties.MaxDate = Model.DateEndMax.Value;
     if (Model.DateEndMin != null)
-        dateEditSettings.Properties.CalendarProperties.MaxDate = Model.DateEndMin.Value;
-
-
+      dateEditSettings.Properties.CalendarProperties.MinDate = (DateTime)Model.DateEndMin;
+		else
+			dateEditSettings.Properties.CalendarProperties.MinDate = Model.DateBeginMin ?? DateTime.MinValue;
 }).GetHtml()
 
 @functions{
@@ -98,6 +95,7 @@
       dateEditSettings.Properties.ValidationSettings.CausesValidation = true;
       dateEditSettings.Properties.CalendarProperties.Columns = 2;
       dateEditSettings.Properties.CalendarProperties.ShowShadow = false;
+      dateEditSettings.Properties.CalendarProperties.ShowClearButton = false;
       return dateEditSettings;
   };
 }
