@@ -8,12 +8,11 @@ namespace Marketing.ViewModels
 {
 	public class DateRangeViewModel
 	{
-
 		[Display(Name = "Дата начала")]
-		public DateTime DateBegin { get; set; }
+		public DateTime? DateBegin { get; set; }
 
 		[Display(Name = "Дата окончания")]
-		public DateTime DateEnd { get; set; }
+		public DateTime? DateEnd { get; set; }
 		public List<DateTime> DateBeginDisabledDates { get; set; }
 		public DateTime? DateBeginMax { get; set; }
 		public DateTime? DateBeginMin { get; set; }

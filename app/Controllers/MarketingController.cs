@@ -268,6 +268,11 @@ namespace Marketing.Controllers
 			var model = new ProducerPromotion();
 			model.MarketingEvent = CurrentMarketingEvent;
 			model.Enabled = true;
+			model.DateStarted = DateTime.Today.AddMonths(1);
+			model.DateStarted = model.DateStarted.AddDays(1 - model.DateStarted.Day);
+			model.DateFinished = model.DateStarted.AddYears(1);
+			model.DateFinished =
+				model.DateFinished.AddDays(1 - model.DateFinished.Day).AddMonths(1 - model.DateFinished.Month).AddDays(-1);
 			ViewBag.MarketingEvent = CurrentMarketingEvent;
 			return View(model);
 		}
