@@ -299,6 +299,48 @@ namespace Marketing.Controllers
 			return RedirectToAction("PromotionList", new {id = CurrentMarketingEvent.Id});
 		}
 
+		public ActionResult PromotionCopy(uint id)
+		{
+			var source = DbSession.Query<ProducerPromotion>().First(r => r.Id == id);
+
+			var promotion = new ProducerPromotion {
+				MarketingEvent = source.MarketingEvent,
+				Name = "Копия " + source.Name,
+				DateStarted = source.DateStarted,
+				DateFinished = source.DateFinished,
+				Enabled = source.Enabled
+			};
+			DbSession.Save(promotion);
+
+			source.Suppliers.ForEach(r => {
+				var supplier = new PromotionSupplier {
+					Supplier = r.Supplier,
+					Promotion = promotion
+				};
+				DbSession.Save(supplier);
+			});
+			source.Products.ForEach(r => {
+				var product = new PromotionProduct {
+					Promotion = promotion,
+					Product = r.Product,
+					Price = r.Price,
+					DealerPercent = r.DealerPercent,
+					MemberPercent = r.MemberPercent
+				};
+				DbSession.Save(product);
+			});
+			source.Subscribes.ForEach(r => {
+				var subscribe = new PromotionSubscribe {
+					Promotion = promotion,
+					Member = r.Member
+				};
+				DbSession.Save(subscribe);
+			});
+
+			DbSession.Flush();
+
+			return RedirectToAction("PromotionList", new { id = CurrentMarketingEvent.Id });
+		}
 
 		public ActionResult PromotionEditListManager(uint id, string list,
 			PromotionTableRequestType type, string regionList)
