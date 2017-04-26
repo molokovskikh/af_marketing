@@ -1,7 +1,7 @@
 ﻿@using System.Drawing
 @using System.Web.UI.WebControls
 @using Marketing.Models
-
+@model List<ProducerPromotion>
 
 @Html.DevExpress().GridView(settings => {
     settings.Name = "Таблица";
@@ -13,6 +13,12 @@
 
     settings.Columns.Add(column =>
     {
+        column.FieldName = "Enabled";
+        column.Caption = "В работе";
+        column.ColumnType = MVCxGridViewColumnType.CheckBox;
+    });
+    settings.Columns.Add(column =>
+    {
         column.FieldName = "Name";
         column.PropertiesEdit.EncodeHtml = false;
         column.Caption = "Наименование";
@@ -20,29 +26,43 @@
         {
             var value = DataBinder.Eval(c.DataItem, "Id").ToString();
             var text = DataBinder.Eval(c.DataItem, "Name").ToString();
-            string htmlContent = $"<a href=\"{Url.Action("PromotionEdit", new { id = value })}\">{text}</a>";
+            string htmlContent = $"<a href=\"{Url.Action("PromotionChange", new { id = value })}\">{text}</a>";
             ViewContext.Writer.Write(htmlContent);
         });
     });
     settings.Columns.Add(column => {
         column.FieldName = "DateStarted";
-        column.Visible = false;
+        column.Caption = "С";
+        column.SetDataItemTemplateContent(c =>
+        {
+            var value = DataBinder.Eval(c.DataItem, "Id").ToString();
+            var text = ((DateTime)DataBinder.Eval(c.DataItem, "DateStarted")).ToString("dd.MM.yyyy");
+            string htmlContent = $"<a href=\"{Url.Action("PromotionChange", new { id = value })}\">{text}</a>";
+            ViewContext.Writer.Write(htmlContent);
+        });
     });
     settings.Columns.Add(column =>
     {
         column.FieldName = "DateFinished";
-        column.Visible = false;
+        column.Caption = "По";
+        column.SetDataItemTemplateContent(c =>
+        {
+            var value = DataBinder.Eval(c.DataItem, "Id").ToString();
+            var text = ((DateTime)DataBinder.Eval(c.DataItem, "DateFinished")).ToString("dd.MM.yyyy");
+            string htmlContent = $"<a href=\"{Url.Action("PromotionChange", new { id = value })}\">{text}</a>";
+            ViewContext.Writer.Write(htmlContent);
+        });
     });
-
-    settings.HtmlRowPrepared = (s, e) => {
-        if (e.RowType != GridViewRowType.Data) return;
-
-        var dateStart = (DateTime)e.GetValue("DateStarted");
-        var dateFinish = (DateTime)e.GetValue("DateFinished");
-        if (dateStart.Date > DateTime.Now || dateFinish.Date < DateTime.Now.Date)
-            e.Row.BackColor = Color.LightGray;
-    };
-
+    settings.Columns.Add(column =>
+    {
+        column.Caption = "Товары и поставщики";
+        column.SetDataItemTemplateContent(c =>
+        {
+            var value = DataBinder.Eval(c.DataItem, "Id").ToString();
+            string htmlContent = $"<a href=\"{Url.Action("PromotionEdit", new { id = value })}\"><span class=\"glyphicon glyphicon-pencil\"></span></a>";
+            ViewContext.Writer.Write(htmlContent);
+        });
+    });
     settings.Columns.Add(column =>
     {
         column.PropertiesEdit.EncodeHtml = false;
@@ -50,21 +70,40 @@
         column.SetDataItemTemplateContent(c =>
         {
             var value = DataBinder.Eval(c.DataItem, "Id").ToString();
-            string htmlContent = $"<a href=\"{Url.Action("PromotionСonditionsEdit", new { id = value })}\"  class=\"href-dots\">...</a>";
+            string htmlContent = $"<a href=\"{Url.Action("PromotionСonditionsEdit", new { id = value })}\"><span class=\"glyphicon glyphicon-pencil\"></span></a>";
+            ViewContext.Writer.Write(htmlContent);
+        });
+    });
+    settings.Columns.Add(column =>
+    {
+        column.Caption = "Скопировать";
+        column.SetDataItemTemplateContent(c =>
+        {
+            var value = DataBinder.Eval(c.DataItem, "Id").ToString();
+            var htmlContent = $"<a href=\"{Url.Action("PromotionCopy", new { id = value })}\"><span class=\"glyphicon glyphicon-plus\"></span></a>";
             ViewContext.Writer.Write(htmlContent);
         });
     });
     settings.Columns.Add(column => {
         column.PropertiesEdit.EncodeHtml = false;
-        column.Caption = "Действие";
+        column.Caption = "Удалить";
         column.SetDataItemTemplateContent(c => {
             var value = DataBinder.Eval(c.DataItem, "Id").ToString();
             var text = DataBinder.Eval(c.DataItem, "Name").ToString();
-            var htmlContent = $"<a class='c-pointer' onclick=\"submit('Вы действительно ходите удалить производителя `{text}`?', 'Да','Нет','{Url.Action("PromotionDelete", new {id = value})}')\">удалить</a> | "
-                + $"<a class='c-pointer' href='{Url.Action("PromotionChange", new { id = value })}'\">изменить</a>";
+            var htmlContent = $"<a class='c-pointer' onclick=\"submit('Вы действительно ходите удалить акцию `{text}`?', 'Да','Нет','{Url.Action("PromotionDelete", new {id = value})}')\"><span class=\"glyphicon glyphicon-remove\"></span></a>";
             ViewContext.Writer.Write(htmlContent);
         });
     });
+
+    settings.HtmlRowPrepared = (s, e) =>
+    {
+        if (e.RowType != GridViewRowType.Data) return;
+
+        var dateStart = (DateTime)e.GetValue("DateStarted");
+        var dateFinish = (DateTime)e.GetValue("DateFinished");
+        if (dateStart.Date > DateTime.Now || dateFinish.Date < DateTime.Now.Date)
+            e.Row.BackColor = Color.LightGray;
+    };
 
     settings.Settings.VerticalScrollableHeight = 500;
     settings.SettingsPager.PageSize = 100;
