@@ -156,10 +156,10 @@ namespace Marketing.Controllers
 				Name = client.Name,
 				RegionName = client.Region.Name,
 				Addresses = client.Addresses,
-				Email = client.ContactGroups.Any()
+				Email = client.ContactGroups.Any(r => r.ContactGroupTypeId == ContactGroupType.Marketing)
 					? client.ContactGroups.First(r => r.ContactGroupTypeId == ContactGroupType.Marketing).Contacts.FirstOrDefault(r => r.ContactType == ContactType.Email)?.ContactText
 					: null,
-				Phone = client.ContactGroups.Any()
+				Phone = client.ContactGroups.Any(r => r.ContactGroupTypeId == ContactGroupType.Marketing)
 					? client.ContactGroups.First(r => r.ContactGroupTypeId == ContactGroupType.Marketing).Contacts.FirstOrDefault(r => r.ContactType == ContactType.Phone)?.ContactText
 					: null
 			};

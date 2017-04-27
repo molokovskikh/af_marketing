@@ -65,12 +65,12 @@
     settings.Columns.Add(column =>
     {
         column.PropertiesEdit.EncodeHtml = false;
-        column.Caption = "Действие";
+        column.Caption = "Удалить";
         column.SetDataItemTemplateContent(c =>
         {
             var value = DataBinder.Eval(c.DataItem, "MemberId").ToString();
             var text = DataBinder.Eval(c.DataItem, "Name").ToString();
-            string htmlContent = $"<a class='c-pointer' onclick=\"submit('Вы действительно ходите удалить участника `{text}`?', 'Да','Нет','{Url.Action("Delete", "Members", new { memberId = value, regionIdList = regions })}')\">удалить</a>";
+            string htmlContent = $"<a class='c-pointer' onclick=\"submit('Вы действительно ходите удалить участника `{text}`?', 'Да','Нет','{Url.Action("Delete", "Members", new { memberId = value, regionIdList = regions })}')\"><span class=\"glyphicon glyphicon-remove\"></span></a>";
             ViewContext.Writer.Write(htmlContent);
         });
     });
