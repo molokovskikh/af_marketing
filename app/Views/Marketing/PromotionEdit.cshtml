@@ -4,10 +4,6 @@
 
 @{
   ViewBag.Title = $"Редактирование акции \"{Model.PromotionName}\"";
-  var selectMethods = new List<SelectListItem> {
-    new SelectListItem { Value = SelectMethod.SelectFromList.ToString(), Text = "Выбор из списка" },
-    new SelectListItem { Value = SelectMethod.SelectFromPrice.ToString(), Text = "Выбор из прайса" }
-  };
 	var canSelectFromPrice = (ViewBag.Association as Association).Supplier != null;
 }
 
@@ -86,7 +82,7 @@ else
     <button type="submit" formaction="@Url.Action("PromotionFromAssortmentSave", "Marketing")" class="btn btn-primary">Сохранить</button>
 </div>
 <div class="form-group">
-		@Html.DropDownListFor(m => m.Method, selectMethods)
+		@Html.ExtEnumDropDownListFor(m => m.Method, new { @class = "form-control" })
 </div>
 
 @if (!canSelectFromPrice)

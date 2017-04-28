@@ -192,6 +192,7 @@
     </Compile>
     <Compile Include="Helpers\AssociationFilter.cs" />
     <Compile Include="Helpers\ErrorFilter.cs" />
+    <Compile Include="Helpers\HtmlHelper.cs" />
     <Compile Include="Helpers\MailHelper.cs" />
     <Compile Include="Helpers\PromoterIdentifierFilter.cs" />
     <Compile Include="Helpers\SessionFilter.cs" />

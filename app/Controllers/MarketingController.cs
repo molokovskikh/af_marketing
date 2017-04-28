@@ -542,7 +542,7 @@ namespace Marketing.Controllers
 		public ActionResult PromotionFromListSave(PromotionViewModel model)
 		{
 			var promotion = DbSession.Query<ProducerPromotion>().First(s => s.Id == model.Promotion.Id);
-
+			promotion.SuppliersType = model.SuppliersType;
 			promotion.UpdateProductsAndSuppliersByIds(DbSession, model.ProductsListToSetList, model.SuppliersListToSetList);
 
 			return RedirectToAction("PromotionList",new {id = promotion.MarketingEvent.Id});
