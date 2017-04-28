@@ -12,6 +12,7 @@ namespace Marketing.ViewModels
 		public AssociationEditViewModel()
 		{
 			AvailableRegions = new List<Region>();
+			AvailableSuppliers = new List<Supplier>();
 			Contacts = new List<AssociationContact>();
 		}
 
@@ -25,6 +26,10 @@ namespace Marketing.ViewModels
 		[Display(Name = "Примечания")]
 		[StringLength(2000, ErrorMessage = "Длина поле {0} не может превышать {1}")]
 		public string Comments { get; set; }
+
+		[Display(Name = "Базовый поставщик")]
+		public uint? SupplierId { get; set; }
+		public IList<Supplier> AvailableSuppliers { get; set; }
 
 		public string SelectedRegionIds { get; set; }
 		public IList<Region> AvailableRegions { get; set; }

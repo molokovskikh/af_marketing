@@ -90,6 +90,7 @@ namespace Marketing
 				});
 			});
 			Mapper.Class<Association>(m => {
+				m.ManyToOne(s => s.Supplier, mapper => mapper.Column("SupplierId"));
 				m.Bag(o => o.Members, c => {
 					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
 					c.Inverse(true);

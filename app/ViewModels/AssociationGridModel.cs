@@ -12,5 +12,6 @@ namespace Marketing.ViewModels
 		public string Contacts { get; set; }
 		public string Regions { get; set; }
 		public string Comments { get; set; }
+		public string SupplierName { get; set; }
 	}
 }

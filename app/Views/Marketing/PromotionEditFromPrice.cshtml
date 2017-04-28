@@ -29,21 +29,14 @@
 <form id="promotionForm" action="@Url.Action("PromotionEdit", "Marketing", new { id = Model.PromotionId })" method="post" novalidate="novalidate">
 	@Html.AntiForgeryToken()
 	@Html.ValidationSummary("", new {@class = "text-danger"})
-	@Html.HiddenFor(model => model.PromotionId)
-	@Html.HiddenFor(m => m.SelectedSupplierIds)
+	@Html.HiddenFor(m => m.PromotionId)
+	@Html.HiddenFor(m => m.SupplierId)
 	@Html.HiddenFor(m => m.SelectedPriceIds)
 	@Html.HiddenFor(m => m.SelectedProductIds)
 
 		<script>
         	var blocked = true;
 
-        	function suppliersInit(s, e) {
-        		var valStr = $("#@Html.IdFor(m => m.SelectedSupplierIds)").val();
-        		if (valStr == "")
-        			return;
-        		var arr = valStr.split(',');
-        		s.SelectRowsByKey(arr);
-        	}
         	function pricesInit(s, e) {
         		var valStr = $("#@Html.IdFor(m => m.SelectedPriceIds)").val();
         		if (valStr == "")
@@ -57,15 +50,6 @@
         			return;
         		var arr = valStr.split(',');
         		s.SelectRowsByKey(arr);
-        	}
-
-        	function switchSuppliers(s, e) {
-        		s.GetSelectedFieldValues("Id", GetSelectedSupplierIdsCallback);
-					}
-        	function GetSelectedSupplierIdsCallback(ids) {
-        		var valStr = ids.join(',');
-        		$("#@Html.IdFor(m => m.SelectedSupplierIds)").val(valStr);
-        		loadPrices();
         	}
 
         	function switchPrices(s, e) {
@@ -85,18 +69,6 @@
         		$("#@Html.IdFor(m => m.SelectedProductIds)").val(valStr);
         	}
 
-        	function loadPrices() {
-        		$("#ajaxLoader").show();
-        		var url = "@Url.Action("ChangeSupplierList", "Marketing")";
-        		var ids = $("#@Html.IdFor(m => m.SelectedSupplierIds)").val();
-        		$.post(url, { selectedIds: ids })
-							.done(function () {
-								blocked = false;
-								gridPrices.PerformCallback();
-							})
-							.fail(function () { alert("Ошибка сервера"); })
-							.always(function () { $("#ajaxLoader").hide(); });
-        	}
         	function loadGoods() {
         		$("#ajaxLoader").show();
         		var url = "@Url.Action("ChangePriceList", "Marketing")";
@@ -147,14 +119,10 @@
 </div>
 </form>
 
-<div class="container-fluid">
+<div class="form-group">
 		<div class="row">
-				<div class="col-md-6">
-						<h3>Поставщики</h3>
-						@Html.Partial("partials/_SuppliersGrid", Model)
-				</div>
-				<div class="col-md-6">
-						<h3>Прайсы</h3>
+				<div class="col-xs-12 col-md-6">
+						<h3>Прайсы поставщика @Model.SupplierName</h3>
 						@Html.Partial("partials/_PricesGrid", Model)
 				</div>
 		</div>

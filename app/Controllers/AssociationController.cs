@@ -6,6 +6,7 @@ using NHibernate.Linq;
 using Marketing.Models;
 using NHibernate;
 using DevExpress.Web.Mvc;
+using System;
 
 namespace Marketing.Controllers
 {
@@ -34,6 +35,7 @@ namespace Marketing.Controllers
 					AssociationId = r.Id,
 					Name = r.Name,
 					Comments = r.Comments,
+					SupplierName = r.Supplier?.Name ?? "",
 					Contacts =
 						string.Join("; ",
 							r.Contacts.OrderBy(x => x.ContactType).ThenBy(x => x.Fio).Select(x => $"{x.Fio}, {x.Phone}, {x.Email}").ToArray()),
@@ -69,9 +71,29 @@ namespace Marketing.Controllers
 			var model = new AssociationEditViewModel {
 				AssociationId = association.Id,
 				Name = association.Name,
+				SupplierId = association.Supplier?.Id,
+				AvailableSuppliers = GetSupplierList(association),
 				Comments = association.Comments
 			};
 			return View(model);
+		}
+
+		public ActionResult SupplierList(uint id)
+		{
+			var association = DbSession.Query<Association>().First(r => r.Id == id);
+			var model = new AssociationEditViewModel();
+			model.AvailableSuppliers = GetSupplierList(association);
+			return PartialView("_SupplierList", model);
+		}
+
+		private IList<Supplier> GetSupplierList(Association association)
+		{
+			var regionMask = (ulong)association.Regions.Sum(r => r.Id);
+			return DbSession.Query<Supplier>()
+				.Where(r => (r.RegionMask & regionMask) != 0)
+				.Where(r => !r.Disabled)
+				.OrderBy(r => r.Name)
+				.ToList();
 		}
 
 		[HttpPost]
@@ -81,8 +103,10 @@ namespace Marketing.Controllers
 				return View(model);
 
 			var association = DbSession.Query<Association>().First(r => r.Id == model.AssociationId);
+			var supplier = DbSession.Query<Supplier>().FirstOrDefault(r => r.Id == model.SupplierId);
 			association.Name = model.Name;
 			association.Comments = model.Comments;
+			association.Supplier = supplier;
 
 			return RedirectToAction("Index");
 		}
