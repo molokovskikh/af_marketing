@@ -10,6 +10,6 @@ namespace Marketing.ViewModels
 		public virtual uint PriceId { get; set; }
 		public virtual string Name { get; set; }
 		public virtual DateTime PriceDate { get; set; }
-		public string SupplierName { get; set; }
+		public string Regions { get; set; }
 	}
 }

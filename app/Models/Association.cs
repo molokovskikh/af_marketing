@@ -22,6 +22,7 @@ namespace Marketing.Models
 		public virtual uint Id { get; set; }
 		public virtual string Name { get; set; }
 		public virtual string Comments { get; set; }
+		public virtual Supplier Supplier { get; set; }
 		public virtual IList<PromotionMember> Members { get; set; }
 		public virtual IList<MarketingEvent> MarketingEvents { get; set; }
 		public virtual IList<PromoterAssociation> Promoters { get; set; }

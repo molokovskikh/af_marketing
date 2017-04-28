@@ -28,6 +28,13 @@
     </div>
 </div>
 <div class="form-group">
+		@Html.LabelFor(m => m.SupplierId, new { @class = "col-md-2 control-label"})
+		<div class="col-md-2">
+				@Html.Partial("_SupplierList", Model)
+        @Html.ValidationMessageFor(m => m.SupplierId, "", new { @class = "text-danger" })
+		</div>
+</div>
+<div class="form-group">
     @Html.LabelFor(m => m.Comments, new { @class = "col-md-2 control-label" })
     <div class="col-md-10">
         @Html.TextAreaFor(m => m.Comments, new { @class = "form-control", rows = "5" })

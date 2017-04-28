@@ -309,7 +309,7 @@
     <Content Include="Views\Account\Confirm.cshtml" />
     <Content Include="Views\Marketing\Index.cshtml" />
     <Content Include="Views\Marketing\PromotionList.cshtml" />
-    <Content Include="Views\Marketing\PromotionEdit.cshtml" />
+    <Content Include="Views\Marketing\PromotionEditFromList.cshtml" />
     <Content Include="Views\Marketing\PromotionAdd.cshtml" />
     <Content Include="Views\Marketing\PromotionСonditionsEdit.cshtml" />
     <Content Include="Views\Marketing\partials\_PromotionListGridView.cshtml" />
@@ -340,6 +340,8 @@
     <Content Include="Views\Association\Regions.cshtml" />
     <Content Include="Views\Association\Contacts.cshtml" />
     <Content Include="Views\Association\_ContactsGridView.cshtml" />
+    <Content Include="Views\Association\_SupplierList.cshtml" />
+    <Content Include="Views\Marketing\partials\_AssortmentGrid.cshtml" />
     <None Include="Views\Marketing\partials\_PromotionEditRegionFilterData.cshtml" />
     <Content Include="Views\Members\_TrailInfo.cshtml" />
     <Content Include="Views\Members\_MembersList.cshtml" />
@@ -347,9 +349,9 @@
     <Content Include="Views\Report\MarketingEvents.cshtml" />
     <Content Include="Views\Marketing\partials\_SelectedProducersGrid.cshtml" />
     <Content Include="Views\Marketing\PromotionEditFromPrice.cshtml" />
-    <Content Include="Views\Marketing\partials\_SuppliersGrid.cshtml" />
     <Content Include="Views\Marketing\partials\_PricesGrid.cshtml" />
     <Content Include="Views\Marketing\partials\_GoodsGrid.cshtml" />
+    <Content Include="Views\Marketing\PromotionEdit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Helpers\GridViews\" />

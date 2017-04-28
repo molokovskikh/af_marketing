@@ -54,6 +54,24 @@ namespace Marketing.Controllers
 			}
 		}
 
+		private PromotionFromAssortmentViewModel _editedPromotionFromAssortment;
+
+		private PromotionFromAssortmentViewModel EditedPromotionFromAssortment
+		{
+			get
+			{
+				if (_editedPromotionFromAssortment == null)
+					_editedPromotionFromAssortment =
+						System.Web.HttpContext.Current.Session["EditedPromotionFromAssortment"] as PromotionFromAssortmentViewModel;
+				return _editedPromotionFromAssortment;
+			}
+			set
+			{
+				_editedPromotionFromAssortment = null;
+				System.Web.HttpContext.Current.Session["EditedPromotionFromAssortment"] = value;
+			}
+		}
+
 		public ActionResult Index()
 		{
 			var model = GetGridData();
@@ -370,23 +388,56 @@ namespace Marketing.Controllers
 		[HttpGet]
 		public ActionResult PromotionEdit(uint id)
 		{
-			return PromotionEditFromList(id);
+			var model = new PromotionFromAssortmentViewModel();
+			model.Init(DbSession, id);
+			EditedPromotionFromAssortment = model;
+			return View(model);
 		}
 
 		[HttpPost]
 		public ActionResult PromotionEdit(uint id, SelectMethod method)
 		{
-			if (method == SelectMethod.SelectFromList)
-				return PromotionEditFromList(id);
-			else
-				return PromotionEditFromPrice(id);
+			if (method == SelectMethod.SelectFromPrice)
+				return RedirectToAction("PromotionEditFromPrice", new {id = id});
+
+			return RedirectToAction("PromotionEdit", new {id = id});
+		}
+
+		[HttpPost]
+		public ActionResult GetAssortment()
+		{
+			return PartialView("partials/_AssortmentGrid", EditedPromotionFromAssortment);
+		}
+
+		[HttpPost]
+		public ActionResult PromotionFromAssortmentSave(PromotionFromAssortmentViewModel model)
+		{
+			var promotion = DbSession.Query<ProducerPromotion>().FirstOrDefault(r => r.Id == model.PromotionId);
+			if (promotion == null)
+				return HttpNotFound();
+
+			var products = DbSession.Query<PromotionProduct>().Where(r => r.Promotion == promotion).ToArray();
+			var ids = model.SelectedProductIds.Split(',').Select(r => uint.Parse(r)).ToArray();
+
+			products.Where(r => !ids.Contains(r.Product.Id)).ForEach(r => DbSession.Delete(r));
+
+			ids.Where(x => !products.Any(r => r.Product.Id == x)).ForEach(x => {
+				var product = new PromotionProduct {
+					Promotion = promotion,
+					Product = DbSession.Query<Product>().First(p => p.Id == x)
+				};
+				DbSession.Save(product);
+			});
+			DbSession.Flush();
+
+			return RedirectToAction("PromotionList", new { id = model.MarketingEventId });
 		}
 
 		public ActionResult PromotionEditFromList(uint id)
 		{
 			var model = new PromotionViewModel();
 			model.SetData(DbSession, id);
-			return View("PromotionEdit", model);
+			return View(model);
 		}
 
 		public ActionResult PromotionEditFromPrice(uint id)
@@ -394,13 +445,7 @@ namespace Marketing.Controllers
 			var model = new PromotionFromPriceViewModel();
 			model.Init(DbSession, id);
 			EditedPromotionFromPrice = model;
-			return View("PromotionEditFromPrice", model);
-		}
-
-		[HttpPost]
-		public ActionResult GetSuppliersList()
-		{
-			return PartialView("partials/_SuppliersGrid", EditedPromotionFromPrice);
+			return View(model);
 		}
 
 		[HttpPost]
@@ -413,25 +458,6 @@ namespace Marketing.Controllers
 		public ActionResult GetProductsList()
 		{
 			return PartialView("partials/_GoodsGrid", EditedPromotionFromPrice);
-		}
-
-		[HttpPost]
-		public ActionResult ChangeSupplierList(string selectedIds)
-		{
-			if (string.IsNullOrEmpty(selectedIds)) {
-				EditedPromotionFromPrice.AvailablePrices = new List<PricesGridViewModel>();
-				return Content("");
-			}
-
-			EditedPromotionFromPrice.SelectedSupplierIds = selectedIds;
-			var producerIds = string.Join(",",
-				EditedPromotionFromPrice.Producers.Select(r => r.Id.ToString()).ToArray());
-			if (string.IsNullOrEmpty(producerIds))
-				return HttpNotFound();
-
-			EditedPromotionFromPrice.AvailablePrices = EditedPromotionFromPrice.GetPricesList(DbSession, producerIds, selectedIds);
-
-			return Content("");
 		}
 
 		[HttpPost]
@@ -462,24 +488,10 @@ namespace Marketing.Controllers
 			if (promotion == null)
 				return HttpNotFound();
 
-			var suppliers = DbSession.Query<PromotionSupplier>()
-				.Where(r => r.Promotion == promotion)
-				.ToArray();
-			var supplierIds = model.SelectedSupplierIds.Split(',').Select(r => uint.Parse(r)).ToArray();
-			suppliers.Where(r => !supplierIds.Contains(r.Supplier.Id)).ForEach(r => DbSession.Delete(r));
-			supplierIds.Where(s => !suppliers.Any(r => r.Supplier.Id == s)).ForEach(r => {
-				var supplier = new PromotionSupplier {
-					Promotion = promotion,
-					Supplier = DbSession.Query<Supplier>().First(s => s.Id == r)
-				};
-				DbSession.Save(supplier);
-			});
-
 			var products = DbSession.Query<PromotionProduct>()
 				.Where(r => r.Promotion == promotion)
 				.ToArray();
 			var productIds = model.SelectedProductIds.Split(',').Select(r => uint.Parse(r)).ToArray();
-			products.Where(r => !productIds.Contains(r.Product.Id)).ForEach(r => DbSession.Delete(r));
 			productIds.Where(p => !products.Any(r => r.Product.Id == p)).ForEach(r => {
 				var product = new PromotionProduct {
 					Promotion = promotion,
@@ -527,7 +539,7 @@ namespace Marketing.Controllers
 		}
 
 
-		public ActionResult PromotionEditGet(PromotionViewModel model)
+		public ActionResult PromotionFromListSave(PromotionViewModel model)
 		{
 			var promotion = DbSession.Query<ProducerPromotion>().First(s => s.Id == model.Promotion.Id);
 

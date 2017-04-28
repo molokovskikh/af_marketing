@@ -1,0 +1,99 @@
+﻿@using System.Web.UI.WebControls
+@using Marketing.ViewModels
+@model PromotionFromAssortmentViewModel
+@if (Model != null)
+{
+@Html.DevExpress().GridView(settings =>
+{
+    settings.Name = "gridGoods";
+    settings.CallbackRouteValues = new { Action = "GetAssortment", Controller = "Marketing", Id = Model.PromotionId };
+    settings.KeyFieldName = "ProductId";
+    settings.PreviewEncodeHtml = false;
+    settings.EncodeHtml = false;
+    settings.Width = Unit.Percentage(100);
+    settings.ControlStyle.Wrap = DefaultBoolean.True;
+
+    settings.CommandColumn.Visible = true;
+    settings.CommandColumn.Width = Unit.Pixel(30);
+    settings.CommandColumn.ShowSelectCheckbox = true;
+    settings.CommandColumn.SelectAllCheckboxMode = GridViewSelectAllCheckBoxMode.AllPages;
+
+    settings.ClientSideEvents.SelectionChanged = "switchGoods";
+    settings.ClientSideEvents.Init = "goodsInit";
+
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "Code";
+        column.Caption = "Код товара";
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "CodeCr";
+        column.Caption = "Код производителя";
+        column.HeaderStyle.Wrap = DefaultBoolean.True;
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "ProductName";
+        column.Caption = "Оригинальное наименование товара";
+        column.HeaderStyle.Wrap = DefaultBoolean.True;
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "ProducerName";
+        column.Caption = "Оригинальное наименование производителя";
+        column.HeaderStyle.Wrap = DefaultBoolean.True;
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "CatalogName";
+        column.Caption = "Каталожное наименование товара";
+        column.HeaderStyle.Wrap = DefaultBoolean.True;
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "CatalogFormName";
+        column.Caption = "Каталожная форма выпуска и дозировка";
+        column.HeaderStyle.Wrap = DefaultBoolean.True;
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "CatalogProperty";
+        column.Caption = "Каталожное свойство";
+        column.HeaderStyle.Wrap = DefaultBoolean.True;
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "CatalogProducer";
+        column.Caption = "Каталожный производитель";
+        column.HeaderStyle.Wrap = DefaultBoolean.True;
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "MainCatalogProducer";
+        column.Caption = "Главный каталожный производитель";
+        column.HeaderStyle.Wrap = DefaultBoolean.True;
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+
+    settings.FormatConditions.AddHighlight("CatalogProducer", "[CatalogProducer] = \"\"", GridConditionHighlightFormat.LightRedFill);
+
+    settings.SettingsSearchPanel.Visible = true;
+    //settings.Settings.HorizontalScrollBarMode = ScrollBarMode.Auto;
+
+    settings.SettingsPager.PageSize = 20;
+    settings.SettingsPager.Position = PagerPosition.TopAndBottom;
+    settings.SettingsPager.FirstPageButton.Visible = true;
+    settings.SettingsPager.LastPageButton.Visible = true;
+    settings.SettingsPager.PageSizeItemSettings.Visible = true;
+    settings.SettingsPager.PageSizeItemSettings.Items = new string[] { "10", "20", "50", "100", "150", "200" };
+}).Bind(Model.AvailableProducts).GetHtml()
+}

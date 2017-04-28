@@ -41,8 +41,6 @@
     });
     settings.Columns.Add(column =>
     {
-        column.FieldName = "Regions";
-        column.PropertiesEdit.EncodeHtml = false;
         column.Caption = "Регионы работы";
         column.SetDataItemTemplateContent(c =>
         {
@@ -56,6 +54,19 @@
     });
     settings.Columns.Add(column =>
     {
+        column.Caption = "Базовый поставщик";
+        column.SetDataItemTemplateContent(c =>
+        {
+            var value = DataBinder.Eval(c.DataItem, "AssociationId").ToString();
+            var text = DataBinder.Eval(c.DataItem, "SupplierName").ToString();
+            if (string.IsNullOrWhiteSpace(text))
+                text = "[добавить]";
+            string htmlContent = $"<a href=\"{Url.Action("Edit", new { id = value })}\">{text}</a>";
+            ViewContext.Writer.Write(htmlContent);
+        });
+    });
+    settings.Columns.Add(column =>
+    {
         column.FieldName = "Comments";
         column.PropertiesEdit.EncodeHtml = false;
         column.Caption = "Примечания";
@@ -63,12 +74,12 @@
     settings.Columns.Add(column =>
     {
         column.PropertiesEdit.EncodeHtml = false;
-        column.Caption = "Действие";
+        column.Caption = "Удалить";
         column.SetDataItemTemplateContent(c =>
         {
             var value = DataBinder.Eval(c.DataItem, "AssociationId").ToString();
             var text = DataBinder.Eval(c.DataItem, "Name").ToString();
-            string htmlContent = $"<a class='c-pointer' onclick=\"submit('Вы действительно ходите удалить ассоциацию `{text}`?', 'Да','Нет','{Url.Action("Delete", new { id = value })}')\">удалить</a>";
+            string htmlContent = $"<a class='c-pointer' onclick=\"submit('Вы действительно ходите удалить ассоциацию `{text}`?', 'Да','Нет','{Url.Action("Delete", new { id = value })}')\"><span class=\"glyphicon glyphicon-remove\"></span></a>";
             ViewContext.Writer.Write(htmlContent);
         });
     });
