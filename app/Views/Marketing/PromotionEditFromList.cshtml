@@ -9,10 +9,6 @@
   var tableNameForProductSet = PromotionTableRequestType.ProductsListToSet.ToString();
   var tableNameForSupplierGet = PromotionTableRequestType.SuppliersListToGet.ToString();
   var tableNameForSupplierSet = PromotionTableRequestType.SuppliersListToSet.ToString();
-  var selectMethods = new List<SelectListItem> {
-    new SelectListItem { Value = SelectMethod.SelectFromList.ToString(), Text = "Выбор из списка" },
-    new SelectListItem { Value = SelectMethod.SelectFromPrice.ToString(), Text = "Выбор из прайса" }
-  };
 	var canSelectFromPrice = (ViewBag.Association as Association).Supplier != null;
 }
 
@@ -282,16 +278,26 @@ else
         		window.location = url;
         	}
 
+        	function switchSuppliersPanel(){
+        		if ($("#@Html.IdFor(m => m.SuppliersType)").val() == 0){
+        			$("#suppliers_panel").hide();
+        		}
+        		else {
+        			$("#suppliers_panel").show();
+        		}
+        	}
+
         	$(document).ready(function(){
         		$("#@Html.IdFor(m => m.Method)").on("change", selectMethod);
         		$("#optionAssortment").on("change", gotoAssortment);
+						$("#@Html.IdFor(m => m.SuppliersType)").on("change", switchSuppliersPanel)
         	});
 		</script>
 <div class="form-group">
     <button type="submit" formaction="@Url.Action("PromotionFromListSave", "Marketing")" class="btn btn-primary">Сохранить</button>
 </div>
 <div class="form-group">
-		@Html.DropDownListFor(m => m.Method, selectMethods)
+		@Html.ExtEnumDropDownListFor(m => m.Method, new { @class = "form-control" })
 </div>
 
 @if (!canSelectFromPrice)
@@ -356,6 +362,10 @@ else
 
 <h3>Поставщики:</h3>
 <div class="form-group">
+		@Html.ExtEnumDropDownListFor(m => m.SuppliersType, new { @class = "form-control" })
+</div>
+<div id="suppliers_panel"@(Model.SuppliersType == SuppliersType.All ? " style=display:none" : "")>
+<div class="form-group">
     @Html.Partial("partials/_PromotionEditRegionFilterData", Model.RegionList)
     @Html.Partial("partials/_PromotionEditRegionFilterLogic", Model.RegionList)
 </div>
@@ -396,6 +406,7 @@ else
 						})
         </div>
     </div>
+</div>
 </div>
 </div>
 </form>

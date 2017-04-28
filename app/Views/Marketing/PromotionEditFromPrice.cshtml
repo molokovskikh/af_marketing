@@ -4,10 +4,6 @@
 @{
   var catalogList = (List<ViewModelListItem>)ViewBag.CatalogList;
   ViewBag.Title = $"Редактирование акции \"{Model.PromotionName}\"";
-  var selectMethods = new List<SelectListItem> {
-    new SelectListItem { Value = SelectMethod.SelectFromList.ToString(), Text = "Выбор из списка" },
-    new SelectListItem { Value = SelectMethod.SelectFromPrice.ToString(), Text = "Выбор из прайса" }
-  };
 }
 
 <div class="form-group">
@@ -115,7 +111,7 @@
     <button type="submit" formaction="@Url.Action("PromotionFromPriceSave", "Marketing")" class="btn btn-primary" data-toggle="tooltip" data-placement="right" title="Сохранить списки отобранных поставщиков и товаров">Сохранить</button>
 </div>
 <div class="form-group">
-		@Html.DropDownListFor(m => m.Method, selectMethods)
+		@Html.ExtEnumDropDownListFor(m => m.Method, new { @class = "form-control" })
 </div>
 </form>
 

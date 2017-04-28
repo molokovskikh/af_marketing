@@ -18,6 +18,7 @@ namespace Marketing.ViewModels
 		}
 
 		public SelectMethod Method { get; set; }
+		public SuppliersType SuppliersType { get; set; }
 		public ProducerPromotion Promotion { get; set; }
 		public string ProductsListToSetList { get; set; }
 		public string SuppliersListToSetList { get; set; }
@@ -37,6 +38,7 @@ namespace Marketing.ViewModels
 			//RegionList = dbSession.Query<Region>().OrderBy(s => s.Name).Select(s => new SelectListItem() { Text = s.Name, Value = s.Id.ToString() }).ToList();
 			RegionList = new List<ViewModelListItem>();
 			Promotion = dbSession.Query<ProducerPromotion>().First(s => s.Id == promotionId);
+			SuppliersType = Promotion.SuppliersType;
 			var currentProducts = string.Join(",", Promotion.Products.Select(s => s.Product.Id).ToList());
 			var currentSupplier = string.Join(",", Promotion.Suppliers.Select(s => s.Supplier.Id).ToList());
 			ProductListGet.SetData(dbSession, promotionId, PromotionTableRequestType.ProductsListToGet, currentProducts, "");
