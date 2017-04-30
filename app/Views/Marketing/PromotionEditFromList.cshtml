@@ -284,6 +284,12 @@ else
         		}
         		else {
         			$("#suppliers_panel").show();
+        			if ($("#@Html.IdFor(m => m.SuppliersType)").val() == 2){
+        				$("#exception-suppliers").show();
+        			}
+        			else {
+        				$("#exception-suppliers").hide();
+        			}
         		}
         	}
 
@@ -365,6 +371,7 @@ else
 		@Html.ExtEnumDropDownListFor(m => m.SuppliersType, new { @class = "form-control" })
 </div>
 <div id="suppliers_panel"@(Model.SuppliersType == SuppliersType.All ? " style=display:none" : "")>
+<div id="exception-suppliers" class="alert alert-warning"@(Model.SuppliersType != SuppliersType.Disabled ? " style=display:none" : "")>Поставщики-исключения из зачёта по акции</div>
 <div class="form-group">
     @Html.Partial("partials/_PromotionEditRegionFilterData", Model.RegionList)
     @Html.Partial("partials/_PromotionEditRegionFilterLogic", Model.RegionList)
