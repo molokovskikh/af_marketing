@@ -54,6 +54,17 @@ namespace Marketing.Models
 		[Display(Name = "Поставщики акции")]
 		public virtual SuppliersType SuppliersType { get; set; }
 
+		[Display(Name = "Требования по выкладке акционного товара")]
+		public virtual string PromoRequirements { get; set; }
+
+		[Display(Name = "Краткое описание акции")]
+		[StringLength(150, ErrorMessage = "Поле {0} не может содержать больше {1} символов")]
+		public virtual string Description { get; set; }
+
+		[Display(Name = "Информация о вознаграждении")]
+		[StringLength(150, ErrorMessage = "Поле {0} не может содержать больше {1} символов")]
+		public virtual string FeeInformation { get; set; }
+
 		public virtual void UpdateProductsAndSuppliersByIds(ISession dbSession, string productsIds, string suppliersIds)
 		{
 			var productsListRaw = (productsIds ?? "").Split(',').Select(s => {

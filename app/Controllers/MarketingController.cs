@@ -308,7 +308,10 @@ namespace Marketing.Controllers
 				Name = model.Name,
 				DateStarted = model.DateStarted,
 				DateFinished = model.DateFinished,
-				Enabled = model.Enabled
+				Enabled = model.Enabled,
+				Description = model.Description,
+				PromoRequirements = model.PromoRequirements,
+				FeeInformation = model.FeeInformation
 			};
 			DbSession.Save(newItem);
 
@@ -326,7 +329,10 @@ namespace Marketing.Controllers
 				Name = "Копия " + source.Name,
 				DateStarted = source.DateStarted,
 				DateFinished = source.DateFinished,
-				Enabled = source.Enabled
+				Enabled = source.Enabled,
+				Description = source.Description,
+				PromoRequirements = source.PromoRequirements,
+				FeeInformation = source.FeeInformation
 			};
 			DbSession.Save(promotion);
 
@@ -525,7 +531,10 @@ namespace Marketing.Controllers
 			promotion.DateStarted = model.DateStarted;
 			promotion.DateFinished = model.DateFinished;
 			promotion.Enabled = model.Enabled;
-			DbSession.Save(promotion);
+			promotion.Description = model.Description;
+			promotion.PromoRequirements = model.PromoRequirements;
+			promotion.FeeInformation = model.FeeInformation;
+			DbSession.Update(promotion);
 			return RedirectToAction("PromotionList", new {id = CurrentMarketingEvent.Id});
 		}
 

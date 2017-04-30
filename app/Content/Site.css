@@ -40,3 +40,4 @@ textarea {
 .hid{ display: none !important;}
 .red {color:#da2d2d !important;}
 h2 .form-control{display:inline-block;font-size:inherit}
+.full-width{width:100%;max-width:initial}

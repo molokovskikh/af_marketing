@@ -31,6 +31,7 @@
         @Html.LabelFor(m => m.Name, new {@class = "col-md-2 control-label"})
         <div class="col-md-10">
             @Html.TextBoxFor(m => m.Name, new {@class = "form-control"})
+            @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
         </div>
     </div>
     <div class="form-group">
@@ -43,6 +44,27 @@
                 @Html.CheckBoxFor(m => m.Enabled)
                 @Html.LabelFor(m => m.Enabled)
             </div>
+        </div>
+    </div>
+		<div class="form-group">
+				@Html.LabelFor(m => m.Description, new { @class = "col-md-2 control-label" })
+				<div class="col-md-10">
+						@Html.TextBoxFor(m => m.Description, new { @class = "form-control" })
+						@Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
+				</div>
+		</div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.FeeInformation, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.FeeInformation, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.FeeInformation, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.PromoRequirements, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextAreaFor(m => m.PromoRequirements, 10, 0, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.PromoRequirements, "", new { @class = "text-danger" })
         </div>
     </div>
     <div class="form-group">
