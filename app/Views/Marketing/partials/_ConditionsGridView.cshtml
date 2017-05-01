@@ -26,11 +26,6 @@
     };
     settings.SettingsEditing.BatchEditSettings.ShowConfirmOnLosingChanges = false;
 
-    //settings.Columns.Add(column =>
-    //{
-    //    column.FieldName = "PromotionId";
-    //    column.Width = Unit.Pixel(0);
-    //});
     settings.Columns.Add(column =>
     {
         column.FieldName = "ProductName";
@@ -40,9 +35,41 @@
     });
     settings.Columns.Add(column =>
     {
+        column.FieldName = "ProducerName";
+        column.Caption = "Производитель";
+        column.ReadOnly = true;
+    });
+    settings.Columns.Add(column =>
+    {
+        column.Caption = "МНН";
+        column.ReadOnly = true;
+        column.SetDataItemTemplateContent(c =>
+        {
+            var value = DataBinder.Eval(c.DataItem, "MnnId")?.ToString();
+            var text = DataBinder.Eval(c.DataItem, "Mnn")?.ToString();
+            string htmlContent = string.IsNullOrEmpty(text) ? "" : $"<a href=\"javascript:void(0);\" onclick=\"viewProductsByMnn({value}, '{text}');\">{text}</a>";
+            ViewContext.Writer.Write(htmlContent);
+        });
+    });
+    settings.Columns.Add(column =>
+    {
+        column.Caption = "Предлагать заменой для...";
+        column.ReadOnly = true;
+        column.SetDataItemTemplateContent(c =>
+        {
+            var value = DataBinder.Eval(c.DataItem, "ConditionId")?.ToString();
+            var text = DataBinder.Eval(c.DataItem, "Replacements")?.ToString();
+            if (string.IsNullOrEmpty(text))
+                text = "[Создать замены]";
+            string htmlContent = string.IsNullOrEmpty(text) ? "" : $"<a href=\"{Url.Action("EditReplacements", new { id = value })}\">{text}</a>";
+            ViewContext.Writer.Write(htmlContent);
+        });
+    });
+    settings.Columns.Add(column =>
+    {
         column.FieldName = "Price";
         column.PropertiesEdit.EncodeHtml = false;
-        column.Caption = "CIP-цена";
+        column.Caption = "Учётная цена";
         column.EditorProperties().TextBox(p =>
         {
             p.DisplayFormatInEditMode = true;

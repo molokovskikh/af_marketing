@@ -1,0 +1,48 @@
+﻿@using System.Web.UI.WebControls
+@using Marketing.ViewModels
+@model ReplacementsGridViewModel
+@if (Model != null)
+{
+@Html.DevExpress().GridView(settings =>
+{
+    settings.Name = Model.Name;
+    settings.CallbackRouteValues = new { Action = Model.Action, Controller = "Marketing" };
+    settings.KeyFieldName = "CatalogId";
+    settings.PreviewEncodeHtml = false;
+    settings.EncodeHtml = false;
+    settings.Width = Unit.Percentage(100);
+    settings.ControlStyle.Wrap = DefaultBoolean.True;
+
+    settings.CommandColumn.Visible = true;
+    settings.CommandColumn.Width = Unit.Pixel(30);
+    settings.CommandColumn.ShowSelectCheckbox = true;
+    settings.CommandColumn.SelectAllCheckboxMode = GridViewSelectAllCheckBoxMode.AllPages;
+
+    settings.ClientSideEvents.SelectionChanged = "switchSelected";
+
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "CatalogName";
+        column.Caption = "Наименование";
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "CatalogForm";
+        column.Caption = "Форма";
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "Mnn";
+        column.Caption = "МНН";
+        column.PropertiesEdit.EncodeHtml = false;
+    });
+
+    settings.SettingsSearchPanel.Visible = true;
+    //settings.SettingsBehavior.AllowFocusedRow = true;
+
+    settings.SettingsPager.PageSize = 50;
+    settings.SettingsPager.Mode = GridViewPagerMode.EndlessPaging;
+}).Bind(Model.List).GetHtml()
+}

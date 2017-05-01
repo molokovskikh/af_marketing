@@ -21,6 +21,52 @@
 </div>
 <h2>@ViewBag.Title</h2>
 
+<script>
+	var mnnId = 0;
+
+	function viewProductsByMnn(id, name) {
+		$("#ajaxLoader").show();
+		$("#mnn_name").html(name);
+		$("#searchTerm").val("");
+		mnnId = id;
+		var url = "@Url.Action("ViewProductsByMnn", "Marketing")/" + id;
+		$.get(url, function (data) {
+			$("#mnn_products_content").html(data);
+			$("#mnn_products").modal();
+		})
+			.fail(function () { alert("Ошибка сервера"); })
+			.always(function () { $("#ajaxLoader").hide(); });
+	}
+
+	function searchProducts(input) {
+		$("#ajaxLoader").show();
+		var term = $(input).val();
+		var url = "@Url.Action("ViewProductsByMnn", "Marketing")/" + mnnId + "?searchTerm=" + term;
+		$.get(url, function (data) {
+			$("#mnn_products_content").html(data);
+		})
+			.fail(function () { alert("Ошибка сервера"); })
+			.always(function () { $("#ajaxLoader").hide(); });
+	}
+</script>
+
+<div class="modal fade" id="mnn_products">
+		<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+						<div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+								<h4 class="modal-title">Торговые наименования, относящиеся к МНН <span id="mnn_name"></span></h4>
+						</div>
+						<div class="modal-body">
+								<div class="form-group">
+										<input type="text" id="searchTerm" placeholder="Поиск по наименованию..." oninput="searchProducts(this);" />
+								</div>
+								<div id="mnn_products_content"></div>
+						</div>
+				</div>
+		</div>
+</div>
+
 <div class="form-group">
 		@Html.Partial("partials/_ConditionsGridView", Model)
 </div>
