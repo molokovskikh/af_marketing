@@ -82,6 +82,30 @@ namespace Marketing
 				m.Id(s => s.Id);
 				m.Schema("Catalogs");
 				m.Table("Catalog");
+				m.ManyToOne(s => s.CatalogForm, mapper => mapper.Column("FormId"));
+				m.ManyToOne(s => s.CatalogName, mapper => mapper.Column("NameId"));
+			});
+			Mapper.Class<CatalogName>(m => {
+				m.Id(s => s.Id);
+				m.Schema("Catalogs");
+				m.Table("CatalogNames");
+				m.Bag(o => o.Catalogs, c => {
+					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
+					c.Inverse(true);
+					c.Key(k => k.Column("NameId"));
+				});
+				m.ManyToOne(s => s.Mnn, mapper => mapper.Column("MnnId"));
+			});
+			Mapper.Class<CatalogForm>(m => {
+				m.Id(s => s.Id);
+				m.Schema("Catalogs");
+				m.Table("CatalogForms");
+			});
+			Mapper.Class<Mnn>(m => {
+				m.Id(s => s.Id);
+				m.Schema("Catalogs");
+				m.Table("Mnn");
+				m.Property(x => x.Name, c => c.Column("Mnn"));
 			});
 			Mapper.Class<Promoter>(m => {
 				m.Bag(o => o.Associations, c => {
@@ -138,6 +162,14 @@ namespace Marketing
 			Mapper.Class<PromotionProduct>(m => {
 				m.ManyToOne(s => s.Product, mapper => mapper.ForeignKey("ProductId"));
 				m.ManyToOne(s => s.Promotion, mapper => mapper.ForeignKey("PromotionId"));
+				m.Bag(o => o.Replacements, c => {
+					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
+					c.Inverse(true);
+					c.Key(k => k.Column("PromotionProductId"));
+				});
+			});
+			Mapper.Class<PromotionReplacement>(m => {
+				m.ManyToOne(s => s.Catalog, mapper => mapper.Column("CatalogId"));
 			});
 			Mapper.Class<PromotionSupplier>(m => {
 				m.ManyToOne(s => s.Supplier, mapper => mapper.ForeignKey("SupplierId"));
@@ -173,10 +205,6 @@ namespace Marketing
 				m.Table("RegionalAdmins");
 				m.Id(x => x.RowId);
 				m.Property(x => x.Name, c => c.Column("UserName"));
-			});
-			Mapper.Class<Product>(m => {
-				m.Schema("Catalogs");
-				m.Table("Products");
 			});
 			Mapper.Class<Region>(m => {
 				m.Schema("Farm");

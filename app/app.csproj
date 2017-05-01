@@ -199,12 +199,16 @@
     <Compile Include="Models\Association.cs" />
     <Compile Include="Models\AssociationContact.cs" />
     <Compile Include="Models\AssociationRegion.cs" />
+    <Compile Include="Models\CatalogForm.cs" />
+    <Compile Include="Models\CatalogName.cs" />
     <Compile Include="Models\Contact.cs" />
     <Compile Include="Models\ContactGroup.cs" />
     <Compile Include="Models\ContactGroupOwner.cs" />
     <Compile Include="Models\ContactOwner.cs" />
     <Compile Include="Models\MarketingEvent.cs" />
+    <Compile Include="Models\Mnn.cs" />
     <Compile Include="Models\PromoterAssociation.cs" />
+    <Compile Include="Models\PromotionReplacement.cs" />
     <Compile Include="Models\Region.cs" />
     <Compile Include="Models\Address.cs" />
     <Compile Include="Models\Catalog.cs" />
@@ -227,6 +231,7 @@
     <Compile Include="ViewModels\AssociationItemViewModel.cs" />
     <Compile Include="ViewModels\ClientViewModel.cs" />
     <Compile Include="ViewModels\DateRangeViewModel.cs" />
+    <Compile Include="ViewModels\EditReplacementsViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\MarketingEventGridModel.cs" />
     <Compile Include="ViewModels\MarketingEventViewModel.cs" />
@@ -234,6 +239,7 @@
     <Compile Include="ViewModels\MembersGridViewModel.cs" />
     <Compile Include="ViewModels\MemberSubscribesViewModel.cs" />
     <Compile Include="ViewModels\MemberViewModel.cs" />
+    <Compile Include="ViewModels\MnnCatalogViewModel.cs" />
     <Compile Include="ViewModels\PricesGridViewModel.cs" />
     <Compile Include="ViewModels\ProductsGridViewModel.cs" />
     <Compile Include="ViewModels\ProfileViewModel.cs" />
@@ -242,6 +248,8 @@
     <Compile Include="ViewModels\RegisterViewModel.cs" />
     <Compile Include="ViewModels\PromoterProducersViewModel.cs" />
     <Compile Include="ViewModels\PromotionTableSelectorViewModel.cs" />
+    <Compile Include="ViewModels\ReplacementViewModel.cs" />
+    <Compile Include="ViewModels\ReplacementsGridViewModel.cs" />
     <Compile Include="ViewModels\TrailInfoViewModel.cs" />
     <Compile Include="ViewModels\ViewModelListItem.cs" />
   </ItemGroup>
@@ -343,6 +351,7 @@
     <Content Include="Views\Association\_ContactsGridView.cshtml" />
     <Content Include="Views\Association\_SupplierList.cshtml" />
     <Content Include="Views\Marketing\partials\_AssortmentGrid.cshtml" />
+    <Content Include="Views\Marketing\EditReplacements.cshtml" />
     <None Include="Views\Marketing\partials\_PromotionEditRegionFilterData.cshtml" />
     <Content Include="Views\Members\_TrailInfo.cshtml" />
     <Content Include="Views\Members\_MembersList.cshtml" />
@@ -353,6 +362,8 @@
     <Content Include="Views\Marketing\partials\_PricesGrid.cshtml" />
     <Content Include="Views\Marketing\partials\_GoodsGrid.cshtml" />
     <Content Include="Views\Marketing\PromotionEdit.cshtml" />
+    <Content Include="Views\Marketing\partials\_ViewProductsByMnn.cshtml" />
+    <Content Include="Views\Marketing\partials\_ReplacementsGrid.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Helpers\GridViews\" />

@@ -13,5 +13,11 @@ namespace Marketing.Models
 		public virtual uint Id { get; set; }
 
 		public virtual string Name { get; set; }
+
+		public virtual bool Hidden { get; set; }
+
+		public virtual CatalogName CatalogName { get; set; }
+
+		public virtual CatalogForm CatalogForm { get; set; }
 	}
 }

@@ -1,0 +1,120 @@
+﻿@using Marketing.ViewModels
+@model EditReplacementsViewModel
+@{
+	ViewBag.Title = $"Замены для {Model.Condition.Product.Catalog.Name} по акции {Model.Condition.Promotion.Name}";
+}
+<div class="form-group">
+    <ol class="breadcrumb">
+        <li>
+            <a href="@Url.Action("Index", "Home")">Меню</a>
+        </li>
+        <li>
+            <a href="@Url.Action("Index", "Marketing")">Маркетинговые мероприятия</a>
+        </li>
+        <li>
+            <a href="@Url.Action("PromotionList", "Marketing", new {id = Model.Condition.Promotion.MarketingEvent.Id})">@Model.Condition.Promotion.MarketingEvent.Name</a>
+        </li>
+				<li>
+						<a href="@Url.Action("PromotionConditionsEdit", "Marketing", new { id = Model.Condition.Promotion.Id})">Условия по акции @Model.Condition.Promotion.Name</a>
+				</li>
+        <li class="active">Замены для @Model.Condition.Product.Catalog.Name</li>
+    </ol>
+</div>
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm("EditReplacements", "Marketing", FormMethod.Post, new { @class = "form-horizontal" }))
+{
+@Html.AntiForgeryToken()
+@Html.ValidationSummary("", new { @class = "text-danger" })
+@Html.HiddenFor(m => m.Condition.Id)
+@Html.HiddenFor(m => m.SelectedAvailableIds)
+@Html.HiddenFor(m => m.SelectedReplacementIds)
+<script>
+	var input = "";
+	function switchSelected(s, e) {
+		input = s.name == "gridAvailable" ? "@Html.IdFor(m => m.SelectedAvailableIds)" : "@Html.IdFor(m => m.SelectedReplacementIds)";
+		s.GetSelectedFieldValues("CatalogId", GetSelectedIdsCallback);
+	}
+	function GetSelectedIdsCallback(ids) {
+		var valStr = ids.join(',');
+		$("#" + input).val(valStr);
+	}
+</script>
+<div class="row">
+		<div class="col-md-5">
+				@Html.Partial("partials/_ReplacementsGrid", new ReplacementsGridViewModel
+        {
+						Name = "gridAvailable",
+						Action = "AvailableReplacements",
+						List = Model.AvailableReplacements
+        })
+		</div>
+		<div class="col-md-2 text-center">
+        <div class="row">
+            <div class="form-group">
+                <button type="button" id="replacementAdd" class="btn btn-default glyphicon glyphicon-arrow-right button-arrow"></button>
+								<div class="alert alert-warning" id="restricted" style="display:none">В списке для замены может быть не более 10 торговых наименований</div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                <button type="button" id="replacementRemove" class="btn btn-default glyphicon glyphicon glyphicon-arrow-left button-arrow"></button>
+            </div>
+        </div>
+		</div>
+		<div class="col-md-5">
+				@Html.Partial("partials/_ReplacementsGrid", new ReplacementsGridViewModel
+        {
+            Name = "gridSelected",
+            Action = "SelectedReplacements",
+            List = Model.SelectedReplacements
+        })
+		</div>
+</div>
+<div class="clearfix">&nbsp;</div>
+<div class="row">
+    <div class="col-md-12 text-right">
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </div>
+</div>
+}
+
+@section scripts{
+	<script>
+    	function replacementChange(url, input) {
+    		$("#ajaxLoader").show();
+    		var list = $("#" + input).val();
+    		$.post(url, {
+    			selectedIds: list
+    		})
+					.done(function(data){
+						gridAvailable.PerformCallback();
+						gridSelected.PerformCallback();
+						$("#" + input).val("");
+						if (data.restricted) {
+							$("#replacementAdd").hide();
+							$("#restricted").show();
+						}
+						else {
+							$("#restricted").hide();
+							$("#replacementAdd").show();
+						}
+					})
+					.fail(function() { alert("Ошибка сервера"); })
+					.always(function() { $("#ajaxLoader").hide(); });
+    	}
+    	function replacementAdd() {
+    		var url = "@Url.Action("ReplacementsAdd", "Marketing")";
+    		replacementChange(url, "@Html.IdFor(m => m.SelectedAvailableIds)");
+    	}
+    	function replacementRemove() {
+    		var url = "@Url.Action("ReplacementsRemove", "Marketing")";
+    		replacementChange(url, "@Html.IdFor(m => m.SelectedReplacementIds)");
+    	}
+
+    	$(document).ready(function () {
+    		$("#replacementAdd").on("click", replacementAdd);
+    		$("#replacementRemove").on("click", replacementRemove);
+    	})
+	</script>
+}

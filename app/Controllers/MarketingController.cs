@@ -55,7 +55,6 @@ namespace Marketing.Controllers
 		}
 
 		private PromotionFromAssortmentViewModel _editedPromotionFromAssortment;
-
 		private PromotionFromAssortmentViewModel EditedPromotionFromAssortment
 		{
 			get
@@ -69,6 +68,22 @@ namespace Marketing.Controllers
 			{
 				_editedPromotionFromAssortment = null;
 				System.Web.HttpContext.Current.Session["EditedPromotionFromAssortment"] = value;
+			}
+		}
+
+		private EditReplacementsViewModel _editedReplacements;
+		private EditReplacementsViewModel EditedReplacements
+		{
+			get
+			{
+				if (_editedReplacements == null)
+					_editedReplacements = System.Web.HttpContext.Current.Session["EditedReplacements"] as EditReplacementsViewModel;
+				return _editedReplacements;
+			}
+			set
+			{
+				_editedReplacements = null;
+				System.Web.HttpContext.Current.Session["EditedReplacements"] = value;
 			}
 		}
 
@@ -592,20 +607,23 @@ namespace Marketing.Controllers
 		private PromotionConditionsViewModel GetConditionsViewModel(uint id)
 		{
 			var promotion = DbSession.Query<ProducerPromotion>().FirstOrDefault(r => r.Id == id);
-			var query = DbSession.Query<PromotionProduct>()
-				.Where(r => r.Promotion == promotion)
-				.Fetch(r => r.Product)
-				.ThenFetch(r => r.Catalog);
-			var conditions = query
-				.Select(r => new ConditionsGridViewModel {
-					PromotionId = promotion.Id,
-					ConditionId = r.Id,
-					ProductName = r.Product.Catalog.Name,
-					Price = r.Price,
-					DealerPercent = r.DealerPercent,
-					MemberPercent = r.MemberPercent
-				})
-				.ToList();
+			var sql = $@"select pp.PromotionId, pp.Id as ConditionId, c.Name as ProductName, pr.Name as ProducerName,
+		Mnn.Id as MnnId, Mnn.Mnn, pp.Price, pp.DealerPercent, pp.MemberPercent,
+		group_concat(crep.Name order by crep.Name separator ', ') as Replacements
+	from Customers.PromotionProducts pp
+		inner join Customers.ProducerPromotions prp on pp.PromotionId = prp.Id
+		inner join Customers.PromoterProducers ppr on prp.MarketingEventId = ppr.MarketingEventId
+		left join Customers.PromotionReplacements prep on prep.PromotionProductId = pp.Id
+		left join Catalogs.Catalog crep on prep.CatalogId = crep.Id
+		inner join Catalogs.Products p on pp.ProductId = p.Id
+		inner join Catalogs.Catalog c on p.CatalogId = c.Id
+		inner join Catalogs.CatalogNames cn on c.NameId = cn.Id
+		left join Catalogs.Mnn on cn.MnnId = Mnn.Id
+		inner join Catalogs.Assortment a on p.CatalogId = a.CatalogId
+		inner join Catalogs.Producers pr on a.ProducerId = pr.Id and ppr.ProducerId = pr.Id
+	where prp.Id = {id}
+	group by pp.Id";
+			var conditions = DbSession.Connection.Query<ConditionsGridViewModel>(sql).ToList();
 			var model = new PromotionConditionsViewModel {
 				Conditions = conditions,
 				Promotion = promotion,
@@ -618,6 +636,163 @@ namespace Marketing.Controllers
 		public ActionResult PromotionСonditionsEdit(uint id, string contacts)
 		{
 			return RedirectToAction("PromotionList", new { id = CurrentMarketingEvent.Id });
+		}
+
+		public ActionResult ViewProductsByMnn(uint id, string searchTerm = "")
+		{
+			var mnn = DbSession.Query<Mnn>().First(r => r.Id == id);
+			var query = DbSession.Query<Catalog>()
+				.Where(r => !r.Hidden)
+				.Fetch(r => r.CatalogName)
+				.Fetch(r => r.CatalogForm)
+				.Where(r => r.CatalogName.Mnn == mnn);
+			if (!string.IsNullOrEmpty(searchTerm))
+				query = query.Where(r => r.CatalogName.Name.Contains(searchTerm));
+			var model = query
+				.Select(r => new MnnCatalogViewModel {
+					MnnId = id,
+					CatalogId = r.Id,
+					CatalogNameId = r.CatalogName.Id,
+					CatalogFormId = r.CatalogForm.Id,
+					CatalogName = r.CatalogName.Name,
+					CatalogForm = r.CatalogForm.Form
+				})
+				.OrderBy(r => r.CatalogName)
+				.ThenBy(r => r.CatalogForm)
+				.ToList();
+			return PartialView("partials/_ViewProductsByMnn", model);
+		}
+
+		public ActionResult EditReplacements(uint id)
+		{
+			var product = DbSession.Query<PromotionProduct>().FirstOrDefault(r => r.Id == id);
+			if (product == null)
+				return HttpNotFound();
+
+			var replacements = DbSession.Query<PromotionReplacement>()
+				.Where(r => r.PromotionProduct == product)
+				.Select(r => new ReplacementViewModel {
+					CatalogId = r.Catalog.Id,
+					CatalogNameId = r.Catalog.CatalogName.Id,
+					CatalogName = r.Catalog.CatalogName.Name,
+					CatalogForm = r.Catalog.CatalogForm.Form,
+					Mnn = r.Catalog.CatalogName.Mnn.Name
+				})
+				.OrderBy(r => r.CatalogName)
+				.ThenBy(r => r.CatalogForm)
+				.ToList();
+			var ids = replacements.Select(r => r.CatalogId).ToArray();
+			var available = DbSession.Query<Catalog>()
+				.Where(r => !r.Hidden)
+				.Where(r => !ids.Contains(r.Id))
+				.Select(r => new ReplacementViewModel {
+					CatalogId = r.Id,
+					CatalogNameId = r.CatalogName.Id,
+					CatalogName = r.CatalogName.Name,
+					CatalogForm = r.CatalogForm.Form,
+					Mnn = r.CatalogName.Mnn.Name
+				})
+				.OrderBy(r => r.CatalogName)
+				.ThenBy(r => r.CatalogForm)
+				.ToList();
+
+			var model = new EditReplacementsViewModel {
+				Condition = product,
+				SelectedReplacements = replacements,
+				AvailableReplacements = available
+			};
+			EditedReplacements = model;
+
+			return View(model);
+		}
+
+		[HttpPost]
+		public ActionResult AvailableReplacements()
+		{
+			var model = new ReplacementsGridViewModel {
+				Name = "gridAvailable",
+				Action = "AvailableReplacements",
+				List = EditedReplacements.AvailableReplacements
+			};
+			return PartialView("partials/_ReplacementsGrid", model);
+		}
+
+		[HttpPost]
+		public ActionResult SelectedReplacements()
+		{
+			var model = new ReplacementsGridViewModel
+			{
+				Name = "gridSelected",
+				Action = "SelectedReplacements",
+				List = EditedReplacements.SelectedReplacements
+			};
+			return PartialView("partials/_ReplacementsGrid", model);
+		}
+
+		[HttpPost]
+		public ActionResult ReplacementsAdd(string selectedIds)
+		{
+			var ids = selectedIds.Split(',').Select(r => uint.Parse(r)).ToArray();
+			var delta = EditedReplacements.AvailableReplacements.Where(r => ids.Contains(r.CatalogId)).ToArray();
+			var restricted = false;
+			delta.ForEach(x => {
+				var cnt = EditedReplacements.SelectedReplacements.Select(r => r.CatalogNameId).Distinct().Count();
+				if (cnt < 10) {
+					EditedReplacements.SelectedReplacements.Add(x);
+					EditedReplacements.AvailableReplacements.Remove(x);
+				} else
+					restricted = true;
+			});
+			EditedReplacements.SelectedReplacements = EditedReplacements.SelectedReplacements
+				.OrderBy(r => r.CatalogName)
+				.ThenBy(r => r.CatalogForm)
+				.ToList();
+
+			return Json(new { restricted });
+		}
+
+		[HttpPost]
+		public ActionResult ReplacementsRemove(string selectedIds)
+		{
+			var ids = selectedIds.Split(',').Select(r => uint.Parse(r)).ToArray();
+			var delta = EditedReplacements.SelectedReplacements.Where(r => ids.Contains(r.CatalogId)).ToArray();
+			delta.ForEach(x => {
+				EditedReplacements.AvailableReplacements.Add(x);
+				EditedReplacements.SelectedReplacements.Remove(x);
+			});
+			EditedReplacements.AvailableReplacements = EditedReplacements.AvailableReplacements
+				.OrderBy(r => r.CatalogName)
+				.ThenBy(r => r.CatalogForm)
+				.ToList();
+
+			return Json(new { restricted = false });
+		}
+
+		[HttpPost]
+		public ActionResult EditReplacements()
+		{
+			var product = DbSession.Query<PromotionProduct>().FirstOrDefault(r => r.Id == EditedReplacements.Condition.Id);
+			var promotionId = product.Promotion.Id;
+			var replacements = product.Replacements.ToList();
+			DbSession.Evict(product);
+			DbSession.Evict(replacements);
+
+			replacements
+				.Where(r => !EditedReplacements.SelectedReplacements.Any(x => x.CatalogId == r.Catalog.Id))
+				.ForEach(r => { DbSession.Delete(r); });
+			EditedReplacements.SelectedReplacements
+				.Where(r => !replacements.Any(x => x.Catalog.Id == r.CatalogId))
+				.ForEach(r => {
+					var catalog = DbSession.Query<Catalog>().First(c => c.Id == r.CatalogId);
+					var item = new PromotionReplacement {
+						PromotionProduct = product,
+						Catalog = catalog
+					};
+					DbSession.Save(item);
+				});
+			DbSession.Flush();
+
+			return RedirectToAction("PromotionСonditionsEdit", new {id = promotionId});
 		}
 	}
 }

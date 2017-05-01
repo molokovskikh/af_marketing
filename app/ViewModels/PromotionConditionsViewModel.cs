@@ -19,6 +19,10 @@ namespace Marketing.ViewModels
 		public uint PromotionId { get; set; }
 		public uint ConditionId { get; set; }
 		public string ProductName { get; set; }
+		public string ProducerName { get; set; }
+		public uint MnnId { get; set; }
+		public string Mnn { get; set; }
+		public string Replacements { get; set; }
 
 		[Range(0, 1000000, ErrorMessage = "Цена не может быть отрицательной")]
 		public decimal Price { get; set; }

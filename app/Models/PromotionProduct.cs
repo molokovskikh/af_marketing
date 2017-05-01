@@ -10,6 +10,11 @@ namespace Marketing.Models
 	/// </summary>
 	public class PromotionProduct
 	{
+		public PromotionProduct()
+		{
+			Replacements = new List<PromotionReplacement>();
+		}
+
 		public virtual uint Id { get; set; }
 
 		public virtual ProducerPromotion Promotion { get; set; }
@@ -21,5 +26,7 @@ namespace Marketing.Models
 		public virtual decimal DealerPercent { get; set; }
 
 		public virtual decimal MemberPercent { get; set; }
+
+		public virtual IList<PromotionReplacement> Replacements { get; set; }
 	}
 }
