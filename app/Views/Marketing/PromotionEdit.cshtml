@@ -157,7 +157,7 @@ else
 {
 	<script>
     	function selectMethod(){
-    		if ($("#@Html.IdFor(m => m.Method)").val() == "@(SelectMethod.SelectFromList.ToString())"){
+    		if ($("#@Html.IdFor(m => m.Method)").val() == "@(((int)SelectMethod.SelectFromList).ToString())"){
     			$("#alertNoSupplier").hide();
 					$("#workspace").show();
     		}
@@ -197,11 +197,13 @@ else
         		else {
         			$("#suppliers_panel").show();
         			if ($("#@Html.IdFor(m => m.SuppliersType)").val() == 2){
+        				$("#include-suppliers").hide();
         				$("#exception-suppliers").show();
         			}
         			else {
         				$("#exception-suppliers").hide();
-        			}
+        				$("#include-suppliers").show();
+							}
         		}
         	}
 
@@ -234,18 +236,21 @@ else
 				</label>
 		</div>
 
+		<div class="clearfix">&nbsp;</div>
+    <div class="form-group">
+        @Html.ExtEnumDropDownListFor(m => m.SuppliersType, new { @class = "form-control" })
+    </div>
+
 	<h3>Товары</h3>
 	@Html.HiddenFor(m => m.SelectedProductIds)
 	<div class="form-group">
 		@Html.Partial("partials/_AssortmentGrid", Model)
 	</div>
 
-<h3>Поставщики:</h3>
-<div class="form-group">
-    @Html.ExtEnumDropDownListFor(m => m.SuppliersType, new { @class = "form-control" })
-</div>
 <div id="suppliers_panel" @(Model.SuppliersType == SuppliersType.All ? " style=display:none" : "")>
-<div id="exception-suppliers" class="alert alert-warning" @(Model.SuppliersType != SuppliersType.Disabled ? " style=display:none" : "")>Поставщики-исключения из зачёта по акции</div>
+<h3>Поставщики:</h3>
+<div id="exception-suppliers" class="alert alert-warning" @(Model.SuppliersType != SuppliersType.Disabled ? " style=display:none" : "")>Поставщики-ИСКЛЮЧЕНИЯ (закупки по выбранным поставщикам не идут в зачёт по акции)</div>
+<div id="include-suppliers" class="alert alert-success" @(Model.SuppliersType == SuppliersType.Disabled ? " style=display:none" : "")>Поставщики, закупки по которым идут в зачёт по акции</div>
 <div class="form-group">
     @Html.Partial("partials/_PromotionEditRegionFilterData", Model.RegionList)
     @Html.Partial("partials/_PromotionEditRegionFilterLogic", Model.RegionList)
