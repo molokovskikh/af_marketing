@@ -47,8 +47,10 @@
     var newItem = pickerGroup.Items.Add(item => Model.DateBegin, itemSettings => ConfigureDateEditItem(itemSettings));
     newItem.NestedExtensionType = FormLayoutNestedExtensionItemType.DateEdit;
     newItem.Width = Unit.Pixel(234);
-    newItem.NestedExtensionSettings.Width = Unit.Pixel(234);
-    newItem.Caption = "-с-:";
+    newItem.NestedExtensionSettings.Width = Unit.Pixel(230);
+    newItem.Caption = "с:";
+    newItem.CaptionCellStyle.Paddings.PaddingRight = Unit.Point(10);
+
     var dateEditSettings = (DateEditSettings) newItem.NestedExtensionSettings;
     dateEditSettings.Properties.ClientSideEvents.DateChanged = "DateBeginUpdate";
     dateEditSettings.Properties.CalendarProperties.DisabledDates.AddRange(Model.DateBeginDisabledDates ?? new List<DateTime>());
@@ -68,7 +70,7 @@
 
     newItem = pickerGroup.Items.Add(item => Model.DateEnd, itemSettings => ConfigureDateEditItem(itemSettings));
     newItem.Width = Unit.Pixel(234);
-    newItem.NestedExtensionSettings.Width = Unit.Pixel(234);
+    newItem.NestedExtensionSettings.Width = Unit.Pixel(230);
 
     newItem.NestedExtensionType = FormLayoutNestedExtensionItemType.DateEdit;
     newItem.Caption = "по:";
@@ -76,11 +78,11 @@
     dateEditSettings.Properties.ClientSideEvents.DateChanged = "DateEndUpdate";
     dateEditSettings.Properties.CalendarProperties.DisabledDates.AddRange(Model.DateEndDisabledDates ?? new List<DateTime>());
     if (Model.DateEndMax != null)
-      dateEditSettings.Properties.CalendarProperties.MaxDate = Model.DateEndMax.Value;
+        dateEditSettings.Properties.CalendarProperties.MaxDate = Model.DateEndMax.Value;
     if (Model.DateEndMin != null)
-      dateEditSettings.Properties.CalendarProperties.MinDate = (DateTime)Model.DateEndMin;
-		else
-			dateEditSettings.Properties.CalendarProperties.MinDate = Model.DateBeginMin ?? DateTime.MinValue;
+        dateEditSettings.Properties.CalendarProperties.MinDate = (DateTime)Model.DateEndMin;
+    else
+        dateEditSettings.Properties.CalendarProperties.MinDate = Model.DateBeginMin ?? DateTime.MinValue;
 }).GetHtml()
 
 @functions{

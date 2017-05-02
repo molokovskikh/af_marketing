@@ -300,7 +300,6 @@ namespace Marketing.Controllers
 		{
 			var model = new ProducerPromotion();
 			model.MarketingEvent = CurrentMarketingEvent;
-			model.Enabled = true;
 			model.DateStarted = DateTime.Today.AddMonths(1);
 			model.DateStarted = model.DateStarted.AddDays(1 - model.DateStarted.Day);
 			model.DateFinished = model.DateStarted.AddYears(1);
@@ -323,9 +322,8 @@ namespace Marketing.Controllers
 				Name = model.Name,
 				DateStarted = model.DateStarted,
 				DateFinished = model.DateFinished,
-				Enabled = model.Enabled,
+				Enabled = false,
 				Description = model.Description,
-				PromoRequirements = model.PromoRequirements,
 				FeeInformation = model.FeeInformation
 			};
 			DbSession.Save(newItem);
