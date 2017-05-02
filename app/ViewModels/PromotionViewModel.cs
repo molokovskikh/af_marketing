@@ -170,6 +170,7 @@ namespace Marketing.ViewModels
 		}
 
 		public SelectMethod Method { get; set; }
+		public SuppliersType SuppliersType { get; set; }
 		public uint MarketingEventId { get; set; }
 		public string MarketingEventName { get; set; }
 		public uint PromotionId { get; set; }
@@ -177,11 +178,19 @@ namespace Marketing.ViewModels
 		public IList<Producer> Producers { get; set; }
 		public string SelectedProductIds { get; set; }
 		public IList<ProductsGridViewModel> AvailableProducts { get; set; }
+		public string SuppliersListToSetList { get; set; }
+		public PromotionTableSelectorViewModel<ViewModelRegionListItem> SupplierListGet { get; set; }
+		public PromotionTableSelectorViewModel<ViewModelRegionListItem> SupplierListSet { get; set; }
+		public List<ViewModelListItem> RegionList { get; set; }
 
 		public void Init(ISession dbSession, uint promotionId)
 		{
+			SupplierListGet = new PromotionTableSelectorViewModel<ViewModelRegionListItem>();
+			SupplierListSet = new PromotionTableSelectorViewModel<ViewModelRegionListItem>();
+			RegionList = new List<ViewModelListItem>();
 			var promotion = dbSession.Query<ProducerPromotion>()
 				.First(r => r.Id == promotionId);
+			SuppliersType = promotion.SuppliersType;
 			MarketingEventId = promotion.MarketingEvent.Id;
 			MarketingEventName = promotion.MarketingEvent.Name;
 			PromotionId = promotionId;
@@ -190,6 +199,10 @@ namespace Marketing.ViewModels
 			SelectedProductIds = string.Join(",", promotion.Products.Select(r => r.Product.Id.ToString()).ToArray());
 			var producerIds = string.Join(",", Producers.Select(r => r.Id.ToString()).ToArray());
 			AvailableProducts = GetProductsList(dbSession, producerIds);
+			var currentSupplier = string.Join(",", promotion.Suppliers.Select(s => s.Supplier.Id).ToList());
+			SupplierListGet.SetData(dbSession, promotionId, PromotionTableRequestType.SuppliersListToGet, currentSupplier, "");
+			SupplierListSet.SetData(dbSession, promotionId, PromotionTableRequestType.SuppliersListToSet, currentSupplier, "");
+			SuppliersListToSetList = string.Join(",", SupplierListSet.ItemsList.Select(s => s.Value));
 		}
 
 		private IList<ProductsGridViewModel> GetProductsList(ISession dbSession, string producerIds)
