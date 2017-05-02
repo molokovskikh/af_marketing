@@ -435,11 +435,11 @@ namespace Marketing.Controllers
 			if (promotion == null)
 				return HttpNotFound();
 
+			promotion.SuppliersType = model.SuppliersType;
+
 			var products = DbSession.Query<PromotionProduct>().Where(r => r.Promotion == promotion).ToArray();
 			var ids = model.SelectedProductIds.Split(',').Select(r => uint.Parse(r)).ToArray();
-
 			products.Where(r => !ids.Contains(r.Product.Id)).ForEach(r => DbSession.Delete(r));
-
 			ids.Where(x => !products.Any(r => r.Product.Id == x)).ForEach(x => {
 				var product = new PromotionProduct {
 					Promotion = promotion,
@@ -447,6 +447,18 @@ namespace Marketing.Controllers
 				};
 				DbSession.Save(product);
 			});
+
+			var suppliers = DbSession.Query<PromotionSupplier>().Where(r => r.Promotion == promotion).ToArray();
+			var supplierIds = model.SuppliersListToSetList.Split(',').Select(r => uint.Parse(r)).ToArray();
+			suppliers.Where(r => !supplierIds.Contains(r.Supplier.Id)).ForEach(r => DbSession.Delete(r));
+			supplierIds.Where(x => !suppliers.Any(r => r.Supplier.Id == x)).ForEach(x => {
+				var supplier = new PromotionSupplier {
+					Promotion = promotion,
+					Supplier = DbSession.Query<Supplier>().First(s => s.Id == x)
+				};
+				DbSession.Save(supplier);
+			});
+
 			DbSession.Flush();
 
 			return RedirectToAction("PromotionList", new { id = model.MarketingEventId });

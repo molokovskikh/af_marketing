@@ -4,7 +4,9 @@
 
 @{
   ViewBag.Title = $"Редактирование акции \"{Model.PromotionName}\"";
-	var canSelectFromPrice = (ViewBag.Association as Association).Supplier != null;
+  var tableNameForSupplierGet = PromotionTableRequestType.SuppliersListToGet.ToString();
+  var tableNameForSupplierSet = PromotionTableRequestType.SuppliersListToSet.ToString();
+  var canSelectFromPrice = (ViewBag.Association as Association).Supplier != null;
 }
 
 <div class="form-group">
@@ -23,11 +25,126 @@
 </div>
 <h2>@ViewBag.Title</h2>
 
+@Html.Hidden(tableNameForSupplierSet + "ToSelectList", "")
+@Html.Hidden(tableNameForSupplierSet + "ToRemoveList", "")
+
+@Html.Hidden(tableNameForSupplierSet + "ToSelectItem", "")
+@Html.Hidden(tableNameForSupplierSet + "ToRemoveItem", "")
+
 <form id="promotionForm" action="@Url.Action("PromotionEdit", "Marketing", new { id = Model.PromotionId })" method="post" novalidate="novalidate">
 @Html.AntiForgeryToken()
 @Html.ValidationSummary("", new {@class = "text-danger"})
 @Html.HiddenFor(m => m.PromotionId)
 @Html.HiddenFor(m => m.MarketingEventId)
+
+@Html.Hidden(tableNameForSupplierSet + "List", Model.SuppliersListToSetList)
+<script>
+    //Здесь нужно собать все значения, которые должны быть учтены при фильтрации
+    function @(tableNameForSupplierGet)BeginCallback(s, e) {
+        e.customArgs["id"] = @Model.PromotionId;
+        e.customArgs["type"] = @((int) PromotionTableRequestType.SuppliersListToGet);
+        e.customArgs["list"] = $("[name='@(tableNameForSupplierSet + "List")']").val();
+        e.customArgs["regionList"] = $("[name='regionIdList']").val();
+    }
+
+    function @(tableNameForSupplierSet)BeginCallback(s, e) {
+        e.customArgs["id"] = @Model.PromotionId;
+        e.customArgs["type"] = @((int) PromotionTableRequestType.SuppliersListToSet);
+        e.customArgs["list"] = $("[name='@(tableNameForSupplierSet + "List")']").val();
+    }
+
+    function @(tableNameForSupplierGet)EndCallback(s, e) {
+        var rowCount = @(tableNameForSupplierGet).GetVisibleRowsOnPage();
+        var totalCount = s.cpVisibleTotalCount;
+        $("[id='empty@(tableNameForSupplierGet)']").removeClass("hid");
+        if (rowCount !== 0)
+            $("[id='empty@(tableNameForSupplierGet)']").addClass("hid");
+        $("[id='num@(tableNameForSupplierGet)']").addClass("hid");
+        if (totalCount !== 0)
+            $("[id='num@(tableNameForSupplierGet)']").removeClass("hid");
+        $("[id='num@(tableNameForSupplierGet)'] .nrows").html(rowCount);
+        $("[id='num@(tableNameForSupplierGet)'] .ntotal").html(totalCount);
+    }
+
+    function @(tableNameForSupplierSet)EndCallback(s, e) {
+        var rowCount = @(tableNameForSupplierSet).GetVisibleRowsOnPage();
+        var totalCount = s.cpVisibleTotalCount;
+        $("[id='empty@(tableNameForSupplierSet)']").removeClass("hid");
+        if (rowCount !== 0)
+            $("[id='empty@(tableNameForSupplierSet)']").addClass("hid");
+        $("[id='num@(tableNameForSupplierSet)']").addClass("hid");
+        if (totalCount !== 0)
+            $("[id='num@(tableNameForSupplierSet)']").removeClass("hid");
+        $("[id='num@(tableNameForSupplierSet)'] .nrows").html(rowCount);
+        $("[id='num@(tableNameForSupplierSet)'] .ntotal").html(totalCount);
+    }
+
+    function @(tableNameForSupplierGet)FocusedRowChanged(s, e) {
+        s.GetRowValues(s.GetFocusedRowIndex(), 'Value', function(value) {
+            $("[name='@(tableNameForSupplierSet + "ToSelectItem")']").val(value);
+        });
+    }
+
+    function @(tableNameForSupplierSet)FocusedRowChanged(s, e) {
+        s.GetRowValues(s.GetFocusedRowIndex(), 'Value', function(value) {
+            $("[name='@(tableNameForSupplierSet + "ToRemoveItem")']").val(value);
+        });
+    }
+
+
+    function @(tableNameForSupplierGet)SelectionChanged(s, e) {
+        s.GetSelectedFieldValues("Value", function(values) { $("[name='@(tableNameForSupplierSet + "ToSelectList")']").val(values.join()); });
+    }
+
+    function @(tableNameForSupplierSet)SelectionChanged(s, e) {
+        s.GetSelectedFieldValues("Value", function(values) { $("[name='@(tableNameForSupplierSet + "ToRemoveList")']").val(values.join()); });
+    }
+
+
+    Array.prototype.getDiff = function(a) {
+        return this.filter(function(i) { return a.indexOf(i) < 0; });
+    };
+
+    function InitSupplierAdd() {
+        var currentList = $("[name='@(tableNameForSupplierSet + "List")']").val();
+        currentList = currentList == "" ? new Array() : currentList.split(',');
+        var selectList = $("[name='@(tableNameForSupplierSet + "ToSelectList")']").val();
+        selectList = selectList == "" ? new Array() : selectList.split(',');
+        var focusedItem = $("[name='@(tableNameForSupplierSet + "ToSelectItem")']").val();
+        if (selectList.length == 0 && focusedItem != undefined && focusedItem != "") {
+            selectList.push(focusedItem);
+        }
+        $("[name='@(tableNameForSupplierSet + "List")']").val((currentList.getDiff(selectList).concat(selectList)).join());
+
+        @(tableNameForSupplierSet).PerformCallback();
+        @(tableNameForSupplierGet).UnselectAllRowsOnPage();
+        $("[name='@(tableNameForSupplierSet + "ToSelectList")']").val("");
+        $("[name='@(tableNameForSupplierSet + "ToSelectItem")']").val("");
+        @(tableNameForSupplierGet).PerformCallback();
+    }
+
+    function InitSupplierRemove() {
+        var currentList = $("[name='@(tableNameForSupplierSet + "List")']").val();
+        currentList = currentList == "" ? new Array() : currentList.split(',');
+        var removeList = $("[name='@(tableNameForSupplierSet + "ToRemoveList")']").val();
+        removeList = removeList == "" ? new Array() : removeList.split(',');
+        var focusedItem = $("[name='@(tableNameForSupplierSet + "ToRemoveItem")']").val();
+        if (removeList.length == 0 && focusedItem != undefined && focusedItem != "") {
+            removeList.push(focusedItem);
+        }
+        $("[name='@(tableNameForSupplierSet + "List")']").val(currentList.getDiff(removeList).join());
+        @(tableNameForSupplierSet).PerformCallback();
+        $("[name='@(tableNameForSupplierSet + "ToRemoveList")']").val("");
+        $("[name='@(tableNameForSupplierSet + "ToRemoveItem")']").val("");
+        @(tableNameForSupplierGet).PerformCallback();
+    }
+
+	$(function () {
+		$("#filterSuppliersRawGet").click(function () { InitSupplierAdd(); });
+		$("#filterSuppliersRawRemove").click(function () { InitSupplierRemove(); });
+	});
+</script>
+
 @if (canSelectFromPrice)
 {
 	<script>
@@ -73,9 +190,25 @@ else
         		window.location = url;
         	}
 
+        	function switchSuppliersPanel(){
+        		if ($("#@Html.IdFor(m => m.SuppliersType)").val() == 0){
+        			$("#suppliers_panel").hide();
+        		}
+        		else {
+        			$("#suppliers_panel").show();
+        			if ($("#@Html.IdFor(m => m.SuppliersType)").val() == 2){
+        				$("#exception-suppliers").show();
+        			}
+        			else {
+        				$("#exception-suppliers").hide();
+        			}
+        		}
+        	}
+
         	$(document).ready(function(){
         		$("#@Html.IdFor(m => m.Method)").on("change", selectMethod);
         		$("#optionAdd").on("change", gotoList);
+        		$("#@Html.IdFor(m => m.SuppliersType)").on("change", switchSuppliersPanel)
         	});
 		</script>
 <div class="form-group">
@@ -106,6 +239,56 @@ else
 	<div class="form-group">
 		@Html.Partial("partials/_AssortmentGrid", Model)
 	</div>
+
+<h3>Поставщики:</h3>
+<div class="form-group">
+    @Html.ExtEnumDropDownListFor(m => m.SuppliersType, new { @class = "form-control" })
+</div>
+<div id="suppliers_panel" @(Model.SuppliersType == SuppliersType.All ? " style=display:none" : "")>
+<div id="exception-suppliers" class="alert alert-warning" @(Model.SuppliersType != SuppliersType.Disabled ? " style=display:none" : "")>Поставщики-исключения из зачёта по акции</div>
+<div class="form-group">
+    @Html.Partial("partials/_PromotionEditRegionFilterData", Model.RegionList)
+    @Html.Partial("partials/_PromotionEditRegionFilterLogic", Model.RegionList)
+</div>
+<div class="row">
+    <div class="form-group">
+        <div class="col-xs-6 col-md-4 tab">
+            <h4 class="red @(Model.SupplierListGet.ItemsList.Count == 0 ? "" : "hid")" id="empty@(tableNameForSupplierGet)">Элементов не найдено.</h4>
+            <h4 class="@(Model.SupplierListGet.ItemsList.Count == 0 ? "hid" : "")" id="num@(tableNameForSupplierGet)">Отображено <span class='nrows'></span> из <span class='ntotal'></span></h4>
+            @Html.Partial("partials/_PromotionEditListGridView", new PromotionTableSelectorViewModel<ViewModelRegionListItem>
+						{
+								Name = tableNameForSupplierGet,
+								Caption = "Доступные",
+								ItemsList = Model.SupplierListGet.ItemsList,
+								Height = Model.SupplierListGet.Height
+						})
+        </div>
+        <div class="col-xs-6 col-md-4 text-center">
+            <div class="row">
+                <div class="form-group">
+                    <button type="button" id="filterSuppliersRawGet" class="btn btn-default glyphicon glyphicon-arrow-right button-arrow"></button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    <button type="button" id="filterSuppliersRawRemove" class="btn btn-default glyphicon glyphicon glyphicon-arrow-left button-arrow"></button>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-md-4">
+            <h4 class="red @(Model.SupplierListSet.ItemsList.Count == 0 ? "" : "hid")" id="empty@(tableNameForSupplierSet)">Элементов не найдено.</h4>
+            <h4 class="@(Model.SupplierListSet.ItemsList.Count == 0 ? "hid" : "")" id="num@(tableNameForSupplierSet)">Отображено <span class='nrows'></span> из <span class='ntotal'></span></h4>
+            @Html.Partial("partials/_PromotionEditListGridView", new PromotionTableSelectorViewModel<ViewModelRegionListItem>
+						{
+								Name = tableNameForSupplierSet,
+								Caption = "Участвующие в акции",
+								ItemsList = Model.SupplierListSet.ItemsList,
+								Height = Model.SupplierListSet.Height
+						})
+        </div>
+    </div>
+</div>
+
 </div>
 </form>
 
