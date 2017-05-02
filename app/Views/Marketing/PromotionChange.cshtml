@@ -29,7 +29,7 @@
     @Html.ValidationSummary("", new {@class = "text-danger"})
     @Html.HiddenFor(model => model.Id)
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-8">
         <div class="form-group">
             @Html.LabelFor(m => m.Name, new { @class = "col-md-4 control-label" })
             <div class="col-md-8">
@@ -59,27 +59,27 @@
             </div>
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-4">
         <div class="panel panel-default">
-						<div class="panel-heading">
+						<div class="panel-heading text-center">
 								<h3 class="panel-title">Краткая информация, показываемая в АналитФармация об акционном препарате</h3>
 						</div>
             <div class="panel-body alert-success">
 								<div class="form-group">
-										<label class="col-md-3 control-label">Ассоциация</label>
-										<div class="col-md-9">
+										<label class="col-md-4">Ассоциация</label>
+										<div class="col-md-8">
 												@association.Name
 										</div>
 								</div>
 								<div class="form-group">
-										<label class="col-md-3 control-label">Маркет.мероприятие</label>
-										<div class="col-md-9">
+										<label class="col-md-4">Маркет.мероприятие</label>
+										<div class="col-md-8">
 												@marketingEvent.Name
 										</div>
 								</div>
 								<div class="form-group">
-										<label class="col-md-3 control-label">Акция</label>
-										<div class="col-md-9">
+										<label class="col-md-4">Акция</label>
+										<div class="col-md-8">
 												@Model.Name
 										</div>
 								</div>
@@ -104,7 +104,7 @@
 <div class="row">
     <div class="col-md-12">
         <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
+            <div class="col-md-offset-4 col-md-8">
                 <input type="submit" class="btn btn-primary" value="Изменить" />
             </div>
         </div>

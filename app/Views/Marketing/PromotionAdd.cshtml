@@ -3,8 +3,9 @@
 @model Marketing.Models.ProducerPromotion
 
 @{
-    var marketingEvent = (MarketingEvent) ViewBag.MarketingEvent;
-    ViewBag.Title = $"Добавление акции от \"{marketingEvent.Name}\"";
+  var marketingEvent = (MarketingEvent) ViewBag.MarketingEvent;
+  var association = (Association)ViewBag.Association;
+  ViewBag.Title = $"Добавление акции от \"{marketingEvent.Name}\"";
 }
 
 <div class="form-group">
@@ -27,53 +28,79 @@
     @Html.AntiForgeryToken()
     @Html.ValidationSummary("", new {@class = "text-danger"})
     @Html.HiddenFor(model => model.MarketingEvent.Id)
-    <div class="form-group">
-        @Html.LabelFor(m => m.Name, new {@class = "col-md-2 control-label"})
-        <div class="col-md-10">
-            @Html.TextBoxFor(m => m.Name, new {@class = "form-control"})
-            @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+<div class="row">
+    <div class="col-md-8">
+        <div class="form-group">
+            @Html.LabelFor(m => m.Name, new { @class = "col-md-4 control-label" })
+            <div class="col-md-8">
+                @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+            </div>
         </div>
-    </div>
-    <div class="form-group">
-        <label class="col-md-2 control-label">Период</label>
-        @Html.Partial("partials/_DateRange", new DateRangeViewModel { DateBegin = Model.DateStarted, DateEnd = Model.DateFinished })
-    </div>
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <div class="checkbox">
-                @Html.CheckBoxFor(m => m.Enabled)
-                @Html.LabelFor(m => m.Enabled)
+        <div class="form-group">
+            <label class="col-md-4 control-label">Период</label>
+            <div class="col-md-8">
+                @Html.Partial("partials/_DateRange", new DateRangeViewModel { DateBegin = Model.DateStarted, DateEnd = Model.DateFinished })
             </div>
         </div>
     </div>
-		<div class="form-group">
-				@Html.LabelFor(m => m.Description, new { @class = "col-md-2 control-label" })
-				<div class="col-md-10">
-						@Html.TextBoxFor(m => m.Description, new { @class = "form-control" })
-						@Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
-				</div>
-		</div>
-    <div class="form-group">
-        @Html.LabelFor(m => m.FeeInformation, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.TextBoxFor(m => m.FeeInformation, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.FeeInformation, "", new { @class = "text-danger" })
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading text-center">
+                <h3 class="panel-title">Краткая информация, показываемая в АналитФармация об акционном препарате</h3>
+            </div>
+            <div class="panel-body alert-success">
+                <div class="form-group">
+                    <label class="col-md-4">Ассоциация</label>
+                    <div class="col-md-8">
+                        @association.Name
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4">Маркет.мероприятие</label>
+                    <div class="col-md-8">
+                        @marketingEvent.Name
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4">Акция</label>
+                    <div class="col-md-8">
+                        <span id="promotion_name"></span>
+                    </div>
+                </div>
+                <div class="form-group text-center">
+                    @Html.LabelFor(m => m.Description, new { @class = "col-md-12" })
+                    <div class="col-md-12">
+                        @Html.TextBoxFor(m => m.Description, new { @class = "form-control full-width" })
+                        @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group text-center">
+                    @Html.LabelFor(m => m.FeeInformation, new { @class = "col-md-12" })
+                    <div class="col-md-12">
+                        @Html.TextBoxFor(m => m.FeeInformation, new { @class = "form-control full-width" })
+                        @Html.ValidationMessageFor(m => m.FeeInformation, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="form-group">
-        @Html.LabelFor(m => m.PromoRequirements, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.TextAreaFor(m => m.PromoRequirements, 10, 0, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.PromoRequirements, "", new { @class = "text-danger" })
-        </div>
+</div>
+<div class="form-group">
+    <div class="col-md-offset-4 col-md-8">
+        <input type="submit" class="btn btn-primary" value="Добавить"/>
     </div>
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" class="btn btn-primary" value="Добавить"/>
-        </div>
-    </div>
+</div>
 }
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+
+	<script>
+    	$(document).ready(function () {
+    		$("#@Html.IdFor(m => m.Name)").on("input", function () {
+    			$("#promotion_name").html($("#@Html.IdFor(m => m.Name)").val());
+    		});
+    	});
+	</script>
 }
