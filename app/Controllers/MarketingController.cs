@@ -535,11 +535,22 @@ namespace Marketing.Controllers
 		[HttpPost]
 		public ActionResult PromotionChange(ProducerPromotion model)
 		{
+			var promotion = DbSession.Query<ProducerPromotion>().First(s => s.Id == model.Id);
+			if (!promotion.Enabled && model.Enabled) {
+				if (model.DateFinished < DateTime.Today)
+					ModelState.AddModelError("", "Нельзя включить акцию, так как она просрочена");
+				if (string.IsNullOrWhiteSpace(model.Description))
+					ModelState.AddModelError("", "Нельзя включить акцию, так как не заполнено краткое описание");
+				if (string.IsNullOrWhiteSpace(model.FeeInformation))
+					ModelState.AddModelError("", "Нельзя включить акцию, так как не заполнена информация о вознаграждении");
+				if (string.IsNullOrWhiteSpace(model.PromoRequirements))
+					ModelState.AddModelError("", "Нельзя включить акцию, так как не указаны требования по выкладке акционного товара");
+			}
 			if (!ModelState.IsValid) {
 				ViewBag.MarketingEvent = CurrentMarketingEvent;
 				return View(model);
 			}
-			var promotion = DbSession.Query<ProducerPromotion>().First(s => s.Id == model.Id);
+
 			promotion.Name = model.Name;
 			promotion.DateStarted = model.DateStarted;
 			promotion.DateFinished = model.DateFinished;

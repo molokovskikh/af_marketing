@@ -43,3 +43,8 @@ h2 .form-control{display:inline-block;font-size:inherit}
 .full-width{width:100%;max-width:initial}
 .panel-body label{font-weight:normal}
 .panel-body .form-group{margin-bottom:0}
+
+.legend div{float:left}
+.legend-title, .legend-info{display:block;padding:5px 10px;margin:0 5px}
+.legend-title{padding-left:0;margin-left:0}
+.legend-gray{background-color:lightgrey}
