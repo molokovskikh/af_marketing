@@ -158,6 +158,24 @@ namespace Marketing
 					c.Inverse(true);
 					c.Key(k => k.Column("MemberId"));
 				});
+				m.Bag(o => o.AddressLimits, c => {
+					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
+					c.Inverse(true);
+					c.Key(k => k.Column("MemberId"));
+				});
+				m.Bag(o => o.LegalEntityLimits, c => {
+					c.Cascade(Cascade.All | Cascade.DeleteOrphans);
+					c.Inverse(true);
+					c.Key(k => k.Column("MemberId"));
+				});
+			});
+			Mapper.Class<AddressLimit>(m => {
+				m.ManyToOne(s => s.Member, mapper => mapper.Column("MemberId"));
+				m.ManyToOne(s => s.Address, mapper => mapper.Column("AddressId"));
+			});
+			Mapper.Class<LegalEntityLimit>(m => {
+				m.ManyToOne(s => s.Member, mapper => mapper.Column("MemberId"));
+				m.ManyToOne(s => s.LegalEntity, mapper => mapper.Column("LegalEntityId"));
 			});
 			Mapper.Class<PromotionProduct>(m => {
 				m.ManyToOne(s => s.Product, mapper => mapper.ForeignKey("ProductId"));
@@ -192,6 +210,22 @@ namespace Marketing
 					c.Inverse(true);
 					c.Key(s => s.Column("PromotionId"));
 				}, map => map.OneToMany(s => s.Class(typeof (PromotionSubscribe))));
+				m.Bag(o => o.FeePercents, c => {
+					c.Cascade(Cascade.All);
+					c.Inverse(true);
+					c.Key(s => s.Column("PromotionId"));
+				});
+				m.Bag(o => o.FeeSums, c => {
+					c.Cascade(Cascade.All);
+					c.Inverse(true);
+					c.Key(s => s.Column("PromotionId"));
+				});
+			});
+			Mapper.Class<PromotionPercent>(m => {
+				m.ManyToOne(s => s.Promotion, mapper => mapper.Column("PromotionId"));
+			});
+			Mapper.Class<PromotionSum>(m => {
+				m.ManyToOne(s => s.Promotion, mapper => mapper.Column("PromotionId"));
 			});
 			Mapper.Class<PromotionSubscribe>(m => {
 				m.ManyToOne(s => s.Member, mapper => mapper.Column("MemberId"));
@@ -222,6 +256,30 @@ namespace Marketing
 						k.Column("ContactGroupOwnerId");
 					});
 				});
+				m.Bag(o => o.Payers, c => {
+					c.Cascade(Cascade.None);
+					c.Inverse(true);
+					c.Key(s => s.Column("ClientId"));
+				});
+			});
+			Mapper.Class<PayerClient>(m => {
+				m.ManyToOne(c => c.Client, mapper => mapper.Column("ClientId"));
+				m.ManyToOne(c => c.Payer, mapper => mapper.Column("PayerId"));
+			});
+			Mapper.Class<Payer>(m => {
+				m.Id(x => x.Id, mapper => mapper.Column("PayerID"));
+				m.Schema("Billing");
+				m.Table("Payers");
+				m.Bag(o => o.LegalEntities, c => {
+					c.Cascade(Cascade.None);
+					c.Inverse(true);
+					c.Key(s => s.Column("PayerId"));
+				});
+			});
+			Mapper.Class<LegalEntity>(m => {
+				m.Schema("Billing");
+				m.Table("LegalEntities");
+				m.ManyToOne(c => c.Payer, mapper => mapper.Column("PayerId"));
 			});
 			Mapper.Class<Contact>(m => {
 				m.Schema("Contacts");

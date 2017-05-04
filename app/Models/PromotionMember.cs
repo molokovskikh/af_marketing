@@ -21,6 +21,12 @@ namespace Marketing.Models
 
 		public virtual Client Client { get; set; }
 
+		public virtual decimal? MinSum { get; set; }
+
 		public virtual IList<PromotionSubscribe> Subscribes { get; set; }
+
+		public virtual IList<AddressLimit> AddressLimits { get; set; }
+
+		public virtual IList<LegalEntityLimit> LegalEntityLimits { get; set; }
 	}
 }

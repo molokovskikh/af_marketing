@@ -540,8 +540,255 @@ namespace Marketing.Controllers
 		public ActionResult PromotionChange(uint id)
 		{
 			var promotion = DbSession.Query<ProducerPromotion>().First(s => s.Id == id);
+			promotion.FeeSums = promotion.FeeSums.OrderBy(r => r.Quantity).ToList();
+			promotion.FeePercents = promotion.FeePercents.OrderBy(r => r.Total).ToList();
 			ViewBag.MarketingEvent = CurrentMarketingEvent;
+			ViewBag.Limits = new LimitsViewModel {
+				PromotionId = id,
+				MemberLimits = GetMemberLimits(id),
+				LegalEntityLimits = GetLegalEntityLimits(id, true),
+				AddressLimits = GetAddressLimits(id, true)
+			};
 			return View(promotion);
+		}
+
+		private IList<MemberLimitViewModel> GetMemberLimits(uint id)
+		{
+			var model = DbSession.Query<ProducerPromotion>()
+				.First(r => r.Id == id)
+				.MarketingEvent
+				.Association
+				.Members
+				.Select(r => new MemberLimitViewModel {
+					MemberId = r.Id,
+					MemberName = r.Client.Name,
+					MinSum = r.MinSum
+				})
+				.OrderBy(r => r.MemberName)
+				.ToList();
+			return model;
+		}
+
+		private IList<LegalEntityLimitViewModel> GetLegalEntityLimits(uint id, bool initialize = false)
+		{
+			var associationId = DbSession.Query<ProducerPromotion>().First(r => r.Id == id).MarketingEvent.Association.Id;
+			if (initialize) {
+				var sql = $@"insert into LegalEntityLimits (MemberId, LegalEntityId)
+	select pm.Id as MemberId, le.Id as LegalEntityId
+		from PromotionMembers pm
+			inner join Billing.PayerClients pc on pm.ClientId = pc.ClientId
+			inner join Billing.LegalEntities le on pc.PayerId = le.PayerId
+			left join LegalEntityLimits lel on pm.Id = lel.MemberId and le.Id = lel.LegalEntityId
+		where pm.AssociationId = {associationId}
+			and lel.Id is null";
+				DbSession.CreateSQLQuery(sql).ExecuteUpdate();
+			}
+
+			var model = DbSession.Query<LegalEntityLimit>()
+				.Where(r => r.Member.Association.Id == associationId)
+				.Select(r => new LegalEntityLimitViewModel {
+					LimitId = r.Id,
+					MemberId = r.Member.Id,
+					MemberName = r.Member.Client.Name,
+					LegalEntityName = r.LegalEntity.Name,
+					MinSum = r.MinSum
+				})
+				.OrderBy(r => r.MemberName)
+				.ThenBy(r => r.LegalEntityName)
+				.ToList();
+			return model;
+		}
+
+		private IList<AddressLimitViewModel> GetAddressLimits(uint id, bool initialize = false)
+		{
+			var associationId = DbSession.Query<ProducerPromotion>().First(r => r.Id == id).MarketingEvent.Association.Id;
+			if (initialize) {
+				var sql = $@"insert into AddressLimits (MemberId, AddressId)
+select pm.Id as MemberId, a.Id as AddressId
+	from PromotionMembers pm
+		inner join Addresses a on pm.ClientId = a.ClientId
+		left join AddressLimits al on pm.Id = al.MemberId and a.Id = al.AddressId
+	where pm.AssociationId = {associationId}
+		and a.Enabled = 1
+		and al.Id is null";
+				DbSession.CreateSQLQuery(sql).ExecuteUpdate();
+			}
+
+			var model = DbSession.Query<AddressLimit>()
+				.Where(r => r.Member.Association.Id == associationId)
+				.Where(r => r.Address.Enabled)
+				.Select(r => new AddressLimitViewModel {
+					LimitId = r.Id,
+					MemberId = r.Member.Id,
+					MemberName = r.Member.Client.Name,
+					Address = r.Address.AddressName,
+					MinSum = r.MinSum
+				})
+				.OrderBy(r => r.MemberName)
+				.ThenBy(r => r.Address)
+				.ToList();
+			return model;
+		}
+
+		[ValidateInput(false)]
+		public ActionResult GridAddressLimits(uint id)
+		{
+			var model = new LimitsViewModel {
+				PromotionId = id,
+				AddressLimits = GetAddressLimits(id)
+			};
+			return PartialView("partials/_AddressLimits", model);
+		}
+
+		[ValidateInput(false)]
+		public ActionResult GridMemberLimits(uint id)
+		{
+			var model = new LimitsViewModel {
+				PromotionId = id,
+				MemberLimits = GetMemberLimits(id)
+			};
+			return PartialView("partials/_MemberLimits", model);
+		}
+
+		[ValidateInput(false)]
+		public ActionResult GridLegalEntityLimits(uint id)
+		{
+			var model = new LimitsViewModel {
+				PromotionId = id,
+				LegalEntityLimits = GetLegalEntityLimits(id)
+			};
+			return PartialView("partials/_LegalEntityLimits", model);
+		}
+
+		[ValidateInput(false)]
+		public ActionResult MemberLimitsSave(uint id, MVCxGridViewBatchUpdateValues<MemberLimitViewModel, int> updateValues)
+		{
+			foreach (var item in updateValues.Update) {
+				if (updateValues.IsValid(item))
+					try {
+						var limit = DbSession.Query<PromotionMember>().First(r => r.Id == item.MemberId);
+						limit.MinSum = item.MinSum;
+					} catch (Exception ex) {
+						updateValues.SetErrorText(item, ex.Message);
+					}
+			}
+			return GridMemberLimits(id);
+		}
+
+		[ValidateInput(false)]
+		public ActionResult AddressLimitsSave(uint id, MVCxGridViewBatchUpdateValues<AddressLimitViewModel, int> updateValues)
+		{
+			foreach (var item in updateValues.Update) {
+				if (updateValues.IsValid(item))
+					try {
+						var limit = DbSession.Query<AddressLimit>().First(r => r.Id == item.LimitId);
+						limit.MinSum = item.MinSum;
+					} catch (Exception ex) {
+						updateValues.SetErrorText(item, ex.Message);
+					}
+			}
+			return GridAddressLimits(id);
+		}
+
+		[ValidateInput(false)]
+		public ActionResult LegalEntityLimitsSave(uint id, MVCxGridViewBatchUpdateValues<LegalEntityLimitViewModel, int> updateValues)
+		{
+			foreach (var item in updateValues.Update) {
+				if (updateValues.IsValid(item))
+					try {
+						var limit = DbSession.Query<LegalEntityLimit>().First(r => r.Id == item.LimitId);
+						limit.MinSum = item.MinSum;
+					} catch (Exception ex) {
+						updateValues.SetErrorText(item, ex.Message);
+					}
+			}
+			return GridLegalEntityLimits(id);
+		}
+
+		[ValidateInput(false)]
+		public ActionResult PercentageSave(uint id, MVCxGridViewBatchUpdateValues<PromotionPercent, int> updateValues)
+		{
+			foreach (var itemId in updateValues.DeleteKeys) {
+					var item = DbSession.Query<PromotionPercent>().FirstOrDefault(r => r.Id == itemId);
+					if (item != null)
+						DbSession.Delete(item);
+			}
+
+			var promotion = DbSession.Query<ProducerPromotion>().First(r => r.Id == id);
+			foreach (var item in updateValues.Insert) {
+				if (updateValues.IsValid(item))
+					try {
+						item.Promotion = promotion;
+						DbSession.Save(item);
+					} catch (Exception ex) {
+						updateValues.SetErrorText(item, ex.Message);
+					}
+			}
+
+			foreach (var item in updateValues.Update) {
+				if (updateValues.IsValid(item))
+					try {
+						var record = DbSession.Query<PromotionPercent>().First(r => r.Id == item.Id);
+						record.DealerPercent = item.DealerPercent;
+						record.MemberPercent = item.MemberPercent;
+						record.Total = item.Total;
+					} catch (Exception ex) {
+						updateValues.SetErrorText(item, ex.Message);
+					}
+			}
+
+			return GridPercentage(id);
+		}
+
+		[ValidateInput(false)]
+		public ActionResult GridPercentage(uint id)
+		{
+			var model = DbSession.Query<ProducerPromotion>().First(r => r.Id == id);
+			model.FeePercents = model.FeePercents.OrderBy(r => r.Total).ToList();
+			return PartialView("partials/_PercentageConditions", model);
+		}
+
+		[ValidateInput(false)]
+		public ActionResult AmountsSave(uint id, MVCxGridViewBatchUpdateValues<PromotionSum, int> updateValues)
+		{
+			foreach (var itemId in updateValues.DeleteKeys) {
+				var item = DbSession.Query<PromotionPercent>().FirstOrDefault(r => r.Id == itemId);
+				if (item != null)
+					DbSession.Delete(item);
+			}
+
+			var promotion = DbSession.Query<ProducerPromotion>().First(r => r.Id == id);
+			foreach (var item in updateValues.Insert) {
+				if (updateValues.IsValid(item))
+					try {
+						item.Promotion = promotion;
+						DbSession.Save(item);
+					} catch (Exception ex) {
+						updateValues.SetErrorText(item, ex.Message);
+					}
+			}
+
+			foreach (var item in updateValues.Update) {
+				if (updateValues.IsValid(item))
+					try {
+						var record = DbSession.Query<PromotionSum>().First(r => r.Id == item.Id);
+						record.DealerSum = item.DealerSum;
+						record.MemberSum = item.MemberSum;
+						record.Quantity = item.Quantity;
+					} catch (Exception ex) {
+						updateValues.SetErrorText(item, ex.Message);
+					}
+			}
+
+			return GridAmounts(id);
+		}
+
+		[ValidateInput(false)]
+		public ActionResult GridAmounts(uint id)
+		{
+			var model = DbSession.Query<ProducerPromotion>().First(r => r.Id == id);
+			model.FeeSums = model.FeeSums.OrderBy(r => r.Quantity).ToList();
+			return PartialView("partials/_AmountConditions", model);
 		}
 
 		[HttpPost]
@@ -570,7 +817,25 @@ namespace Marketing.Controllers
 			promotion.Description = model.Description;
 			promotion.PromoRequirements = model.PromoRequirements;
 			promotion.FeeInformation = model.FeeInformation;
+			promotion.FeeType = model.FeeType;
+			promotion.CalculationUnit = model.CalculationUnit;
+			promotion.FeeBase = model.FeeBase;
+			promotion.MinLimit = model.MinLimit;
+			promotion.SameConditions = model.SameConditions;
+			promotion.Accounting = model.Accounting;
+
+			if (!promotion.SameConditions || promotion.FeeBase != FeeBase.Amount) {
+				promotion.FeeSums.ForEach(x => DbSession.Delete(x));
+				promotion.FeeSums.Clear();
+			}
+			if (!promotion.SameConditions || promotion.FeeBase != FeeBase.Percentage) {
+				promotion.FeePercents.ForEach(x => DbSession.Delete(x));
+				promotion.FeePercents.Clear();
+			}
+
 			DbSession.Update(promotion);
+			DbSession.Flush();
+
 			return RedirectToAction("PromotionList", new {id = CurrentMarketingEvent.Id});
 		}
 
@@ -629,7 +894,7 @@ namespace Marketing.Controllers
 		{
 			var promotion = DbSession.Query<ProducerPromotion>().FirstOrDefault(r => r.Id == id);
 			var sql = $@"select pp.PromotionId, pp.Id as ConditionId, c.Name as ProductName, pr.Name as ProducerName,
-		Mnn.Id as MnnId, Mnn.Mnn, pp.Price, pp.DealerPercent, pp.MemberPercent,
+		Mnn.Id as MnnId, Mnn.Mnn, pp.Price, pp.DealerPercent, pp.MemberPercent, pp.Quantity, pp.DealerSum, pp.MemberSum,
 		group_concat(crep.Name order by crep.Name separator ', ') as Replacements
 	from Customers.PromotionProducts pp
 		inner join Customers.ProducerPromotions prp on pp.PromotionId = prp.Id

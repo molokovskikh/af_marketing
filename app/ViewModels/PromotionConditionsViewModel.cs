@@ -32,5 +32,9 @@ namespace Marketing.ViewModels
 
 		[Range(0, 100, ErrorMessage = "Процент должен лежать в диапазоне от {0} до {1}")]
 		public decimal MemberPercent { get; set; }
+
+		public uint Quantity { get; set; }
+		public decimal? DealerSum { get; set; }
+		public decimal? MemberSum { get; set; }
 	}
 }

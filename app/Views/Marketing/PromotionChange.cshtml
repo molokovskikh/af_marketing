@@ -5,6 +5,7 @@
 @{
 	var marketingEvent = (MarketingEvent) ViewBag.MarketingEvent;
 	var association = (Association)ViewBag.Association;
+	var limitsModel = (LimitsViewModel)ViewBag.Limits;
 	ViewBag.Title = $"Изменение акции от \"{marketingEvent.Name}\"";
 }
 
@@ -58,6 +59,81 @@
             <div class="col-md-12">
                 @Html.TextAreaFor(m => m.PromoRequirements, 10, 0, new { @class = "form-control full-width" })
                 @Html.ValidationMessageFor(m => m.PromoRequirements, "", new { @class = "text-danger" })
+            </div>
+        </div>
+				<div class="form-group">
+						@Html.LabelFor(m => m.FeeType, new { @class = "col-md-2 control-label" })
+						<div class="col-md-10">
+								@Html.ExtEnumDropDownListFor(m => m.FeeType, new { @class = "form-control" })
+								@Html.ValidationMessageFor(m => m.FeeType, "", new { @class = "text-danger" })
+						</div>
+				</div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.CalculationUnit, new { @class = "col-md-2 control-label" })
+            <div class="col-md-10">
+                @Html.ExtEnumDropDownListFor(m => m.CalculationUnit, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.CalculationUnit, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.FeeBase, new { @class = "col-md-2 control-label" })
+            <div class="col-md-10">
+                @Html.ExtEnumDropDownListFor(m => m.FeeBase, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.FeeBase, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.MinLimit, new { @class = "col-md-2 control-label" })
+            <div class="col-md-7">
+                @Html.ExtEnumDropDownListFor(m => m.MinLimit, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.MinLimit, "", new { @class = "text-danger" })
+            </div>
+						<div class="col-md-3" id="limitsButton"@(Model.MinLimit == LimitType.None ? " style=display:none" : "")>
+                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#limitsModal">Ограничения по мин.объёму</button>
+            </div>
+            <div id="limitsModal" class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                            <h4 class="modal-title">Ограничения по мин.объёму</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div id="limitsMember"@(Model.MinLimit == LimitType.ByClient ? "" : " style=display:none")>
+                                @Html.Partial("partials/_MemberLimits", limitsModel)
+                            </div>
+                            <div id="limitsLegalEntity"@(Model.MinLimit == LimitType.ByLegalEntity ? "" : " style=display:none")>
+                                @Html.Partial("partials/_LegalEntityLimits", limitsModel)
+                            </div>
+                            <div id="limitsAddress"@(Model.MinLimit == LimitType.ByAddress ? "" : " style=display:none")>
+                                @Html.Partial("partials/_AddressLimits", limitsModel)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="checkbox">
+                    @Html.CheckBoxFor(m => m.SameConditions)
+                    @Html.LabelFor(m => m.SameConditions)
+                </div>
+            </div>
+						<div class="col-md-offset-2 col-md-10" id="conditionPanel"@(Model.SameConditions ? "" : " style=display:none")>
+								<div id="samePercents"@(Model.FeeBase == FeeBase.Amount ? "" : " style=display:none")>
+										@Html.Partial("partials/_AmountConditions", Model)
+								</div>
+                <div id="sameSums" @(Model.FeeBase == FeeBase.Percentage ? "" : " style=display:none")>
+										@Html.Partial("partials/_PercentageConditions", Model)
+                </div>
+						</div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.Accounting, new { @class = "col-md-2 control-label" })
+            <div class="col-md-10">
+								@Html.ExtEnumDropDownListFor(m => m.Accounting, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Accounting, "", new { @class = "text-danger" })
             </div>
         </div>
     </div>
@@ -116,4 +192,50 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+
+	<script>
+    	$(document).ready(function () {
+    		$("#@Html.IdFor(m => m.SameConditions)").on("change", function (s) {
+    			if ($(s.target).is(":checked")) {
+    				$("#conditionPanel").show();
+    			}
+    			else {
+    				$("#conditionPanel").hide();
+    			}
+    		});
+    		$("#@Html.IdFor(m => m.FeeBase)").on("change", function () {
+    			if (this.value == "@((int)FeeBase.Percentage)") {
+    				$("#samePercents").hide();
+    				$("#sameSums").show();
+    			}
+    			else {
+    				$("#sameSums").hide();
+    				$("#samePercents").show();
+    			}
+    		});
+    		$("#@Html.IdFor(m => m.MinLimit)").on("change", function () {
+    			$("#limitsMember").hide();
+    			$("#limitsLegalEntity").hide();
+    			$("#limitsAddress").hide();
+    			var value = this.value;
+    			switch (value) {
+    				case "@((int)LimitType.ByClient)":
+    					$("#limitsButton").show();
+    					$("#limitsMember").show();
+    					break;
+    				case "@((int)LimitType.ByLegalEntity)":
+    					$("#limitsButton").show();
+    					$("#limitsLegalEntity").show();
+    					break;
+    				case "@((int)LimitType.ByAddress)":
+    					$("#limitsButton").show();
+    					$("#limitsAddress").show();
+    					break;
+    				default:
+    					$("#limitsButton").hide();
+    					break;
+    			};
+    		});
+    	});
+	</script>
 }

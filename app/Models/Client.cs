@@ -12,7 +12,9 @@ namespace Marketing.Models
 	{
 		public Client()
 		{
+			ContactGroups = new List<ContactGroup>();
 			Addresses = new List<Address>();
+			Payers = new List<PayerClient>();
 		}
 
 		public virtual uint Id { get; set; }
@@ -29,5 +31,7 @@ namespace Marketing.Models
 		public virtual Region Region { get; set; }
 
 		public virtual IList<Address> Addresses { get; set; }
+
+		public virtual IList<PayerClient> Payers { get; set; }
 	}
 }

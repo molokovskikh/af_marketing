@@ -1,0 +1,53 @@
+﻿@using System.Web.UI.WebControls
+@using Marketing.ViewModels
+@model LimitsViewModel
+@{
+  Html.EnableClientValidation();
+  Html.EnableUnobtrusiveJavaScript();
+}
+@Html.DevExpress().GridView(settings =>
+{
+    settings.Name = "gridMemberLimits";
+    settings.CallbackRouteValues = new { Action = "GridMemberLimits", Controller = "Marketing", Id = Model.PromotionId };
+    settings.PreviewEncodeHtml = false;
+    settings.EncodeHtml = false;
+    settings.KeyFieldName = "MemberId";
+    settings.Width = Unit.Percentage(100);
+
+    settings.SettingsEditing.BatchUpdateRouteValues = new { Action = "MemberLimitsSave", Controller = "Marketing", Id = Model.PromotionId };
+    settings.SettingsEditing.Mode = GridViewEditingMode.Batch;
+    settings.SettingsEditing.BatchEditSettings.EditMode = GridViewBatchEditMode.Cell;
+    settings.SettingsEditing.BatchEditSettings.StartEditAction = GridViewBatchStartEditAction.FocusedCellClick;
+    settings.CellEditorInitialize = (s, e) =>
+    {
+        ASPxEdit editor = (ASPxEdit)e.Editor;
+        editor.ValidationSettings.Display = Display.None;
+    };
+    settings.SettingsEditing.BatchEditSettings.ShowConfirmOnLosingChanges = false;
+
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "MemberName";
+        column.PropertiesEdit.EncodeHtml = false;
+        column.Caption = "Участник";
+        column.ReadOnly = true;
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "MinSum";
+        column.PropertiesEdit.EncodeHtml = false;
+        column.Caption = "Минимальная сумма";
+        column.EditorProperties().SpinEdit(p =>
+        {
+            p.NumberType = SpinEditNumberType.Float;
+            p.DisplayFormatInEditMode = true;
+            p.MinValue = 0;
+            p.Increment = 1m;
+            p.LargeIncrement = 10m;
+        });
+    });
+
+    settings.SettingsPager.Mode = GridViewPagerMode.EndlessPaging;
+    settings.SettingsPager.PageSize = 20;
+    settings.SettingsSearchPanel.Visible = true;
+}).Bind(Model.MemberLimits).GetHtml()

@@ -20,6 +20,8 @@ namespace Marketing.Models
 			Products = new List<PromotionProduct>();
 			Suppliers = new List<PromotionSupplier>();
 			Subscribes = new List<PromotionSubscribe>();
+			FeePercents = new List<PromotionPercent>();
+			FeeSums = new List<PromotionSum>();
 		}
 
 		public virtual uint Id { get; set; }
@@ -64,6 +66,27 @@ namespace Marketing.Models
 		[Display(Name = "Информация о вознаграждении")]
 		[StringLength(150, ErrorMessage = "Поле {0} не может содержать больше {1} символов")]
 		public virtual string FeeInformation { get; set; }
+
+		[Display(Name = "Форма вознаграждения")]
+		public virtual FeeType FeeType { get; set; }
+
+		[Display(Name = "Единица расчёта")]
+		public virtual CalculationUnit CalculationUnit { get; set; }
+
+		[Display(Name = "Вознаграждение")]
+		public virtual FeeBase FeeBase { get; set; }
+
+		[Display(Name = "Ограничения по минимальному объёму")]
+		public virtual LimitType MinLimit { get; set; }
+
+		[Display(Name = "Единые условия для всех товаров")]
+		public virtual bool SameConditions { get; set; }
+
+		[Display(Name = "Отчётность")]
+		public virtual AccountingPeriod Accounting { get; set; }
+
+		public virtual IList<PromotionPercent> FeePercents { get; set; }
+		public virtual IList<PromotionSum> FeeSums { get; set; }
 
 		public virtual void UpdateProductsAndSuppliersByIds(ISession dbSession, string productsIds, string suppliersIds)
 		{
@@ -122,5 +145,53 @@ namespace Marketing.Models
 		[Description("Все поставщики")] All = 0,
 		[Description("Разрешённые поставщики")] Enabled,
 		[Description("Исключения по поставщикам")] Disabled
+	}
+
+	/// <summary>
+	/// Форма вознаграждения
+	/// </summary>
+	public enum FeeType : byte
+	{
+		[Description("Деньгами")] Money = 0,
+		[Description("Баллами-Картами")] Cards
+	}
+
+	/// <summary>
+	/// Единица расчёта
+	/// </summary>
+	public enum CalculationUnit : byte
+	{
+		[Description("Учётная цена")] CipPrice = 0,
+		[Description("Закупочная цена")] PurchasePrice,
+		[Description("Упаковки")] Packages
+	}
+
+	/// <summary>
+	/// Базовая величина для расчёта вознаграждения
+	/// </summary>
+	public enum FeeBase : byte
+	{
+		[Description("Процент от объёма")] Percentage = 0,
+		[Description("Сумма за пакет")] Amount
+	}
+
+	/// <summary>
+	/// Ограничения по минимальному объёму
+	/// </summary>
+	public enum LimitType : byte
+	{
+		[Description("Нет")] None = 0,
+		[Description("На клиента")] ByClient,
+		[Description("На юр.лицо")] ByLegalEntity,
+		[Description("На аптеку")] ByAddress
+	}
+
+	/// <summary>
+	/// Периодичность отчётности
+	/// </summary>
+	public enum AccountingPeriod : byte
+	{
+		[Description("Помесячно")] Monthly = 0,
+		[Description("Поквартально")] Quarterly
 	}
 }
