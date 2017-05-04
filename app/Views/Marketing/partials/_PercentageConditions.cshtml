@@ -1,0 +1,79 @@
+﻿@using System.Web.UI.WebControls
+@using Marketing.Models
+@model ProducerPromotion
+@{
+  Html.EnableClientValidation();
+  Html.EnableUnobtrusiveJavaScript();
+}
+@Html.DevExpress().GridView(settings =>
+{
+    settings.Name = "gridPercentage";
+    settings.CallbackRouteValues = new { Action = "GridPercentage", Controller = "Marketing", Id = Model.Id };
+    settings.PreviewEncodeHtml = false;
+    settings.EncodeHtml = false;
+    settings.KeyFieldName = "Id";
+    settings.Width = Unit.Percentage(100);
+
+    settings.SettingsEditing.BatchUpdateRouteValues = new { Action = "PercentageSave", Controller = "Marketing", Id = Model.Id };
+    settings.SettingsEditing.Mode = GridViewEditingMode.Batch;
+    settings.SettingsEditing.BatchEditSettings.EditMode = GridViewBatchEditMode.Cell;
+    settings.SettingsEditing.BatchEditSettings.StartEditAction = GridViewBatchStartEditAction.FocusedCellClick;
+    settings.CellEditorInitialize = (s, e) =>
+    {
+        ASPxEdit editor = (ASPxEdit)e.Editor;
+        editor.ValidationSettings.Display = Display.None;
+    };
+    settings.SettingsEditing.BatchEditSettings.ShowConfirmOnLosingChanges = false;
+
+    settings.CommandColumn.Visible = true;
+    settings.CommandColumn.ShowDeleteButton = true;
+    settings.CommandColumn.ShowNewButtonInHeader = true;
+    settings.CommandColumn.Width = Unit.Point(50);
+
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "Total";
+        column.PropertiesEdit.EncodeHtml = false;
+        column.Caption = "Сумма";
+        column.EditorProperties().SpinEdit(p =>
+        {
+            p.NumberType = SpinEditNumberType.Float;
+            p.DisplayFormatInEditMode = true;
+            p.MinValue = 0;
+            p.Increment = 10m;
+            p.LargeIncrement = 100m;
+        });
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "DealerPercent";
+        column.PropertiesEdit.EncodeHtml = false;
+        column.Caption = "% бонуса по договору";
+        column.EditorProperties().SpinEdit(p =>
+        {
+            p.NumberType = SpinEditNumberType.Float;
+            p.DisplayFormatInEditMode = true;
+            p.MinValue = 0;
+            p.Increment = 0.1m;
+            p.LargeIncrement = 1m;
+        });
+    });
+    settings.Columns.Add(column =>
+    {
+        column.FieldName = "MemberPercent";
+        column.PropertiesEdit.EncodeHtml = false;
+        column.Caption = "% бонуса для участника";
+        column.EditorProperties().SpinEdit(p =>
+        {
+            p.NumberType = SpinEditNumberType.Float;
+            p.DisplayFormatInEditMode = true;
+            p.MinValue = 0;
+            p.Increment = 0.1m;
+            p.LargeIncrement = 1m;
+        });
+    });
+
+    settings.SettingsPager.Mode = GridViewPagerMode.EndlessPaging;
+    settings.SettingsPager.PageSize = 20;
+    settings.SettingsSearchPanel.Visible = true;
+}).Bind(Model.FeePercents).GetHtml()
