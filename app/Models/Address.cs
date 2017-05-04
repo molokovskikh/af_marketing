@@ -14,6 +14,8 @@ namespace Marketing.Models
 
 		public virtual string AddressName { get; set; }
 
+		public virtual bool Enabled { get; set; }
+
 		public virtual Client Client { get; set; }
 	}
 }

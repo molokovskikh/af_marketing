@@ -609,12 +609,14 @@ select pm.Id as MemberId, a.Id as AddressId
 		inner join Addresses a on pm.ClientId = a.ClientId
 		left join AddressLimits al on pm.Id = al.MemberId and a.Id = al.AddressId
 	where pm.AssociationId = {associationId}
+		and a.Enabled = 1
 		and al.Id is null";
 				DbSession.CreateSQLQuery(sql).ExecuteUpdate();
 			}
 
 			var model = DbSession.Query<AddressLimit>()
 				.Where(r => r.Member.Association.Id == associationId)
+				.Where(r => r.Address.Enabled)
 				.Select(r => new AddressLimitViewModel {
 					LimitId = r.Id,
 					MemberId = r.Member.Id,
